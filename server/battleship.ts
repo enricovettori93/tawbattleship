@@ -4,6 +4,8 @@ import http = require("http");
 import io = require("socket.io");
 import express = require("express");
 import colors = require("colors");
+import {User} from "./User";
+import * as user from "./User";
 
 colors.enabled = true;
 var ios = undefined;
@@ -12,6 +14,21 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
     function onconnected() {
 
         console.log("Connected to MongoDB");
+        //Creating Admin
+        var admin = user.newUser({
+            name: "admin",
+            surname: "admin",
+            username: "admin",
+            email: "admin@battleship.it"
+        });
+        admin.setAdmin();
+        admin.setPassword("ciaobelli");
+        admin.save().then(() => {
+            console.log("Admin created");
+        }).catch((err)=>{
+            console.log("Unable to create admin user: " + err );
+        });
+
         // To start a standard HTTP server we directly invoke the "listen"
         // method of express application
         let server = http.createServer(app);

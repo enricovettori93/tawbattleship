@@ -3,14 +3,14 @@ import crypto = require('crypto');
 
 export interface User extends mongoose.Document{
     name: string,
-    cognome: string,
+    surname: string,
     username: string,
     mail: string,
     partiteVinte: Number,
     partitePerse: Number,
     salt: string,
     digest: string,
-    roles: string[],
+    isAdmin: boolean,
     setPassword: (pwd:string)=>void,
     validatePassword: (pwd:string)=>boolean,
     hasAdminRole: ()=>boolean,
@@ -25,13 +25,21 @@ var userSchema = new mongoose.Schema( {
         required: true,
         unique: true
     },
+    name: {
+        type: mongoose.SchemaTypes.String,
+        required: true
+    },
+    surname: {
+        type: mongoose.SchemaTypes.String,
+        required: true
+    },
     mail: {
         type: mongoose.SchemaTypes.String,
         required: true,
         unique: true
     },
-    roles:  {
-        type: [mongoose.SchemaTypes.String],
+    isAdmin:  {
+        type: mongoose.SchemaTypes.Boolean,
         required: true 
     },
     salt:  {
@@ -67,35 +75,25 @@ userSchema.methods.validatePassword = function( pwd:string ):boolean {
 }
 
 userSchema.methods.hasAdminRole = function(): boolean {
-    for(var roleidx in this.roles) {
-        if( this.roles[roleidx] === 'ADMIN' )
-            return true;
-    }
-    return false;
+    return this.isAdmin;
 }
 
 userSchema.methods.setAdmin = function() {
-    this.roles.push("ADMIN");
-}
-
-userSchema.methods.hasModeratorRole = function(): boolean {
-    for(var roleidx in this.roles) {
-        if(this.roles[roleidx] === 'MODERATOR')
-            return true;
-    }
-    return false;
-}
-
-userSchema.methods.setModerator = function() {
-    this.roles.push( "MODERATOR" );
+    this.isAdmin = true;
 }
 
 export function getSchema() { return userSchema; }
 
 var userModel;
-export function getModel(): mongoose.Model<mongoose.Document> {
+export function getModel(): mongoose.Model<User> {
     if (!userModel) {
-        userModel = mongoose.model('Ship', getSchema())
+        userModel = mongoose.model('User', getSchema())
     }
     return userModel;
+}
+
+export function newUser(data): User {
+    var _userModel = getModel();
+    var user = new _userModel(data);
+    return user;
 }
