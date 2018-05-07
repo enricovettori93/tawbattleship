@@ -1,6 +1,6 @@
 {
     "name": "battleship",
-    "main": "battleship",
+    "main": "Match",
     "version": "0.0.1",
     "author": "",
     "dependencies": {
