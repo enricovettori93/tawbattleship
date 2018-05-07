@@ -26,9 +26,6 @@ var PointSchema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
-
-
-
 })
 export function getSchema() { return PointSchema; }
 

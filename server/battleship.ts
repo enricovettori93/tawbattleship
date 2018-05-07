@@ -8,7 +8,7 @@ import colors = require("colors");
 colors.enabled = true;
 var ios = undefined;
 var app = express();
-mongoose.connect('mongodb://localhost:27017/postmessages').then(
+mongoose.connect('mongodb://localhost:27017/battleship').then(
     function onconnected() {
 
         console.log("Connected to MongoDB");
