@@ -15,7 +15,19 @@
 
   <!-- Custom styles for this template -->
   <link href="css/half-slider.css" rel="stylesheet">
+  <style>
+    .me {
+      width: 60%;
+      text-align: right;
+      float: right;
+    }
 
+    .other {
+      width: 60%;
+      text-align: left;
+      float: left;
+    }
+  </style>
 </head>
 
 <body>
@@ -36,14 +48,14 @@
             <a class="nav-link" href="matches.html">Partite</a>
           </li>
           <li class="nav-item active">
-              <a class="nav-link" href="messagges.html">Messaggi</a>
-            </li>
+            <a class="nav-link" href="messagges.html">Messaggi</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="scoreboard.html">Scoreboard</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="index.html">Logout</a>
-            </li>
+            <a class="nav-link" href="index.html">Logout</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -53,13 +65,35 @@
   <section class="py-5">
     <div class="container py-5">
       <div class="row col">
-        <h1>Chat con <a href="otheraccount.html"><b>Goku</b></a></h1>
+        <h1>Chat con
+          <a href="otheraccount.html">
+            <b>Goku</b>
+          </a>
+        </h1>
       </div>
-      <div class="container py-5">
-        <div class="row">
-          
+      <div class="container py-2">
+        <div class="alert alert-dark py-2 me">
+          <span>Ciao</span>
+        </div>
+        <div class="alert alert-info py-2 other">
+          <span>Ciao</span>
+        </div>
+        <div class="alert alert-dark py-2 me">
+          <span>Come va?</span>
+        </div>
+        <div class="alert alert-info py-2 other">
+          <span>Tutto bene, te?</span>
         </div>
       </div>
+      <form>
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1"></label>
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+        <div class="row col-sm-12">
+            <button type="button" class="btn btn-primary">Invia il messaggio</button>
+        </div>
+      </form>
     </div>
   </section>
 
