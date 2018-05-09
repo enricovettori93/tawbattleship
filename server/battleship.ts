@@ -22,7 +22,7 @@ import jwt = require("express-jwt");
 import bodyparser = require("body-parser");
 import cors = require("cors");
 
-//Import Typescript classes
+//Import TypeScript classes
 import {User} from "./User";
 import * as user from "./User";
 
@@ -35,8 +35,8 @@ app.use(cors);
 app.use(bodyparser.json);
 
 //Root Endpoint
-app.get("/",(req,res) => {
-    res.status(200).json({api_v: 1, endpoints: ["/users","/chats","/scoreboard","/matches"]});
+app.get("/", (req,res) => {
+    res.status(200).json({api_version: "1.0", endpoints: ["/users","/chats","/scoreboard","/matches"]});
 })
 
 //Renew Endpoint
@@ -49,7 +49,7 @@ app.get("/renew",auth, (req,res,next) => {
 })
 
 //Login Endpoint
-app.get("/login",passport.authenticate("Basic",{session:false}),(req,res,next) => {
+app.get("/login", passport.authenticate("Basic",{session:false}), (req,res,next) => {
     var tokendata = {
         username: req.user.username,
         isAdmin: req.user.isAdmin,
@@ -67,15 +67,33 @@ app.route("/users/:id").get(auth, (req,res,next) =>{
     //Get /users/:id information
     user.getModel().findOne({salt: 0,digest: 0}).then((users)=>{
         return res.status(200).json(users);
-    }).catch((reason)=>{
+    }).catch((reason) => {
         return next({statusCode: 404, error: true, errormessage: "Error: "+reason});
     })
 }).put(auth,(req,res,next) => {
     //Update /users/:id information
+    //TODO: da controllare la seconda parte dell'or di questo if, non sono sicuro della sua correttezza
+    if(!user.newUser(req.user).hasAdminRole() || user.newUser(req.user).id != req.params.id){
+        return next({statusCode: 404, error:true, errormessage: "Unauthorized"});
+    }
+    //Creo un user dummy al volo per calcolare digest e salt da inserire nell'utente da modificare
+    var userdummy = user.newUser({
+        name: "",
+        surname: "",
+        username: "",
+        mail: ""
+    });
+    userdummy.setPassword(req.params.password);
 
+    user.getModel().updateOne({id: req.params.id},{"$set":{"name":req.params.name,"surname":req.params.surname,"mail":req.params.mail,"salt":userdummy.salt,"digest":userdummy.digest,"isAdmin":req.params.isAdmin}}).then(() => {
+        return res.status(200).json({error: false, errormessage: ""});
+    }).catch((error) => {
+        return next({statuscode: 404, error: true, errormessage: "MongoDB error: "+error});
+    })
 }).delete(auth,(req,res,next) => {
     //Delete /users/:id
-    if(!user.newUser(req.user).hasAdminRole()){
+    //TODO: da controllare la seconda parte dell'or di questo if, non sono sicuro della sua correttezza
+    if(!user.newUser(req.user).hasAdminRole() || user.newUser(req.user).id != req.params.id){
         return next({statusCode: 404, error:true, errormessage: "Unauthorized"});
     }
     user.getModel().deleteOne({id: req.params.id}).then(() => {
@@ -122,7 +140,6 @@ passport.use(new passportHTTP.BasicStrategy(
 //Start server only if mongoose connect to database
 mongoose.connect('mongodb://localhost:27017/battleship').then(
     function onconnected() {
-
         console.log("Connected to MongoDB");
         //Creating Admin
         var admin = user.newUser({
@@ -135,7 +152,7 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
         admin.setPassword("ciaobelli");
         admin.save().then(() => {
             console.log("Admin created");
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log("Unable to create admin user: " + err );
         });
 

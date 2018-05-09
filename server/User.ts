@@ -11,10 +11,10 @@ export interface User extends mongoose.Document{
     salt: string,
     digest: string,
     isAdmin: boolean,
-    setPassword: (pwd:string)=>void,
-    validatePassword: (pwd:string)=>boolean,
-    hasAdminRole: ()=>boolean,
-    setAdmin: ()=>void,
+    setPassword: (pwd:string) => void,
+    validatePassword: (pwd:string) => boolean,
+    hasAdminRole: () => boolean,
+    setAdmin: () => void,
 }
 
 var userSchema = new mongoose.Schema( {
