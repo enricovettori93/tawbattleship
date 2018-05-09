@@ -34,6 +34,72 @@ colors.enabled = true;
 app.use(cors);
 app.use(bodyparser.json);
 
+//Root Endpoint
+app.get("/",(req,res) => {
+    res.status(200).json({api_v: 1, endpoints: ["/users","/chats","/scoreboard","/matches"]});
+})
+
+//Renew Endpoint
+app.get("/renew",auth, (req,res,next) => {
+    var tokenrenew = req.user;
+    delete tokenrenew.iat;
+    delete tokenrenew.exp;
+    var token_renew = jsonwebtoken.sign(tokenrenew,process.env.JWT_SECRET,{expiresIn: "2h"});
+    return res.status(200).json({error: false, errormessage: "",token: tokenrenew})
+})
+
+//Login Endpoint
+app.get("/login",passport.authenticate("Basic",{session:false}),(req,res,next) => {
+    var tokendata = {
+        username: req.user.username,
+        isAdmin: req.user.isAdmin,
+        mail: req.user.mail,
+        id: req.user.id,
+        name: req.user.name,
+        surname: req.user.surname
+    };
+    var tokensigned = jsonwebtoken.sign(tokendata,process.env.JWT_SECRET,{expiresIn: "2h"});
+    return res.status(200).json({error: false, errormessage: "", token: tokensigned});
+})
+
+//User Endpoints
+app.route("/users/:id").get(auth, (req,res,next) =>{
+    //Get /users/:id information
+    user.getModel().findOne({salt: 0,digest: 0}).then((users)=>{
+        return res.status(200).json(users);
+    }).catch((reason)=>{
+        return next({statusCode: 404, error: true, errormessage: "Error: "+reason});
+    })
+}).put(auth,(req,res,next) => {
+    //Update /users/:id information
+
+}).delete(auth,(req,res,next) => {
+    //Delete /users/:id
+    if(!user.newUser(req.user).hasAdminRole()){
+        return next({statusCode: 404, error:true, errormessage: "Unauthorized"});
+    }
+    user.getModel().deleteOne({id: req.params.id}).then(() => {
+        return res.status(200).json({error: false, errormessage: ""});
+    }).catch((error) => {
+        return next({statuscode: 404, error: true, errormessage: "MongoDB error: "+error})
+    })
+})
+
+app.post("/users",(req,res,next) => {
+    var new_user = user.newUser(req.body);
+    if(!req.body.password){
+        return next({statusCode: 500, error: true, errormessage: "Missing password"});
+    }
+    new_user.setPassword(req.body.password);
+    new_user.save().then((data) => {
+        return res.status(200).json({error: false, errormessage: "", id: data._id});
+    }).catch((error) => {
+        if(error.code === 11000)
+            return next({statusCode: 404, error: true, errormessage: "User already exists"})
+        return next({statusCode: 404, error: true, errormessage: "MongoDB error: "+error});
+    })
+})
+
 //Configure HTTP basic auth
 passport.use(new passportHTTP.BasicStrategy(
     function(username, password, done){
@@ -73,24 +139,13 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
             console.log("Unable to create admin user: " + err );
         });
 
-        // To start a standard HTTP server we directly invoke the "listen" method of express application
+        //Starting server
         let server = http.createServer(app);
         ios = io(server);
         ios.on('connection', function (client) {
             console.log("Socket.io client connected".green);
         });
         server.listen(8080, () => console.log("HTTP Server started on port 8080"));
-
-        // To start an HTTPS server we create an https.Server instance 
-        // passing the express application middleware. Then, we start listening
-        // on port 8443
-        //
-        /*
-        https.createServer({
-          key: fs.readFileSync('keys/key.pem'),
-          cert: fs.readFileSync('keys/cert.pem')
-        }, app).listen(8443);
-        */
     },
     function onrejected() {
         console.log("Unable to connect to MongoDB");

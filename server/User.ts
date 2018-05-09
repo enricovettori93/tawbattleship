@@ -15,8 +15,6 @@ export interface User extends mongoose.Document{
     validatePassword: (pwd:string)=>boolean,
     hasAdminRole: ()=>boolean,
     setAdmin: ()=>void,
-    hasModeratorRole: ()=>boolean,
-    setModerator: ()=>void
 }
 
 var userSchema = new mongoose.Schema( {
