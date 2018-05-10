@@ -10,16 +10,16 @@ if(!process.env.JWT_SECRET){
 }
 
 //Import libraries
-import mongoose = require("mongoose");
 import http = require("http");
-import io = require("socket.io");
-import express = require("express");
 import colors = require("colors");
+import mongoose = require("mongoose");
+import express = require("express");
+import bodyparser = require("body-parser");
 import passport = require("passport");
 import passportHTTP = require("passport-http");
 import jsonwebtoken = require("jsonwebtoken");
 import jwt = require("express-jwt");
-import bodyparser = require("body-parser");
+import io = require("socket.io");
 import cors = require("cors");
 
 //Import TypeScript classes
@@ -30,17 +30,18 @@ import * as user from "./User";
 var ios = undefined;
 var app = express();
 var auth = jwt({secret: process.env.JWT_SECRET});
-colors.enabled = true;
 app.use(cors);
 app.use(bodyparser.json);
+colors.enabled = true;
 
 //Root Endpoint
 app.get("/", (req,res) => {
+    console.log("Called root endpoint".blue);
     res.status(200).json({api_version: "1.0", endpoints: ["/users","/chats","/scoreboard","/matches"]});
 })
 
 //Renew Endpoint
-app.get("/renew",auth, (req,res,next) => {
+app.get("/renew", auth, (req,res,next) => {
     var tokenrenew = req.user;
     delete tokenrenew.iat;
     delete tokenrenew.exp;
@@ -136,6 +137,17 @@ passport.use(new passportHTTP.BasicStrategy(
         })
     }
 ));
+
+//Error handling middleware
+app.use(function (err, req, res, next){
+    console.log("Error: ".red + JSON.stringify(err));
+    res.status(err.statusCode || 500).json(err);
+})
+
+//Endpoint error 404 for request without endpoint
+app.use((req,res,next) => {
+    res.status(404).json({error: true, errormessage: "Invalid endpoint"});
+})
 
 //Start server only if mongoose connect to database
 mongoose.connect('mongodb://localhost:27017/battleship').then(
