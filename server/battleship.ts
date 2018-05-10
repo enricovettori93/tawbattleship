@@ -46,6 +46,25 @@ app.get("/", (req, res) => {
     res.status(200).json({ api_version: "1.0", endpoints: ["/users", "/chats", "/scoreboard", "/matches"] });
 })
 
+//Configure HTTP basic auth
+passport.use(new passportHTTP.BasicStrategy(
+    function (username, password, done) {
+        console.log("Login from: ".green + username);
+        user.getModel().findOne({ username: username }, (err, user) => {
+            if (err) {
+                return done({ statusCode: 500, error: true, errormessage: "Error fetching user" + err });
+            }
+            if (!user) {
+                return done({ statusCode: 500, error: true, errormessage: "Invalid user" });
+            }
+            if (user.validatePassword(password)) {
+                return done(null, user);
+            }
+            return done({ statusCode: 500, error: true, errormessage: "Password errata" });
+        })
+    }
+));
+
 //Renew Endpoint
 app.get("/renew", auth, (req, res, next) => {
     var tokenrenew = req.user;
@@ -56,7 +75,8 @@ app.get("/renew", auth, (req, res, next) => {
 })
 
 //Login Endpoint
-app.get("/login", passport.authenticate("Basic", { session: false }), (req, res, next) => {
+app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
+    console.log("Called endpoint Login".bgYellow);
     var tokendata = {
         username: req.user.username,
         isAdmin: req.user.isAdmin,
@@ -70,12 +90,13 @@ app.get("/login", passport.authenticate("Basic", { session: false }), (req, res,
 })
 
 //User Endpoints
-app.route("/users/:id").get(auth, (req, res, next) => {
+app.route("/users/:mail").get(auth, (req, res, next) => {
+    console.log("Called endpoint user info with email: " + req.params.mail);
     //Get /users/:id information
-    user.getModel().findOne({ salt: 0, digest: 0 }).then((users) => {
-        return res.status(200).json(users);
+    user.getModel().findOne({ mail: req.params.mail }, { salt: 0, digest: 0 }).then((user) => {
+        return res.status(200).json(user);
     }).catch((reason) => {
-        return next({ statusCode: 404, error: true, errormessage: "Error: " + reason });
+        return next({ statusCode: 404, error: true, errormessage: "Error get user info: " + reason });
     })
 }).put(auth, (req, res, next) => {
     //Update /users/:id information
@@ -116,7 +137,9 @@ app.route("/users").post((req, res, next) => {
         return next({ statusCode: 500, error: true, errormessage: "Missing password" });
     }
     new_user.setPassword(req.body.password);
+    new_user.isAdmin = false;
     new_user.save().then((data) => {
+        console.log("User " + req.body.username + " saved succesfully".green);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
     }).catch((error) => {
         if (error.code === 11000)
@@ -124,38 +147,31 @@ app.route("/users").post((req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
     })
 }).get(auth, (req, res, next) => {
-    //TODO: da controllare e testare questa ricerca
-    var keysearched = req.params.keysearched;
-    var filter = { $or: [{ username: { $all: keysearched } }, { name: { $all: keysearched } }, { surname: { $all: keysearched } }] };
-    user.getModel().find(filter).then((documents) => {
-        return res.status(200).json(documents);
-    }).catch((error) => {
-        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error })
-    })
-})
-
-//Configure HTTP basic auth
-passport.use(new passportHTTP.BasicStrategy(
-    function (username, password, done) {
-        console.log("Login from: ".green + username);
-        user.getModel().findOne({ username: username }, (err, user) => {
-            if (err) {
-                return done({ statusCode: 500, error: true, errormessage: err });
-            }
-            if (!user) {
-                return done({ statusCode: 500, error: true, errormessage: err });
-            }
-            if (user.validatePassword(password)) {
-                return done(null, user);
-            }
-            return done({ statusCode: 500, error: true, errormessage: "Password errata" });
+    if (req.query.keysearched === undefined) {
+        console.log("Called endpoint user search without word");
+        user.getModel().find({ salt: 0, digest: 0, _id: 0 }).then((documents) => {
+            return res.status(200).json(documents);
+        }).catch((error) => {
+            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error })
+        });
+    }
+    else {
+        //TODO: da controllare e testare questa ricerca
+        var keysearched = req.query.keysearched.toLowerCase();
+        console.log("Called endpoint user search with word: " + keysearched);
+        var filter = { username: new RegExp(keysearched, "i")};
+        //var filter = { $in: [{ username: new RegExp(keysearched, "i")}, { name: new RegExp(keysearched, "i")}, { surname: new RegExp(keysearched, "i")}] };
+        user.getModel().find(filter, { salt: 0, digest: 0, _id: 0 }).then((documents) => {
+            return res.status(200).json(documents);
+        }).catch((error) => {
+            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error })
         })
     }
-));
+})
 
 //Error handling middleware
 app.use(function (err, req, res, next) {
-    console.log("Error: ".red + JSON.stringify(err));
+    console.log("Error middleware endpoint: ".red + JSON.stringify(err));
     res.status(err.statusCode || 500).json(err);
 })
 
