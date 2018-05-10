@@ -104,7 +104,7 @@ app.route("/users/:id").get(auth, (req,res,next) =>{
     })
 })
 
-app.post("/users",(req,res,next) => {
+app.route("/users").post((req,res,next) => {
     var new_user = user.newUser(req.body);
     if(!req.body.password){
         return next({statusCode: 500, error: true, errormessage: "Missing password"});
@@ -116,6 +116,15 @@ app.post("/users",(req,res,next) => {
         if(error.code === 11000)
             return next({statusCode: 404, error: true, errormessage: "User already exists"})
         return next({statusCode: 404, error: true, errormessage: "MongoDB error: "+error});
+    })
+}).get(auth, (req,res,next) => {
+    //TODO: da controllare e testare questa ricerca
+    var keysearched = req.params.keysearched;
+    var filter = {$or: [{username: {$all: keysearched}}, {name: {$all: keysearched}}, {surname: {$all: keysearched}}]};
+    user.getModel().find(filter).then((documents) => {
+        return res.status(200).json(documents);
+    }).catch((error) => {
+        return next({statusCode: 404, error: true, errormessage: "MongoDB error: "+error})
     })
 })
 
