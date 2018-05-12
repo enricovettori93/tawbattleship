@@ -19,6 +19,8 @@ import mongoose = require('mongoose');
 
 import { User } from './User';
 import * as user from './User';
+import {Message} from './Message';
+import * as message from './Message';
 
 import express = require('express');
 import bodyparser = require('body-parser');      // body-parser middleware is used to parse the request body and
