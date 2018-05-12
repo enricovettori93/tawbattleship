@@ -152,7 +152,7 @@ app.route("/users").post((req, res, next) => {
 }).get(auth, (req, res, next) => {
     if (req.query.keysearched === undefined) {
         console.log("Called endpoint user search without word");
-        user.getModel().find({},{ salt: 0, digest: 0, _id: 0, __v: 0 }).then((documents) => {
+        user.getModel().find({},{ salt: 0, digest: 0, _id: 0, __v: 0, chatList: 0 }).then((documents) => {
             return res.status(200).json(documents);
         }).catch((error) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error })
@@ -162,7 +162,7 @@ app.route("/users").post((req, res, next) => {
         var keysearched = req.query.keysearched.toLowerCase();
         console.log("Called endpoint user search with word: " + keysearched);
         var filter = { $or: [{ username: new RegExp(keysearched, "i") }, { name: new RegExp(keysearched, "i") }, { surname: new RegExp(keysearched, "i") }] };
-        user.getModel().find(filter, { salt: 0, digest: 0, _id: 0, __v: 0 }).then((documents) => {
+        user.getModel().find(filter, { salt: 0, digest: 0, _id: 0, __v: 0, chatList: 0 }).then((documents) => {
             return res.status(200).json(documents);
         }).catch((error) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error })

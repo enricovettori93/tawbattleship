@@ -1,5 +1,6 @@
 import mongoose = require('mongoose');
 import crypto = require('crypto');
+import { ObjectID } from 'bson';
 
 export interface User extends mongoose.Document{
     name: string,
@@ -11,6 +12,7 @@ export interface User extends mongoose.Document{
     salt: string,
     digest: string,
     isAdmin: boolean,
+    chatList: [ObjectID],
     setPassword: (pwd:string) => void,
     validatePassword: (pwd:string) => boolean,
     hasAdminRole: () => boolean,
@@ -39,6 +41,10 @@ var userSchema = new mongoose.Schema( {
     isAdmin:  {
         type: mongoose.SchemaTypes.Boolean,
         required: true 
+    },
+    chatList:{
+        type: [mongoose.SchemaTypes.ObjectId],
+        required: false
     },
     salt:  {
         type: mongoose.SchemaTypes.String,
