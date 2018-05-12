@@ -76,7 +76,7 @@ app.get("/renew", auth, (req, res, next) => {
 
 //Login Endpoint
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
-    console.log("Called endpoint Login".bgYellow);
+    console.log("Called endpoint Login");
     var tokendata = {
         username: req.user.username,
         isAdmin: req.user.isAdmin,
@@ -92,16 +92,16 @@ app.get("/login", passport.authenticate("basic", { session: false }), (req, res,
 //User Endpoints
 app.route("/users/:mail").get(auth, (req, res, next) => {
     console.log("Called endpoint user info with email: " + req.params.mail);
-    //Get /users/:id information
-    user.getModel().findOne({ mail: req.params.mail }, { salt: 0, digest: 0 }).then((user) => {
+    //Get /users/:mail information
+    user.getModel().findOne({ mail: req.params.mail }, { salt: 0, digest: 0 , _id: 0 , __v: 0}).then((user) => {
         return res.status(200).json(user);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "Error get user info: " + reason });
     })
 }).put(auth, (req, res, next) => {
-    //Update /users/:id information
-    //TODO: da controllare la seconda parte dell'or di questo if, non sono sicuro della sua correttezza
-    if (!user.newUser(req.user).hasAdminRole() || user.newUser(req.user).id != req.params.id) {
+    //Update /users/:mail information
+    console.log("Called endpoint update user with email: " + req.params.mail);
+    if (!user.newUser(req.user).hasAdminRole() && user.newUser(req.user).mail != req.params.mail) {
         return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
     }
     //Creo un user dummy al volo per calcolare digest e salt da inserire nell'utente da modificare
@@ -111,20 +111,21 @@ app.route("/users/:mail").get(auth, (req, res, next) => {
         username: "",
         mail: ""
     });
-    userdummy.setPassword(req.params.password);
-
-    user.getModel().updateOne({ id: req.params.id }, { "$set": { "name": req.params.name, "surname": req.params.surname, "mail": req.params.mail, "salt": userdummy.salt, "digest": userdummy.digest, "isAdmin": req.params.isAdmin } }).then(() => {
+    userdummy.setPassword(req.body.password);
+    //TODO: manca da gestire la possibilità di diventare admin se un Admin lo concede aggiornando l'utente
+    user.getModel().updateOne({ mail: req.params.mail }, { "$set": { "username": req.body.username, "name": req.body.name, "surname": req.body.surname, "mail": req.body.mail, "salt": userdummy.salt, "digest": userdummy.digest} }).then(() => {
+        console.log(("User with email " + req.params.mail + " updated").yellow);
         return res.status(200).json({ error: false, errormessage: "" });
     }).catch((error) => {
         return next({ statuscode: 404, error: true, errormessage: "MongoDB error: " + error });
     })
 }).delete(auth, (req, res, next) => {
-    //Delete /users/:id
-    //TODO: da controllare la seconda parte dell'or di questo if, non sono sicuro della sua correttezza
-    if (!user.newUser(req.user).hasAdminRole() || user.newUser(req.user).id != req.params.id) {
+    //Delete /users/:mail
+    if (!user.newUser(req.user).hasAdminRole() && user.newUser(req.user).mail != req.params.mail) {
         return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
     }
-    user.getModel().deleteOne({ id: req.params.id }).then(() => {
+    user.getModel().deleteOne({ mail: req.params.mail }).then(() => {
+        console.log(("User with email " + req.params.mail + " deleted").red);
         return res.status(200).json({ error: false, errormessage: "" });
     }).catch((error) => {
         return next({ statuscode: 404, error: true, errormessage: "MongoDB error: " + error })
@@ -139,7 +140,7 @@ app.route("/users").post((req, res, next) => {
     new_user.setPassword(req.body.password);
     new_user.isAdmin = false;
     new_user.save().then((data) => {
-        console.log("User " + req.body.username + " saved succesfully".green);
+        console.log(("User " + req.body.username + " saved succesfully").green);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
     }).catch((error) => {
         if (error.code === 11000)
