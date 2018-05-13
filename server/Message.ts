@@ -13,11 +13,11 @@ var messageSchema = new mongoose.Schema({
         required: true
     },
     senderUsername:{
-        type: String,
+        type: mongoose.SchemaTypes.String,
         required: true
     },
     text:{
-        type: String,
+        type: mongoose.SchemaTypes.String,
         required: true
     }
 })

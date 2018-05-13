@@ -1,6 +1,7 @@
 import mongoose = require('mongoose');
 import crypto = require('crypto');
 import { ObjectID } from 'bson';
+import { Chat } from './Chat';
 
 export interface User extends mongoose.Document{
     name: string,
@@ -12,7 +13,7 @@ export interface User extends mongoose.Document{
     salt: string,
     digest: string,
     isAdmin: boolean,
-    chatList: [ObjectID],
+    chatList: [Chat],
     setPassword: (pwd:string) => void,
     validatePassword: (pwd:string) => boolean,
     hasAdminRole: () => boolean,

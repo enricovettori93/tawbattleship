@@ -1,20 +1,21 @@
 import mongoose = require("mongoose");
 import { Timestamp, ObjectID } from "bson";
+import { Message } from "./Message";
 
 export interface Chat extends mongoose.Document{
-    usernameUser1: String,
-    usernameUser2: String,
+    user1ID: Number,
+    user2ID: Number,
     createdAt: Timestamp,
-    listMessage: [ObjectID]
+    listMessage: [Message]
 }
 
 var chatSchema = new mongoose.Schema({
-    usernameUser1:{
-        type: String,
+    user1:{
+        type: mongoose.SchemaTypes.Number,
         required: true
     },
-    usernameUser2:{
-        type: String,
+    user2:{
+        type: mongoose.SchemaTypes.Number,
         required: true
     },
     createdAt:{
@@ -26,6 +27,9 @@ var chatSchema = new mongoose.Schema({
         required: true
     }
 })
+
+//Chat between user1 and user2 -> singleton
+chatSchema.index({user1: 1, user2: 2},{unique: true});
 
 export function getSchema(){return chatSchema}
 

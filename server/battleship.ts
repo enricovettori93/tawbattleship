@@ -91,7 +91,7 @@ app.get("/login", passport.authenticate("basic", { session: false }), (req, res,
     return res.status(200).json({ error: false, errormessage: "", token: tokensigned });
 })
 
-//User Endpoints
+//---------------------- User Endpoints ----------------------
 app.route("/users/:mail").get(auth, (req, res, next) => {
     console.log("Called endpoint user info with email: " + req.params.mail);
     //Get /users/:mail information
@@ -165,9 +165,20 @@ app.route("/users").post((req, res, next) => {
         user.getModel().find(filter, { salt: 0, digest: 0, _id: 0, __v: 0, chatList: 0 }).then((documents) => {
             return res.status(200).json(documents);
         }).catch((error) => {
-            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error })
+            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
         })
     }
+})
+
+//---------------------- Chat Endpoints ----------------------
+app.route("/chats").get(auth, (req, res, next) => {
+    //Get all chats of auth user
+    console.log(("Getting " + req.user.username + " chats").blue);
+    user.getModel().find({username: req.user.username},{"chatList":1, "_id": 0}).then((documents) => {
+        return res.status(200).json(documents);
+    }).catch((error) => {
+        return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
+    })
 })
 
 //Error handling middleware
