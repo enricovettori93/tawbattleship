@@ -69,6 +69,7 @@ passport.use(new passportHTTP.BasicStrategy(
 
 //Renew Endpoint
 app.get("/renew", auth, (req, res, next) => {
+    console.log((req.user.username + " renew JWT").rainbow);
     var tokenrenew = req.user;
     delete tokenrenew.iat;
     delete tokenrenew.exp;
@@ -139,6 +140,8 @@ app.route("/users").post((req, res, next) => {
     if (!req.body.password) {
         return next({ statusCode: 500, error: true, errormessage: "Missing password" });
     }
+    new_user.partitePerse =  0;
+    new_user.partiteVinte =  0;
     new_user.setPassword(req.body.password);
     new_user.isAdmin = false;
     new_user.save().then((data) => {
@@ -179,6 +182,19 @@ app.route("/chats").get(auth, (req, res, next) => {
     }).catch((error) => {
         return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
     })
+}).post(auth, (req,res, next) => {
+    
+})
+
+//---------------------- Scoreboard Endpoints ----------------------
+app.get("/scoreboard", (req,res,next) => {
+    req.query.limit = parseInt( req.query.limit || "10" ) || 10;
+    console.log(("Printing scoreboard with limit: " + req.query.limit).magenta);
+    user.getModel().find({},{"username": 1, "partiteVinte": 1, "_id": 0}).sort({partiteVinte: -1}).limit(req.query.limit).then((documents) => {
+        return res.status(200).json(documents);
+    }).catch((error) => {
+        return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
+    })
 })
 
 //Error handling middleware
@@ -204,7 +220,9 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
             name: "admin",
             surname: "admin",
             username: "admin",
-            mail: "admin@battleship.it"
+            mail: "admin@battleship.it",
+            partiteVinte: 0,
+            partitePerse: 0
         });
         admin.setAdmin();
         admin.setPassword("ciaobelli");
