@@ -21,6 +21,8 @@ import { User } from './User';
 import * as user from './User';
 import {Message} from './Message';
 import * as message from './Message';
+import {Chat} from './Chat';
+import * as chat from './Chat';
 
 import express = require('express');
 import bodyparser = require('body-parser');      // body-parser middleware is used to parse the request body and
@@ -183,7 +185,40 @@ app.route("/chats").get(auth, (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
     })
 }).post(auth, (req,res, next) => {
-    
+    var dest = req.body.destinatario;
+    var id_dest = undefined;
+    var id_sender = undefined;
+    //TODO: da rivedere con Promise.all
+    user.getModel().findOne({username: dest}).then((dest) => {
+        id_dest = dest._id;
+        user.getModel().findOne({username: req.user.username}).then((userfind) => {
+            id_sender = userfind._id;
+            var new_chat = chat.newChat({
+                user1ID: id_sender,
+                user2ID: id_dest,
+                createdAt: Date.now,
+                listMessage: []
+            });
+            new_chat.save().then((data) => {
+                console.log("Chat between " + id_sender + " and " + id_dest + " created");
+                //Aggiorno la lista delle chat dei 2 utenti con quella apena creata
+                var promise1 = user.getModel().update({_id: id_sender},{$push: {chatList: data._id}});
+                var promise2 = user.getModel().update({_id: id_dest},{$push: {chatList: data._id}});
+                Promise.all([promise1, promise2]).then((data) => {
+                    console.log("Chat addedd succesfully");
+                }).catch((error) => {
+                    console.log("MongoDB error saving chats: " + error);
+                })
+                return res.status(200).json({error: false, errormessage: ""});
+            }).catch((error) => {
+                return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
+            })
+        }).catch((error) => {
+            return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
+        })
+    }).catch((error) => {
+        return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
+    })
 })
 
 //---------------------- Scoreboard Endpoints ----------------------

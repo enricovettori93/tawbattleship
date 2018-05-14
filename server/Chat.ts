@@ -5,31 +5,31 @@ import { Message } from "./Message";
 export interface Chat extends mongoose.Document{
     user1ID: Number,
     user2ID: Number,
-    createdAt: Timestamp,
+    createdAt: Date,
     listMessage: [Message]
 }
 
 var chatSchema = new mongoose.Schema({
-    user1:{
-        type: mongoose.SchemaTypes.Number,
+    user1ID:{
+        type: mongoose.SchemaTypes.ObjectId,
         required: true
     },
-    user2:{
-        type: mongoose.SchemaTypes.Number,
+    user2ID:{
+        type: mongoose.SchemaTypes.ObjectId,
         required: true
     },
     createdAt:{
-        type: Timestamp,
+        type: Date,
         required: true
     },
     listMessage:{
-        type: [ObjectID],
+        type: [mongoose.SchemaTypes.ObjectId],
         required: true
     }
 })
 
 //Chat between user1 and user2 -> singleton
-chatSchema.index({user1: 1, user2: 2},{unique: true});
+chatSchema.index({user1ID: 1, user2ID: 2},{unique: true});
 
 export function getSchema(){return chatSchema}
 

@@ -2,14 +2,14 @@ import mongoose = require("mongoose");
 import { Timestamp } from "bson";
 
 export interface Message extends mongoose.Document{
-    sentAt: Timestamp,
+    sentAt: Date,
     senderUsername: string,
     text: string
 }
 
 var messageSchema = new mongoose.Schema({
     sentAt:{
-        type: Timestamp,
+        type: Date,
         required: true
     },
     senderUsername:{
