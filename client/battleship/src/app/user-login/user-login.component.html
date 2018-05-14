@@ -1,0 +1,37 @@
+<div class="container py-5">
+  <div class="row col">
+      <h1>Sign-in</h1>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <p>Inserisci le tue credenziali per accedere</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <p>Username</p>
+    </div>
+    <div class="col-sm-6">
+      <input type="text" #usertxt required placeholder="username" id="inputuser" class="form-control">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <p>Password</p>
+    </div>
+    <div class="col-sm-6">
+      <input type="password" #passwordtxt required placeholder="password" id="inputpassword" class="form-control">
+    </div>
+  </div>
+  <div class="row col-sm-12">
+    <label>
+      <input type="checkbox" #checklogin value="remember-me"> Ricordami
+    </label>
+  </div>
+  <div *ngIf="errmessage" class="alert alert-danger" role="alert">
+    Errore di login: {{errmessage}}
+  </div>
+  <div class="row col-sm-12">
+      <button type="button" class="btn btn-primary" (click)="login(usertxt.value, passwordtxt.value, checklogin.checked)">Login</button>
+  </div>
+</div>
