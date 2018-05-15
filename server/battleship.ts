@@ -188,37 +188,77 @@ app.route("/chats").get(auth, (req, res, next) => {
     var dest = req.body.destinatario;
     var id_dest = undefined;
     var id_sender = undefined;
-    //TODO: da rivedere con Promise.all
-    user.getModel().findOne({username: dest}).then((dest) => {
-        id_dest = dest._id;
-        user.getModel().findOne({username: req.user.username}).then((userfind) => {
-            id_sender = userfind._id;
-            var new_chat = chat.newChat({
-                user1ID: id_sender,
-                user2ID: id_dest,
-                createdAt: Date.now,
-                listMessage: []
-            });
-            new_chat.save().then((data) => {
-                console.log("Chat between " + id_sender + " and " + id_dest + " created");
-                //Aggiorno la lista delle chat dei 2 utenti con quella apena creata
-                var promise1 = user.getModel().update({_id: id_sender},{$push: {chatList: data._id}});
-                var promise2 = user.getModel().update({_id: id_dest},{$push: {chatList: data._id}});
-                Promise.all([promise1, promise2]).then((data) => {
-                    console.log("Chat addedd succesfully");
-                }).catch((error) => {
-                    console.log("MongoDB error saving chats: " + error);
-                })
+    var date = Date.now();
+
+    console.log(("Creating chat between " + req.user.username + " and " + dest).green);
+
+    var query_id_dest = user.getModel().findOne({username: dest});
+    var query_id_sender = user.getModel().findOne({username: req.user.username});
+
+    var promise_query_id_dest = query_id_dest.exec();
+    var promise_query_id_sender = query_id_sender.exec();
+
+    Promise.all([promise_query_id_dest,promise_query_id_sender]).then(values => {
+        id_dest = values[0]._id;
+        id_sender = values[1]._id;
+        var new_chat = chat.newChat({
+            user1ID: id_sender,
+            user2ID: id_dest,
+            createdAt: date,
+            listMessage: []
+        });
+        new_chat.save().then((data) => {
+            console.log(("Chat between " + req.user.username + " and " + dest + " created").green);
+            //Aggiorno la lista delle chat dei 2 utenti con quella apena creata
+            var promise1 = user.getModel().update({_id: id_sender},{$push: {chatList: data._id}});
+            var promise2 = user.getModel().update({_id: id_dest},{$push: {chatList: data._id}});
+            Promise.all([promise1, promise2]).then(function() {
+                console.log(("Chat addedd succesfully").green);
                 return res.status(200).json({error: false, errormessage: ""});
-            }).catch((error) => {
+            }).catch(function(error) {
+                console.log("MongoDB error saving chats: " + error);
                 return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
-            })
+            });
         }).catch((error) => {
+            if(error.code === 11000)
+                return next({statusCode: 404, error: true, errormessage: "Chat already exists"});
             return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
         })
     }).catch((error) => {
-        return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
-    })
+        return next({statusCode: 404, error: true, errormessage: "MongoDB error retrieving ids for new chat: " + error});
+    });
+}).delete(auth, (req,res,next) => {
+    //Endpoint di prova, cancella la chat con parametro destinatario nel body
+    console.log(("Deleting chat between " + req.user.username + " and " + req.body.destinatario).zebra);
+
+    var query_id_dest = user.getModel().findOne({username: req.body.destinatario});
+    var query_id_sender = user.getModel().findOne({username: req.user.username});
+
+    var promise_query_id_dest = query_id_dest.exec();
+    var promise_query_id_sender = query_id_sender.exec();
+
+    Promise.all([promise_query_id_sender,promise_query_id_dest]).then(values => {
+        var query_get_id_chat  = chat.getModel().findOne({user1ID: values[0]._id,user2ID: values[1]._id});
+        var query_delete_chat = chat.getModel().deleteOne({user1ID: values[0]._id,user2ID: values[1]._id});
+        
+        var promise_query_get_id_chat = query_get_id_chat.exec();
+        var promise_query_delete_chat = query_delete_chat.exec();
+
+        Promise.all([promise_query_get_id_chat,promise_query_delete_chat]).then(values2 => {
+            user.getModel().update({chatList: values2[0]._id},{$set: {chatList: values2[0]._id, val: undefined}});
+        }).catch((error) => {
+            return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
+        })
+
+        /*
+        chat.getModel().deleteOne({user1ID: values[0]._id,user2ID: values[1]._id}).then((data) => {
+            console.log(("Chat deleted succesfully").zebra);
+            return res.status(200).json({error: false, errormessage: ""});
+        }).catch(function(error) {
+            console.log("MongoDB error deleting chat: " + error);
+            return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
+        });*/
+    });
 })
 
 //---------------------- Scoreboard Endpoints ----------------------
