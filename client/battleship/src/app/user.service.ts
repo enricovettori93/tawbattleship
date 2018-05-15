@@ -15,15 +15,16 @@ export class UserService {
   private token = '';
   public url = 'http://localhost:8080';
 
-  login(username: string, password: string, remember: boolean): Observable<any> {
+  login(user: string, password: string, remember: boolean): Observable<any> {
+    
     const options = {
       headers: new HttpHeaders({
-        authorization: 'Basic' + btoa(username + ':' + password),
-        'cache-control':'no-cache',
-        'Content-Type':'application/x-www-form-urlencoded'
+        authorization: 'Basic ' + btoa( user + ':' + password),
+        'cache-control': 'no-cache',
+        'Content-Type':  'application/x-www-form-urlencoded',
       })
     };
-
+    console.log("Login: "+ this.url + '/login ' + JSON.stringify(options));
     return this.http.get(this.url + '/login', options, ).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
