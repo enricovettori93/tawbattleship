@@ -5,12 +5,14 @@ import { AppComponent } from './app.component';
 import { UserLoginComponent } from './user-login/user-login.component';
 import { UserInfoComponent } from './user-info/user-info.component';
 import { UserSignupComponent } from './user-signup/user-signup.component';
+import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
   {path: 'login', component: UserLoginComponent},
   {path: 'user', component: UserInfoComponent},
-  {path: 'signup', component: UserSignupComponent}
+  {path: 'signup', component: UserSignupComponent},
+  {path: 'scoreboard', component: ScoreboardComponent}
 ]
 
 @NgModule({

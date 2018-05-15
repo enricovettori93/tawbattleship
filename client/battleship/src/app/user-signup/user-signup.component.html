@@ -1,36 +1,39 @@
 <div class="row col">
   <h1>Registrazione</h1>
 </div>
-<form>
-  <div class="row col">
-    <div class="form-group">
-      <label for="inputName">Nome</label>
-      <input type="password" class="form-control" id="inputNewName" placeholder="Inserisci il nome">
-    </div>
-    <div class="form-group">
-      <label for="inputSurname">Cognome</label>
-      <input type="password" class="form-control" id="inputNewSurname" placeholder="Inserisci il cognome">
-    </div>
+
+<div class="row col">
+  <div class="form-group">
+    <label for="inputName">Nome</label>
+    <input type="text" #name="ngModel" class="form-control" [(ngModel)]="user.name" id="inputNewName" placeholder="Inserisci il nome">
   </div>
-  <div class="row col">
-    <div class="form-group">
-      <label for="inputUsername">Username</label>
-      <input type="email" class="form-control" id="inputNewUsername" placeholder="Inserisci lo Username">
-    </div>
-    <div class="form-group">
-        <label for="inputEmail1">Indirizzo Email</label>
-        <input type="email" class="form-control" id="inputNewEmail1" placeholder="Inserisci l'email">
-      </div>
+  <div class="form-group">
+    <label for="inputSurname">Cognome</label>
+    <input type="text" #surname="ngModel" class="form-control" [(ngModel)]="user.surname" id="inputNewSurname" placeholder="Inserisci il cognome">
   </div>
-  <div class="row col">
-    <div class="form-group">
-      <label for="inputPassword1">Password</label>
-      <input type="password" class="form-control" id="inputNewPassword1" placeholder="Inserisci la password">
-    </div>
-    <div class="form-group">
-      <label for="inputPassword2">Password</label>
-      <input type="password" class="form-control" id="inputNewPassword2" placeholder="Ripeti la password">
-    </div>
+</div>
+<div class="row col">
+  <div class="form-group">
+    <label for="inputUsername">Username</label>
+    <input type="text" #username="ngModel" class="form-control" [(ngModel)]="user.username" id="inputNewUsername" placeholder="Inserisci lo Username">
   </div>
-  <button class="btn btn-primary" id="registerNewAccount">Crea l'account</button>
-</form>
+  <div class="form-group">
+    <label for="inputEmail1">Indirizzo Email</label>
+    <input type="email" #mail="ngModel" class="form-control" [(ngModel)]="user.mail" id="inputNewEmail" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+      placeholder="Inserisci l'email">
+  </div>
+</div>
+<div class="row col">
+  <div class="form-group">
+    <label for="inputPassword1">Password</label>
+    <input type="password" #password1="ngModel" class="form-control" [(ngModel)]="user.password" id="inputNewPassword1" placeholder="Inserisci la password">
+  </div>
+  <div class="form-group">
+    <label for="inputPassword2">Password</label>
+    <input type="password" #password2="ngModel" class="form-control" [(ngModel)]="user.password" id="inputNewPassword2" placeholder="Ripeti la password">
+  </div>
+</div>
+<div *ngIf="errmessage" class="alert alert-danger" role="alert">
+  Errore durante la registrazione: {{errmessage}}
+</div>
+<button class="btn btn-primary" id="registerNewAccount" (click)="signup();">Crea l'account</button>
