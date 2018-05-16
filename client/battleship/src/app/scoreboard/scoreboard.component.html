@@ -29,3 +29,11 @@
     </div>
   </div>
 </div>
+<div class="row py-2">
+  <select class="form-control" (click)="changeLimit(limitScoreboard.value)" #limitScoreboard>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="100">100</option>
+  </select>
+</div>

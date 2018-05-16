@@ -49,6 +49,9 @@
       <input type="password" #newpassword2 required="true" placeholder="Ripeti nuova password" class="form-control">
     </div>
   </div>
+  <div *ngIf="isAdmin" class="col-12 py-2">
+    <input type="checkbox" [checked]="isAdmin"> Amministratore
+  </div>
   <div class="row py-2">
     <div class="col-12">
       <a routerLink="/matches">Partite giocate</a>

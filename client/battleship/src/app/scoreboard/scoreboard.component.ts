@@ -30,8 +30,13 @@ export class ScoreboardComponent implements OnInit {
     });
   }
 
-  getScoreboard():Observable<any>{
-    return this.http.get('http://localhost:8080/scoreboard',this.create_options()).pipe(
+  changeLimit(n: number){
+    console.log("# scoreboard: " + n);
+    this.getScoreboard({limit: n});
+  }
+
+  getScoreboard(params = {}):Observable<any>{
+    return this.http.get('http://localhost:8080/scoreboard',this.create_options(params)).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })

@@ -11,6 +11,7 @@ export class UserInfoComponent implements OnInit {
 
   private errmessage = undefined;
   private okmessage = undefined;
+  private isAdmin = undefined;
 
   constructor(private userService: UserService, private router: Router) { }
 
@@ -19,6 +20,7 @@ export class UserInfoComponent implements OnInit {
     if(this.userService.get_token().length === 0){
       this.router.navigate(['/']);
     }
+    this.isAdmin = this.userService.is_admin();
   }
 
   updateInfo(username: string, name: string, surname: string, mail: string, password1: string, password2: string){
