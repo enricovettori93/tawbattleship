@@ -47,14 +47,14 @@ export class UserInfoComponent implements OnInit {
 
   deleteThisUser(){
       var answer = confirm("Sei sicuro di cancellare l'utente?");
-      var mailToDelete = this.userService.get_mail();
+      var userToDelete = this.userService.get_username();
       if(answer){
-        this.userService.deleteUser(mailToDelete).subscribe((d) => {
-          console.log("User " + mailToDelete + " deleted");
+        this.userService.deleteUser(userToDelete).subscribe((d) => {
+          console.log("User " + userToDelete + " deleted");
           this.userService.logout();
           this.router.navigate(['/']);
         }),(err) => {
-          console.log("Delete user " + mailToDelete + " error " + err);
+          console.log("Delete user " + userToDelete + " error " + err);
         }
       }
   }

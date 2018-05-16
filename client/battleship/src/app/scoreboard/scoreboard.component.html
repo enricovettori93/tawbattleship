@@ -1,3 +1,31 @@
-<p>
-  scoreboard works!
-</p>
+<div class="row col">
+  <h1>Scoreboard</h1>
+</div>
+<!-- Header-->
+<div class="row">
+  <div class="col-md-8">
+    <p>
+      <b>Username</b>
+    </p>
+  </div>
+  <div class="col-md-4">
+    <p>
+      <b>Punteggio</b>
+    </p>
+  </div>
+</div>
+<!-- Content-->
+<div *ngFor = "let score of scoreboard">
+  <div class="row">
+    <div class="col-md-8">
+      <p>
+        <a routerLink='/users/{{score.username}}'>{{score.username}}</a>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>
+        {{score.partiteVinte}}
+      </p>
+    </div>
+  </div>
+</div>

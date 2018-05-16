@@ -26,6 +26,18 @@ export class UserService {
     };
   }
 
+  private handleError(error: HttpErrorResponse){
+    if(error.error instanceof ErrorEvent){
+      console.error("Errore generato: ", error.error.message);
+    }
+    else{
+      console.error(
+        `Backend returned code ${error.status}, ` +
+        'body was: ' + JSON.stringify(error.error)
+      )
+    }
+  }
+
   login(user: string, password: string, remember: boolean): Observable<any> {
     const optionsLogin = {
       headers: new HttpHeaders({
@@ -66,18 +78,18 @@ export class UserService {
       mail: mail
     }
 
-    console.log("Updating at: " + this.url + '/users/' + this.get_mail() + " user: " + JSON.stringify(user));
+    console.log("Updating at: " + this.url + '/users/' + this.get_username() + " user: " + JSON.stringify(user));
     
-    return this.http.put(this.url + '/users/' + this.get_mail(), user, this.create_options()).pipe(
+    return this.http.put(this.url + '/users/' + this.get_username(), user, this.create_options()).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
     )
   }
 
-  deleteUser(mail: string):Observable<any>{
-    console.log("Deleting user " + mail);
-    return this.http.delete(this.url + "/users/" + mail,this.create_options()).pipe(
+  deleteUser(username: string):Observable<any>{
+    console.log("Deleting user " + username);
+    return this.http.delete(this.url + "/users/" + username,this.create_options()).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -88,6 +100,8 @@ export class UserService {
     this.token = '';
     localStorage.setItem('battleship_token', this.token);
   }
+
+  //----------------- JTW GETTER -----------------
 
   get_token() {
     return this.token;

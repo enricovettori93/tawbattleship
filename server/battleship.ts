@@ -94,18 +94,18 @@ app.get("/login", passport.authenticate("basic", { session: false }), (req, res,
 })
 
 //---------------------- User Endpoints ----------------------
-app.route("/users/:mail").get(auth, (req, res, next) => {
-    console.log("Called endpoint user info with email: " + req.params.mail);
-    //Get /users/:mail information
-    user.getModel().findOne({ mail: req.params.mail }, { salt: 0, digest: 0 , _id: 0 , __v: 0}).then((user) => {
+app.route("/users/:username").get(auth, (req, res, next) => {
+    console.log("Called endpoint user info with username: " + req.params.username);
+    //Get /users/:username information
+    user.getModel().findOne({ username: req.params.username }, { salt: 0, digest: 0 , _id: 0 , __v: 0}).then((user) => {
         return res.status(200).json(user);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "Error get user info: " + reason });
     })
 }).put(auth, (req, res, next) => {
-    //Update /users/:mail information
-    console.log("Called endpoint update user with email: " + req.params.mail);
-    if (!user.newUser(req.user).hasAdminRole() && user.newUser(req.user).mail != req.params.mail) {
+    //Update /users/:username information
+    console.log("Called endpoint update user with username: " + req.params.username);
+    if (!user.newUser(req.user).hasAdminRole() && user.newUser(req.user).username != req.params.username) {
         return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
     }
     //Creo un user dummy al volo per calcolare digest e salt da inserire nell'utente da modificare
@@ -117,19 +117,19 @@ app.route("/users/:mail").get(auth, (req, res, next) => {
     });
     userdummy.setPassword(req.body.password);
     //TODO: manca da gestire la possibilità di diventare admin se un Admin lo concede aggiornando l'utente
-    user.getModel().updateOne({ mail: req.params.mail }, { "$set": { "username": req.body.username, "name": req.body.name, "surname": req.body.surname, "mail": req.body.mail, "salt": userdummy.salt, "digest": userdummy.digest} }).then(() => {
-        console.log(("User with email " + req.params.mail + " updated").yellow);
+    user.getModel().updateOne({ username: req.params.username }, { "$set": { "username": req.body.username, "name": req.body.name, "surname": req.body.surname, "mail": req.body.mail, "salt": userdummy.salt, "digest": userdummy.digest} }).then(() => {
+        console.log(("User with username " + req.params.username + " updated").yellow);
         return res.status(200).json({ error: false, errormessage: "" });
     }).catch((error) => {
         return next({ statuscode: 404, error: true, errormessage: "MongoDB error: " + error });
     })
 }).delete(auth, (req, res, next) => {
-    //Delete /users/:mail
-    if (!user.newUser(req.user).hasAdminRole() && user.newUser(req.user).mail != req.params.mail) {
+    //Delete /users/:username
+    if (!user.newUser(req.user).hasAdminRole() && user.newUser(req.user).username != req.params.username) {
         return next({ statusCode: 404, error: true, errormessage: "Unauthorized" });
     }
-    user.getModel().deleteOne({ mail: req.params.mail }).then(() => {
-        console.log(("User with email " + req.params.mail + " deleted").red);
+    user.getModel().deleteOne({ username: req.params.username }).then(() => {
+        console.log(("User with username " + req.params.username + " deleted").red);
         return res.status(200).json({ error: false, errormessage: "" });
     }).catch((error) => {
         return next({ statuscode: 404, error: true, errormessage: "MongoDB error: " + error })
