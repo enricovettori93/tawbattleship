@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import * as jwt_decode from 'jwt-decode';
 import { of, Observable } from 'rxjs';
@@ -14,6 +14,8 @@ export class UserService {
 
   private token = '';
   public url = 'http://localhost:8080';
+
+  public is_logged: EventEmitter<any> = new EventEmitter();
 
   private create_options(params = {}) {
     return {
@@ -50,6 +52,7 @@ export class UserService {
     return this.http.get(this.url + '/login', optionsLogin).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
+        this.is_logged.emit(true);
         this.token = data.token;
         if (remember) {
           localStorage.setItem('battleship_token', this.token);
@@ -98,6 +101,7 @@ export class UserService {
 
   logout() {
     this.token = '';
+    this.is_logged.emit(false);
     localStorage.setItem('battleship_token', this.token);
   }
 
@@ -127,10 +131,10 @@ export class UserService {
     return jwt_decode(this.token).isAdmin;
   }
 
-  is_logged(): boolean {
+  /*is_logged(): boolean {
     if (this.token === '')
       return false;
     else
       return true;
-  }
+  }*/
 }

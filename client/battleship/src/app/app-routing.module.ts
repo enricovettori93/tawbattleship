@@ -12,7 +12,8 @@ const routes: Routes = [
   {path: 'login', component: UserLoginComponent},
   {path: 'user', component: UserInfoComponent},
   {path: 'signup', component: UserSignupComponent},
-  {path: 'scoreboard', component: ScoreboardComponent}
+  {path: 'scoreboard', component: ScoreboardComponent},
+  {path: 'user/:username', component: UserInfoComponent}
 ]
 
 @NgModule({
