@@ -14,7 +14,7 @@
       <b>Username</b>
     </div>
     <div class="col-6">
-      <input type="text" required="true" class="form-control" value="">
+      <input type="text" #usertxt required="true" value="{{this.userService.get_name()}}" class="form-control">
     </div>
   </div>
   <div class="row py-2">
@@ -22,7 +22,7 @@
       <b>Nome</b>
     </div>
     <div class="col-6">
-      <input type="text" required="true" value="" class="form-control">
+      <input type="text" #nametxt required="true" value="{{this.userService.get_name()}}" class="form-control">
     </div>
   </div>
   <div class="row py-2">
@@ -30,7 +30,7 @@
       <b>Cognome</b>
     </div>
     <div class="col-6">
-      <input type="text" required="true" value="" class="form-control">
+      <input type="text" #surnametxt required="true" value="{{this.userService.get_surname()}}" class="form-control">
     </div>
   </div>
   <div class="row py-2">
@@ -38,15 +38,15 @@
       <b>Email</b>
     </div>
     <div class="col-6">
-      <input type="email" required="true" class="form-control" value="">
+      <input type="email" #mailtxt required="true" value="{{this.userService.get_mail()}}" class="form-control">
     </div>
   </div>
   <div class="row py-2">
     <div class="col-6">
-      <input type="password" required="true" placeholder="vecchia_password" class="form-control">
+      <input type="password" #newpassword1 required="true" placeholder="Nuova password" class="form-control">
     </div>
     <div class="col-6">
-      <input type="password" required="true" placeholder="nuova_password" class="form-control">
+      <input type="password" #newpassword2 required="true" placeholder="Ripeti nuova password" class="form-control">
     </div>
   </div>
   <div class="row py-2">
@@ -54,7 +54,13 @@
       <a routerLink="/matches">Partite giocate</a>
     </div>
   </div>
+  <div *ngIf="errmessage" class="alert alert-danger" role="alert">
+    Errore: {{errmessage}}
+  </div>
+  <div *ngIf="okmessage" class="alert alert-success" role="alert">
+    Errore: {{okmessage}}
+  </div>
   <div class="row col py-2">
-    <button type="button" class="btn btn-primary">Aggiorna le informazioni</button>
+    <button type="button" class="btn btn-primary" (click)="updateInfo(usertxt.value, nametxt.value, surnametxt.value, mailtxt.value, newpassword1.value, newpassword2.value)">Aggiorna le informazioni</button>
   </div>
 </div>

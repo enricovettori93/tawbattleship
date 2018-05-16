@@ -12,8 +12,7 @@ export class UserSignupComponent implements OnInit {
   private user = {mail: '', name: '', surname: '', username: '', password: ''};
   constructor(private userService: UserService, private router: Router) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   signup(){
     this.userService.register(this.user).subscribe((d) => {

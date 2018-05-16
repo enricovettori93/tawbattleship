@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular
 import * as jwt_decode from 'jwt-decode';
 import { of, Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-//import * as ErrorObservable from 'rxjs/observable/ErrorObservable';
+//import {ErrorObservable} from 'rxjs/observable/ErrorObservable'
 
 @Injectable()
 export class UserService {
@@ -15,17 +15,27 @@ export class UserService {
   private token = '';
   public url = 'http://localhost:8080';
 
-  login(user: string, password: string, remember: boolean): Observable<any> {
+  private create_options(params = {}) {
+    return {
+      headers: new HttpHeaders({
+        authorization: 'Bearer ' + this.get_token(),
+        'cache-control': 'no-cache',
+        'Content-Type': 'application/json',
+      }),
+      params: new HttpParams({ fromObject: params })
+    };
+  }
 
-    const options = {
+  login(user: string, password: string, remember: boolean): Observable<any> {
+    const optionsLogin = {
       headers: new HttpHeaders({
         authorization: 'Basic ' + btoa(user + ':' + password),
         'cache-control': 'no-cache',
         'Content-Type': 'application/x-www-form-urlencoded',
       })
     };
-    console.log("Login: " + this.url + '/login ' + JSON.stringify(options));
-    return this.http.get(this.url + '/login', options, ).pipe(
+    console.log("Login: " + this.url + '/login ' + JSON.stringify(optionsLogin));
+    return this.http.get(this.url + '/login', optionsLogin).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
         this.token = data.token;
@@ -40,14 +50,25 @@ export class UserService {
   }
 
   register(user): Observable<any> {
-    const options = {
-      headers: new HttpHeaders({
-        'cache-control': 'no-cache',
-        'Content-type': 'application/json',
+    return this.http.post(this.url + '/users', user, this.create_options()).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
       })
-    };
+    )
+  }
 
-    return this.http.post(this.url + '/users', user, options).pipe(
+  updateInfo(username: string, name: string, surname: string, mail: string, password: string):Observable<any>{
+    var user = {
+      username: username,
+      name: name,
+      surname: surname,
+      password: password,
+      mail: mail
+    }
+
+    console.log("Updating at: " + this.url + '/users/' + this.get_mail() + " user: " + JSON.stringify(user));
+    
+    return this.http.put(this.url + '/users/' + this.get_mail(), user, this.create_options()).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -63,12 +84,12 @@ export class UserService {
     return this.token;
   }
 
-  get_nome() {
-    return jwt_decode(this.token).nome;
+  get_name() {
+    return jwt_decode(this.token).name;
   }
 
-  get_cognome() {
-    return jwt_decode(this.token).cognome;
+  get_surname() {
+    return jwt_decode(this.token).surname;
   }
 
   get_username() {

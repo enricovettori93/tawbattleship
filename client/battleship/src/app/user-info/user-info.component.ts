@@ -8,16 +8,40 @@ import { Router } from '@angular/router';
   styleUrls: ['./user-info.component.css']
 })
 export class UserInfoComponent implements OnInit {
-  private logged;
+
+  private errmessage = undefined;
+  private okmessage = undefined;
+
   constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit() {
-    if(this.userService.is_logged()){
-      this.logged = true;
-    }
-    else{
-      this.logged = false;
+    console.log(this.userService.get_token());
+    if(this.userService.get_token().length === 0){
+      this.router.navigate(['/']);
     }
   }
 
+  updateInfo(username: string, name: string, surname: string, mail: string, password1: string, password2: string){
+    if(username === "" || name === "" || surname === "" || mail === "" || password1 === "" || password2 === ""){
+      this.errmessage = "riempire tutti i campi.";
+      this.okmessage = undefined;
+    }
+    else{
+      if(password1 != password2){
+        this.errmessage = "le password sono diverse.";
+        this.okmessage = undefined;
+      }
+      else{
+        this.userService.updateInfo(username, name, surname, mail, password1).subscribe((d) =>{
+          console.log("User info " + username + " update");
+          this.errmessage = undefined;
+          this.okmessage = "Aggiornamento riuscito con successo!"
+        }),(err) =>{
+          console.log("User info " + username + " update error: " + err);
+          this.errmessage = err.error.errormessage || err.error.message;
+          this.okmessage = undefined;
+        }
+      }
+    }
+  }
 }

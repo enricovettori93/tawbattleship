@@ -81,7 +81,6 @@ app.get("/renew", auth, (req, res, next) => {
 
 //Login Endpoint
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
-    console.log("Called endpoint Login");
     var tokendata = {
         username: req.user.username,
         isAdmin: req.user.isAdmin,
