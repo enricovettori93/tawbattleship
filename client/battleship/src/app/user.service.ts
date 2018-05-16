@@ -5,12 +5,12 @@ import { of, Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 //import * as ErrorObservable from 'rxjs/observable/ErrorObservable';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class UserService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    console.log("User Service istanziato");
+  }
 
   private token = '';
   public url = 'http://localhost:8080';
