@@ -20,4 +20,7 @@ export class NavbarComponent implements OnInit {
       this.is_logged = mode;
     })
   }
+  logout(){
+    this.userService.logout();
+  }
 }

@@ -8,7 +8,7 @@
       console.log("Display navbar for no logged user");
     </script>
     <div class="container">
-      <a class="navbar-brand" href="/">Battleship</a>
+      <a class="navbar-brand" routerLink="/">Battleship</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -36,7 +36,7 @@
       console.log("Display navbar for logged user");
     </script>
     <div class="container">
-      <a class="navbar-brand" href="/">Battleship</a>
+      <a class="navbar-brand" routerLink="/user">Battleship</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
         aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -56,7 +56,7 @@
             <a class="nav-link" routerLink="/scoreboard">Scoreboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/">Logout</a>
+            <a class="nav-link" (click)="logout()">Logout</a>
           </li>
         </ul>
       </div>

@@ -3,12 +3,13 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular
 import * as jwt_decode from 'jwt-decode';
 import { of, Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 //import {ErrorObservable} from 'rxjs/observable/ErrorObservable'
 
 @Injectable()
 export class UserService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     console.log("User Service istanziato");
   }
 
@@ -103,6 +104,7 @@ export class UserService {
     this.token = '';
     this.is_logged.emit(false);
     localStorage.setItem('battleship_token', this.token);
+    this.router.navigate(['/']);
   }
 
   //----------------- JTW GETTER -----------------
