@@ -58,9 +58,12 @@
     Errore: {{errmessage}}
   </div>
   <div *ngIf="okmessage" class="alert alert-success" role="alert">
-    Errore: {{okmessage}}
+    {{okmessage}}
   </div>
   <div class="row col py-2">
     <button type="button" class="btn btn-primary" (click)="updateInfo(usertxt.value, nametxt.value, surnametxt.value, mailtxt.value, newpassword1.value, newpassword2.value)">Aggiorna le informazioni</button>
+  </div>
+  <div class="row col py-2">
+    <button type="button" class="btn btn-danger" (click)="deleteThisUser()">Elimina l'utente</button>
   </div>
 </div>

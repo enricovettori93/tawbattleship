@@ -6,7 +6,7 @@
     <p>Inserisci le tue credenziali per accedere</p>
   </div>
 </div>
-<div class="row">
+<div class="row py-2">
   <div class="col-sm-6">
     <p>Username</p>
   </div>
@@ -14,7 +14,7 @@
     <input type="text" #usertxt required placeholder="username" id="inputuser" class="form-control">
   </div>
 </div>
-<div class="row">
+<div class="row py-2">
   <div class="col-sm-6">
     <p>Password</p>
   </div>
@@ -30,6 +30,9 @@
 <div *ngIf="errmessage" class="alert alert-danger" role="alert">
   Errore di login: {{errmessage}}
 </div>
-<div class="row col-sm-12">
+<div class="row col-sm-12 py-2">
   <button type="button" class="btn btn-primary" (click)="login(usertxt.value, passwordtxt.value, checklogin.checked)">Login</button>
+</div>
+<div class="row col-sm-12 py-2">
+  <button type="button" class="btn btn-primary" routerLink="/signup">Registrati</button>
 </div>

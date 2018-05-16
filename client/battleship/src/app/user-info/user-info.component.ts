@@ -36,12 +36,26 @@ export class UserInfoComponent implements OnInit {
           console.log("User info " + username + " update");
           this.errmessage = undefined;
           this.okmessage = "Aggiornamento riuscito con successo!"
-        }),(err) =>{
+        }),(err) => {
           console.log("User info " + username + " update error: " + err);
           this.errmessage = err.error.errormessage || err.error.message;
           this.okmessage = undefined;
         }
       }
-    }
+    } 
+  }
+
+  deleteThisUser(){
+      var answer = confirm("Sei sicuro di cancellare l'utente?");
+      var mailToDelete = this.userService.get_mail();
+      if(answer){
+        this.userService.deleteUser(mailToDelete).subscribe((d) => {
+          console.log("User " + mailToDelete + " deleted");
+          this.userService.logout();
+          this.router.navigate(['/']);
+        }),(err) => {
+          console.log("Delete user " + mailToDelete + " error " + err);
+        }
+      }
   }
 }

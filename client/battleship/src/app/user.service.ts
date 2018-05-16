@@ -75,6 +75,15 @@ export class UserService {
     )
   }
 
+  deleteUser(mail: string):Observable<any>{
+    console.log("Deleting user " + mail);
+    return this.http.delete(this.url + "/users/" + mail,this.create_options()).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
+
   logout() {
     this.token = '';
     localStorage.setItem('battleship_token', this.token);
