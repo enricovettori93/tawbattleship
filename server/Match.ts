@@ -9,7 +9,7 @@ enum MatchStatus {
     Ended
 }
 
-export interface Match {
+export interface Match extends mongoose.Document {
     timestamp: Date,
     player1Id: Number,
     player2Id: Number,
@@ -32,7 +32,7 @@ var MatchSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.Date,
         required: true
     },
-    player1Id: {
+    player1Id: { //per ora diamo per scontato che sia l'owner
         type: mongoose.SchemaTypes.Number,
         required: true
     },
@@ -89,23 +89,21 @@ export function getModel(): mongoose.Model<Match> { // Return Model as singleton
     return matchModel;
 }
 
-export function newMatch(UID1 : Number, UID2 : Number) : Match{
-    var _matchModel = getModel()
-    var match = new _matchModel()
+export function newMatch(owner : Number) : Match{
+    var _matchModel = getModel();
+    var match = new _matchModel();
 
     // inizializzo la data della partita
     match.timestamp = new Date()
 
     // inizializzo i due ID proprietari della partita
-    match.player1Id = UID1
-    match.player2ID = UID2
+    match.player1Id = owner
 
-    // inizializzo i campi dei due giocatori
-    match.fieldPlayer1 = field.newField()
-    match.fieldPlayer2 = field.newField()
+    // inizializzo il campo di owner
+    match.fieldPlayer1 = field.newField(owner)
 
-    // setto lo status del match come Active
-    match.setStatus(MatchStatus.Active)
+    // setto lo status del match come Wait, in attesa del secondo player
+    match.setStatus(MatchStatus.Wait)
 
     return match
 }

@@ -23,6 +23,8 @@ import {Message} from './Message';
 import * as message from './Message';
 import {Chat} from './Chat';
 import * as chat from './Chat';
+import {Match} from './Match';
+import * as match from './Match';
 
 import express = require('express');
 import bodyparser = require('body-parser');      // body-parser middleware is used to parse the request body and
@@ -323,4 +325,18 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
 
 //---------------------- Match Endpoints ---------------------------
 
-
+app.route("/matches").get(auth, (req, res, next) => {
+    match.getModel().find().then((documents) => {
+        return res.status(200).json(documents);
+    }).catch((error) => {
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+    })
+}).post((req, res, next) => {
+    var new_match = match.newMatch(req.user.id)
+    new_match.save().then((data) => {
+        console.log(("Match created succesfully. Owner UID: " + data.player1Id).green);
+        return res.status(200).json({ error: false, errormessage: "", id: data._id });
+    }).catch((error) =>{
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+    })
+})

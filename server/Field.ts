@@ -1,7 +1,7 @@
 
 import mongoose = require('mongoose');
 
-export interface Field {
+export interface Field extends mongoose.Document{
     playerId: Number,
     matrix: [[Number]],
 
@@ -39,8 +39,13 @@ export function getModel(): mongoose.Model<Field> { // Return Model as singleton
     return fieldModel;
 }
 
-export function newField() : Field {
-    var _fieldModel = getModel()
-    var field = new _fieldModel()
-    return field
+export function newField(UID : Number) : Field {
+    var _fieldModel = getModel();
+    var field = new _fieldModel();
+    field.playerID = UID;
+    field.matrix = new Array<Array<Number>>(10);
+    field.matrix.foreach(array => {
+        array = new Array <Number>(10);
+    })
+    return field;
 }
