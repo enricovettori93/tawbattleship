@@ -134,6 +134,14 @@ export class UserService {
     }
   }
 
+  getScoreboard(params = {}):Observable<any>{
+    return this.http.get(this.url + '/scoreboard',this.utilities.create_options(this.get_token(),params)).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
+
   //----------------- JTW GETTER -----------------
 
   get_token() {

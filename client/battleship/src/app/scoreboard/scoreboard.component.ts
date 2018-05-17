@@ -15,10 +15,7 @@ export class ScoreboardComponent implements OnInit {
   constructor(private http: HttpClient, private userService: UserService, private utilities: UtilitiesService) { }
 
   ngOnInit() {
-    this.scoreboard = [];
-    this.getScoreboard().subscribe((scoreboard) => {
-      this.scoreboard = scoreboard;
-    });
+    this.getScoreboard();
   }
 
   /**
@@ -26,14 +23,13 @@ export class ScoreboardComponent implements OnInit {
    * @param n : numero di utenti da visualizzare
    */
   changeLimit(n: number){
-    this.getScoreboard({limit: n});
+    this.getScoreboard({'limit': n});
   }
 
-  getScoreboard(params = {}):Observable<any>{
-    return this.http.get('http://localhost:8080/scoreboard',this.utilities.create_options(this.userService.get_token(),params)).pipe(
-      tap((data) => {
-        console.log(JSON.stringify(data));
-      })
-    )
+  getScoreboard(params = {}){
+    this.scoreboard = [];
+    this.userService.getScoreboard(params).subscribe((scoreboard) => {
+      this.scoreboard = scoreboard;
+    })
   }
 }

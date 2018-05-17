@@ -46,7 +46,7 @@
         <p *ngIf="otherUser">{{otherUser.mail}}</p>
       </div>
     </div>
-    <div *ngIf="isAdmin" class="col-12 py-2">
+    <div *ngIf="isAdmin" style="padding-left:0" class="col-12 py-2">
       <input *ngIf="otherUser" type="checkbox" [checked]="otherUserIsAdmin" (click)="changeStatusAdminOtherAccount()" #changeOtherAdmin> Amministratore
     </div>
     <div class="row py-2">
@@ -61,7 +61,8 @@
       {{okmessage}}
     </div>
     <div class="row col py-2">
-      <button *ngIf="otherUser" type="button" class="btn btn-primary" (click)="updateInfoAdmin(otherUser.username, otherUserIsAdmin)">Aggiorna le informazioni</button>
+      <button *ngIf="otherUser && isAdmin" class="btn btn-primary" (click)="updateInfoAdmin(otherUser.username, otherUserIsAdmin)">Aggiorna le informazioni</button>
+      <button class="btn btn-primary">Invia un messaggio</button>
     </div>
   </div>
 </ng-template>
@@ -118,7 +119,7 @@
         <input type="password" #newpassword2 required="true" placeholder="Ripeti nuova password" class="form-control">
       </div>
     </div>
-    <div *ngIf="isAdmin" class="col-12 py-2">
+    <div *ngIf="isAdmin" style="padding-left:0" class="col-12 py-2">
       <input type="checkbox" [checked]="isAdmin" #changeThisAdmin (click)="changeStatusAdminThisAccount()"> Amministratore
     </div>
     <div class="row py-2">
