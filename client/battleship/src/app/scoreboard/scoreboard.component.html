@@ -19,7 +19,7 @@
   <div class="row">
     <div class="col-md-8">
       <p>
-        <a routerLink='/users/{{score.username}}'>{{score.username}}</a>
+        <a routerLink='/user/{{score.username}}'>{{score.username}}</a>
       </p>
     </div>
     <div class="col-md-4">
@@ -29,10 +29,11 @@
     </div>
   </div>
 </div>
-<div class="row py-2">
+<div class="row">
+  <p>Mostra le prime posizioni nella classifica:</p>
   <select class="form-control" (click)="changeLimit(limitScoreboard.value)" #limitScoreboard>
     <option value="5">5</option>
-    <option value="10">10</option>
+    <option value="10" selected>10</option>
     <option value="20">20</option>
     <option value="100">100</option>
   </select>

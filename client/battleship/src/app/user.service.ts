@@ -73,18 +73,29 @@ export class UserService {
     )
   }
 
-  updateInfo(username: string, name: string, surname: string, mail: string, password: string):Observable<any>{
+  //Modifica le informazioni dell'utente
+  updateInfo(username: string, name: string, surname: string, mail: string, password: string, isAdmin: boolean):Observable<any>{
     var user = {
       username: username,
       name: name,
       surname: surname,
       password: password,
-      mail: mail
+      mail: mail,
+      isAdmin: isAdmin
     }
 
     console.log("Updating at: " + this.url + '/users/' + this.get_username() + " user: " + JSON.stringify(user));
     
     return this.http.put(this.url + '/users/' + this.get_username(), user, this.create_options()).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
+
+  //Modifica lo status isAdmin dell'utente username
+  updateInfoAdmin(username: string, isAdmin: boolean):Observable<any>{
+    return this.http.put(this.url + '/users/' + username, {'username':username,'isAdmin': isAdmin},this.create_options()).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -105,6 +116,14 @@ export class UserService {
     this.is_logged.emit(false);
     localStorage.setItem('battleship_token', this.token);
     this.router.navigate(['/']);
+  }
+
+  getInfoUser(user: string):Observable<any>{
+    return this.http.get(this.url + '/users/' + user, this.create_options()).pipe(
+      tap((data) => {
+        console.log("Getting info user: " + JSON.stringify(data));
+      })
+    )
   }
 
   //----------------- JTW GETTER -----------------
@@ -133,10 +152,10 @@ export class UserService {
     return jwt_decode(this.token).isAdmin;
   }
 
-  /*is_logged(): boolean {
+  is_user_logged(): boolean {
     if (this.token === '')
       return false;
     else
       return true;
-  }*/
+  }
 }

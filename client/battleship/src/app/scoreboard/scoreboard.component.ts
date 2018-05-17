@@ -14,6 +14,7 @@ export class ScoreboardComponent implements OnInit {
   constructor(private http: HttpClient, private userService: UserService) { }
 
   private create_options(params = {}) {
+    console.log("PARAMS QUERY " + JSON.stringify(params))
     return {
       headers: new HttpHeaders({
         authorization: 'Bearer ' + this.userService.get_token(),
@@ -25,13 +26,12 @@ export class ScoreboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getScoreboard().subscribe((scoreboard) =>{
+    this.getScoreboard().subscribe((scoreboard) => {
       this.scoreboard = scoreboard;
     });
   }
 
   changeLimit(n: number){
-    console.log("# scoreboard: " + n);
     this.getScoreboard({limit: n});
   }
 
