@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClientModule, HttpParams, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilitiesService {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   public create_options(token,params = {}) {
     console.log("PARAMS QUERY " + JSON.stringify(params))
@@ -18,5 +19,11 @@ export class UtilitiesService {
       }),
       params: new HttpParams({ fromObject: params })
     };
+  }
+
+  public check_auth(token: string){
+    if (token.length === 0) {
+      this.router.navigate(['/']);
+    }
   }
 }

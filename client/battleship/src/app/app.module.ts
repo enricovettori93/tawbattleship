@@ -13,6 +13,7 @@ import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 //Services
 import { UserService } from './user.service';
 import { UtilitiesService } from './utilities.service';
+import { PlayersComponent } from './players/players.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { UtilitiesService } from './utilities.service';
     UserInfoComponent,
     UserSignupComponent,
     NavbarComponent,
-    ScoreboardComponent
+    ScoreboardComponent,
+    PlayersComponent
   ],
   imports: [
     BrowserModule,

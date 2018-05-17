@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { Router } from '@angular/router';
+import { UtilitiesService } from '../utilities.service';
 
 @Component({
   selector: 'app-user-info',
@@ -16,13 +17,11 @@ export class UserInfoComponent implements OnInit {
   private otherUser = undefined;
   private otherUserIsAdmin = undefined;
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService, private router: Router, private utilities: UtilitiesService) { }
 
   ngOnInit() {
     //console.log(this.userService.get_token());
-    if (this.userService.get_token().length === 0) {
-      this.router.navigate(['/']);
-    }
+    this.utilities.check_auth(this.userService.get_token());
     console.log("Routing in user component: " + this.router.url);
     if (this.router.url != "/user") {
       this.routingNotCurrentUser = this.router.url.split('/').pop();

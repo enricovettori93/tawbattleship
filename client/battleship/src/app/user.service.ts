@@ -52,6 +52,7 @@ export class UserService {
   }
 
   renew(): Observable<any> {
+    //Da fare
     return of({});
   }
 
@@ -114,6 +115,23 @@ export class UserService {
         console.log("Getting info user: " + JSON.stringify(data));
       })
     )
+  }
+
+  searchUser(keyword: string):Observable<any>{
+    if(keyword === undefined || keyword === ''){
+      return this.http.get(this.url + '/users', this.utilities.create_options(this.get_token())).pipe(
+        tap((data) => {
+          console.log("Searching user: " + JSON.stringify(data));
+        })
+      )
+    }
+    else{
+      return this.http.get(this.url + '/users', this.utilities.create_options(this.get_token(),{'keysearched': keyword})).pipe(
+        tap((data) => {
+          console.log("Searching user: " + JSON.stringify(data));
+        })
+      )
+    }
   }
 
   //----------------- JTW GETTER -----------------
