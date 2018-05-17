@@ -12,6 +12,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 //Services
 import { UserService } from './user.service';
+import { UtilitiesService } from './utilities.service';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { UserService } from './user.service';
     HttpClientModule
   ],
   providers: [
-    {provide: UserService, useClass: UserService}
+    {provide: UserService, useClass: UserService},
+    {provide: UtilitiesService, useClass: UtilitiesService}
   ],
   bootstrap: [AppComponent]
 })

@@ -4,12 +4,13 @@ import * as jwt_decode from 'jwt-decode';
 import { of, Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { UtilitiesService } from './utilities.service';
 //import {ErrorObservable} from 'rxjs/observable/ErrorObservable'
 
 @Injectable()
 export class UserService {
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient, private router: Router, private utilities: UtilitiesService) {
     console.log("User Service istanziato");
   }
 
@@ -17,17 +18,6 @@ export class UserService {
   public url = 'http://localhost:8080';
 
   public is_logged: EventEmitter<any> = new EventEmitter();
-
-  private create_options(params = {}) {
-    return {
-      headers: new HttpHeaders({
-        authorization: 'Bearer ' + this.get_token(),
-        'cache-control': 'no-cache',
-        'Content-Type': 'application/json',
-      }),
-      params: new HttpParams({ fromObject: params })
-    };
-  }
 
   private handleError(error: HttpErrorResponse){
     if(error.error instanceof ErrorEvent){
@@ -66,7 +56,7 @@ export class UserService {
   }
 
   register(user): Observable<any> {
-    return this.http.post(this.url + '/users', user, this.create_options()).pipe(
+    return this.http.post(this.url + '/users', user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -86,7 +76,7 @@ export class UserService {
 
     console.log("Updating at: " + this.url + '/users/' + this.get_username() + " user: " + JSON.stringify(user));
     
-    return this.http.put(this.url + '/users/' + this.get_username(), user, this.create_options()).pipe(
+    return this.http.put(this.url + '/users/' + this.get_username(), user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -95,7 +85,7 @@ export class UserService {
 
   //Modifica lo status isAdmin dell'utente username
   updateInfoAdmin(username: string, isAdmin: boolean):Observable<any>{
-    return this.http.put(this.url + '/users/' + username, {'username':username,'isAdmin': isAdmin},this.create_options()).pipe(
+    return this.http.put(this.url + '/users/' + username, {'username':username,'isAdmin': isAdmin},this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -104,7 +94,7 @@ export class UserService {
 
   deleteUser(username: string):Observable<any>{
     console.log("Deleting user " + username);
-    return this.http.delete(this.url + "/users/" + username,this.create_options()).pipe(
+    return this.http.delete(this.url + "/users/" + username,this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -119,7 +109,7 @@ export class UserService {
   }
 
   getInfoUser(user: string):Observable<any>{
-    return this.http.get(this.url + '/users/' + user, this.create_options()).pipe(
+    return this.http.get(this.url + '/users/' + user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log("Getting info user: " + JSON.stringify(data));
       })
