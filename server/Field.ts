@@ -32,9 +32,15 @@ export function getSchema() { return FieldSchema; }
 
 // Mongoose Model
 var fieldModel;
-export function getModel(): mongoose.Model<mongoose.Document> { // Return Model as singleton
+export function getModel(): mongoose.Model<Field> { // Return Model as singleton
     if (!fieldModel) {
         fieldModel = mongoose.model('Field', getSchema())
     }
     return fieldModel;
+}
+
+export function newField() : Field {
+    var _fieldModel = getModel()
+    var field = new _fieldModel()
+    return field
 }
