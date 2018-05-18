@@ -23,7 +23,7 @@ import { Message } from './Message';
 import * as message from './Message';
 import { Chat } from './Chat';
 import * as chat from './Chat';
-import {Match} from './Match';
+import { Match } from './Match';
 import * as match from './Match';
 
 import express = require('express');
@@ -112,7 +112,7 @@ app.route("/users/:username").get(auth, (req, res, next) => {
     }
     if (req.body.password === undefined) {
         //Utente admin non modifica i dati dell'altro utente, ma solo l'attributo isAdmin
-        user.getModel().updateOne({ username: req.body.username }, { "$set": {"isAdmin": req.body.isAdmin } }).then(() => {
+        user.getModel().updateOne({ username: req.body.username }, { "$set": { "isAdmin": req.body.isAdmin } }).then(() => {
             console.log(("User with username " + req.body.username + " updated").yellow);
             return res.status(200).json({ error: false, errormessage: "" });
         }).catch((error) => {
@@ -191,7 +191,7 @@ app.route("/users").post((req, res, next) => {
 app.route("/chats").get(auth, (req, res, next) => {
     //Get all chats of auth user
     console.log(("Getting " + req.user.username + " chats").blue);
-    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0}).then((documents) => {
+    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0 }).then((documents) => {
         return res.status(200).json(documents);
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
@@ -220,7 +220,7 @@ app.route("/chats").get(auth, (req, res, next) => {
             listMessage: []
         });
         new_chat.save().then((data) => {
-            console.log(("Chat between " + req.user.username + " and " + dest + " created").green);
+            console.log(("Chat between " + req.user.username + " and " + dest + " created, info chat" + JSON.stringify(data)).green);
             //Aggiorno la lista delle chat dei 2 utenti con quella apena creata
             var promise1 = user.getModel().update({ _id: id_sender }, { $push: { chatList: data._id } });
             var promise2 = user.getModel().update({ _id: id_dest }, { $push: { chatList: data._id } });
@@ -241,29 +241,32 @@ app.route("/chats").get(auth, (req, res, next) => {
     });
 }).delete(auth, (req, res, next) => {
     //Endpoint di prova, cancella la chat con parametro destinatario nel body
-    //Al momento non funziona
     console.log(("Deleting chat between " + req.user.username + " and " + req.body.destinatario).cyan);
 
-    var query_id_dest = user.getModel().findOne({ username: req.body.destinatario });
-    var query_id_sender = user.getModel().findOne({ username: req.user.username });
+    var query_id_dest = user.getModel().findOne({ username: req.body.destinatario },{_id: 1});
+    var query_id_sender = user.getModel().findOne({ username: req.user.username },{_id: 1});
 
     var promise_query_id_dest = query_id_dest.exec();
     var promise_query_id_sender = query_id_sender.exec();
 
     Promise.all([promise_query_id_sender, promise_query_id_dest]).then(values => {
-        var query_get_id_chat = chat.getModel().findOne({ user1ID: values[0]._id, user2ID: values[1]._id });
-        var query_delete_chat = chat.getModel().deleteOne({ user1ID: values[0]._id, user2ID: values[1]._id });
         console.log("1° promise ok, uid1: " + values[0]._id + " uid2: " + values[1]._id)
+        var filter = {$or: [{ user1ID: values[0]._id, user2ID: values[1]._id },{ user1ID: values[1]._id, user2ID: values[0]._id }]};
+        var query_get_id_chat = chat.getModel().findOne(filter);//.then((test)=> {console.log(JSON.stringify(test))});
+        var query_delete_chat = chat.getModel().deleteOne(filter);
+        
         var promise_query_get_id_chat = query_get_id_chat.exec();
         var promise_query_delete_chat = query_delete_chat.exec();
 
         Promise.all([promise_query_get_id_chat, promise_query_delete_chat]).then(values2 => {
-            console.log("2° promise ok, chatid: " + values[0]._id + " deletestatus: " + values[1]._id)
-            user.getModel().update({ chatList: values2[0]._id }, { $set: { chatList: values2[0]._id, val: undefined } }).then((data) => {
-                console.log("Chat between user deleted");
+            console.log("2° promise ok, chatid: " + values2[0]._id + " delete status: " + JSON.stringify(values2[1]))
+            user.getModel().updateMany({}, { $pull: { chatList: values2[0]._id } }).then((data) => {
+                console.log("Chat " + values2[0]._id + " deleted");
+                return res.status(200).json({ error: false, errormessage: "" });
             }).catch((err) => {
-                console.log("Error deleting chat between user") 
-            });;
+                console.log("Error deleting chat between user");
+                return next({ statusCode: 404, error: true, errormessage: "MongoBD error " + err });
+            });
         }).catch((error) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
         })
@@ -276,6 +279,8 @@ app.route("/chats").get(auth, (req, res, next) => {
             console.log("MongoDB error deleting chat: " + error);
             return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
         });*/
+    }).catch((error) => {
+        return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});  
     });
 })
 
@@ -353,7 +358,7 @@ app.route("/matches").get(auth, (req, res, next) => {
     new_match.save().then((data) => {
         console.log(("Match created succesfully. Owner UID: " + data.player1Id).green);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch((error) =>{
+    }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
     })
 })
