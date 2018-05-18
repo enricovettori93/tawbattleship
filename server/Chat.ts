@@ -12,10 +12,12 @@ export interface Chat extends mongoose.Document{
 var chatSchema = new mongoose.Schema({
     user1ID:{
         type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
         required: true
     },
     user2ID:{
         type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
         required: true
     },
     createdAt:{
@@ -24,12 +26,13 @@ var chatSchema = new mongoose.Schema({
     },
     listMessage:{
         type: [mongoose.SchemaTypes.ObjectId],
+        ref: 'Message',
         required: true
     }
 })
 
 //Chat between user1 and user2 -> singleton
-chatSchema.index({user1ID: 1, user2ID: 2},{unique: true});
+chatSchema.index({user1ID: 1, user2ID: 1},{unique: true});
 
 export function getSchema(){return chatSchema}
 

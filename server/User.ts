@@ -45,6 +45,7 @@ var userSchema = new mongoose.Schema( {
     },
     chatList:{
         type: [mongoose.SchemaTypes.ObjectId],
+        ref: 'Chat',
         required: false
     },
     salt:  {
