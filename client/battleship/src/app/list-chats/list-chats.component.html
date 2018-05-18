@@ -1,3 +1,9 @@
 <div class="row col">
   <h1>Le tue chat</h1>
 </div>
+<div *ngIf="chats.length === 0">
+  <h2>Nessuna chat presente</h2>
+</div>
+<div *ngFor="let chat of chats">
+  <p>{{chat}}</p>
+</div>

@@ -12,11 +12,13 @@ var chatSchema = new mongoose.Schema({
     user1ID:{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User',
+        index: true,
         required: true
     },
     user2ID:{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User',
+        index: true,
         required: true
     },
     createdAt:{
@@ -33,7 +35,7 @@ var chatSchema = new mongoose.Schema({
 //Chat between user1 and user2 -> singleton
 chatSchema.index({user1ID: 1, user2ID: 1},{unique: true});
 
-export function getSchema(){return chatSchema}
+export function getSchema(){return chatSchema};
 
 var chatModel;
 

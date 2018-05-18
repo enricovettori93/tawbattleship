@@ -220,7 +220,7 @@ app.route("/chats").get(auth, (req, res, next) => {
             listMessage: []
         });
         new_chat.save().then((data) => {
-            console.log(("Chat between " + req.user.username + " and " + dest + " created, info chat" + JSON.stringify(data)).green);
+            console.log(("Chat between " + req.user.username + " and " + dest + " created.\ninfo chat" + JSON.stringify(data)).green);
             //Aggiorno la lista delle chat dei 2 utenti con quella apena creata
             var promise1 = user.getModel().update({ _id: id_sender }, { $push: { chatList: data._id } });
             var promise2 = user.getModel().update({ _id: id_dest }, { $push: { chatList: data._id } });
@@ -240,7 +240,7 @@ app.route("/chats").get(auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error retrieving ids for new chat: " + error });
     });
 }).delete(auth, (req, res, next) => {
-    //Endpoint di prova, cancella la chat con parametro destinatario nel body
+    //Cancella la chat con parametro destinatario nel body
     console.log(("Deleting chat between " + req.user.username + " and " + req.body.destinatario).cyan);
 
     var query_id_dest = user.getModel().findOne({ username: req.body.destinatario },{_id: 1});
