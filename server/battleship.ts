@@ -191,7 +191,7 @@ app.route("/users").post((req, res, next) => {
 app.route("/chats").get(auth, (req, res, next) => {
     //Get all chats of auth user
     console.log(("Getting " + req.user.username + " chats").blue);
-    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0 }).then((documents) => {
+    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0}).then((documents) => {
         return res.status(200).json(documents);
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
@@ -241,7 +241,8 @@ app.route("/chats").get(auth, (req, res, next) => {
     });
 }).delete(auth, (req, res, next) => {
     //Endpoint di prova, cancella la chat con parametro destinatario nel body
-    console.log(("Deleting chat between " + req.user.username + " and " + req.body.destinatario).zebra);
+    //Al momento non funziona
+    console.log(("Deleting chat between " + req.user.username + " and " + req.body.destinatario).cyan);
 
     var query_id_dest = user.getModel().findOne({ username: req.body.destinatario });
     var query_id_sender = user.getModel().findOne({ username: req.user.username });
@@ -252,12 +253,17 @@ app.route("/chats").get(auth, (req, res, next) => {
     Promise.all([promise_query_id_sender, promise_query_id_dest]).then(values => {
         var query_get_id_chat = chat.getModel().findOne({ user1ID: values[0]._id, user2ID: values[1]._id });
         var query_delete_chat = chat.getModel().deleteOne({ user1ID: values[0]._id, user2ID: values[1]._id });
-
+        console.log("1° promise ok, uid1: " + values[0]._id + " uid2: " + values[1]._id)
         var promise_query_get_id_chat = query_get_id_chat.exec();
         var promise_query_delete_chat = query_delete_chat.exec();
 
         Promise.all([promise_query_get_id_chat, promise_query_delete_chat]).then(values2 => {
-            user.getModel().update({ chatList: values2[0]._id }, { $set: { chatList: values2[0]._id, val: undefined } });
+            console.log("2° promise ok, chatid: " + values[0]._id + " deletestatus: " + values[1]._id)
+            user.getModel().update({ chatList: values2[0]._id }, { $set: { chatList: values2[0]._id, val: undefined } }).then((data) => {
+                console.log("Chat between user deleted");
+            }).catch((err) => {
+                console.log("Error deleting chat between user") 
+            });;
         }).catch((error) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
         })

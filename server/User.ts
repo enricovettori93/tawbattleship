@@ -1,6 +1,5 @@
 import mongoose = require('mongoose');
 import crypto = require('crypto');
-import { ObjectID } from 'bson';
 import { Chat } from './Chat';
 
 export interface User extends mongoose.Document{

@@ -1,10 +1,9 @@
 import mongoose = require("mongoose");
-import { Timestamp, ObjectID } from "bson";
 import { Message } from "./Message";
 
 export interface Chat extends mongoose.Document{
-    user1ID: Number,
-    user2ID: Number,
+    user1ID: string,
+    user2ID: string,
     createdAt: Date,
     listMessage: [Message]
 }

@@ -3,7 +3,7 @@ import { Timestamp } from "bson";
 
 export interface Message extends mongoose.Document{
     sentAt: Date,
-    senderUsername: string,
+    senderID: string,
     text: string
 }
 
@@ -12,8 +12,8 @@ var messageSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    senderUsername:{
-        type: mongoose.SchemaTypes.String,
+    senderID:{
+        type: mongoose.SchemaTypes.ObjectId,
         required: true
     },
     text:{
