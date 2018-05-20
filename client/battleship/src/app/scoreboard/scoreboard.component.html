@@ -1,8 +1,11 @@
 <div class="row col">
   <h1>Scoreboard</h1>
 </div>
+<div *ngIf="scoreboard.length === 0">
+  <h2>Nessun giocatore in classifica!</h2>
+</div>
 <!-- Header-->
-<div class="row">
+<div *ngIf="!scoreboard.length === 0" class="row">
   <div class="col-md-8">
     <p>
       <b>Username</b>

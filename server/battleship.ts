@@ -112,6 +112,9 @@ app.route("/users/:username").get(auth, (req, res, next) => {
     }
     if (req.body.password === undefined) {
         //Utente admin non modifica i dati dell'altro utente, ma solo l'attributo isAdmin
+        if(!req.user.isAdmin){
+            return res.status(500).json({error: true, errormessage: "User is not admin"});
+        }
         user.getModel().updateOne({ username: req.body.username }, { "$set": { "isAdmin": req.body.isAdmin } }).then(() => {
             console.log(("User with username " + req.body.username + " updated").yellow);
             return res.status(200).json({ error: false, errormessage: "" });
@@ -128,7 +131,6 @@ app.route("/users/:username").get(auth, (req, res, next) => {
             mail: ""
         });
         userdummy.setPassword(req.body.password);
-        //TODO: manca da gestire la possibilità di diventare admin se un Admin lo concede aggiornando l'utente
         user.getModel().updateOne({ username: req.params.username }, { "$set": { "username": req.body.username, "name": req.body.name, "surname": req.body.surname, "mail": req.body.mail, "salt": userdummy.salt, "digest": userdummy.digest, "isAdmin": req.body.isAdmin } }).then(() => {
             console.log(("User with username " + req.params.username + " updated").yellow);
             return res.status(200).json({ error: false, errormessage: "" });
@@ -282,6 +284,18 @@ app.route("/chats").get(auth, (req, res, next) => {
     }).catch((error) => {
         return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});  
     });
+})
+
+app.get("/chats/:id", auth, (req,res,next) => {
+    chat.getModel().find({"_id": req.params.id}).then((chat) => {
+        //La chat per forza è univoca con l'id, quindi documents avrà un singolo elemento
+        if(chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id){
+            return res.status(200).json(chat);
+        }
+        return res.status(200).json({statusCode: 500, error: true, errormessage: "User not allowed to see this chat"});
+    }).catch((error) =>{
+        return next({statusCode: 404, error: true, errormessage : "MongoDB error: " + error})
+    })
 })
 
 //---------------------- Scoreboard Endpoints ----------------------

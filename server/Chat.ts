@@ -30,10 +30,10 @@ var chatSchema = new mongoose.Schema({
         ref: 'Message',
         required: true
     }
-})
+}).index({user1ID: 1, user2ID: 1},{unique: true});
 
 //Chat between user1 and user2 -> singleton
-chatSchema.index({user1ID: 1, user2ID: 1},{unique: true});
+//chatSchema.index({user1ID: 1, user2ID: 1},{unique: true});
 
 export function getSchema(){return chatSchema};
 
