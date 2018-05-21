@@ -42,11 +42,11 @@ var userSchema = new mongoose.Schema( {
         type: mongoose.SchemaTypes.Boolean,
         required: true 
     },
-    chatList:{
-        type: [mongoose.SchemaTypes.ObjectId],
+    chatList:[{
+        type: mongoose.SchemaTypes.ObjectId,
         ref: 'Chat',
         required: false
-    },
+    }],
     salt:  {
         type: mongoose.SchemaTypes.String,
         required: false 

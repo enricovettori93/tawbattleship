@@ -25,11 +25,11 @@ var chatSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    listMessage:{
-        type: [mongoose.SchemaTypes.ObjectId],
+    listMessage:[{
+        type: mongoose.SchemaTypes.ObjectId,
         ref: 'Message',
         required: true
-    }
+    }]
 }).index({user1ID: 1, user2ID: 1},{unique: true});
 
 //Chat between user1 and user2 -> singleton

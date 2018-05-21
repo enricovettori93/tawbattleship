@@ -193,7 +193,7 @@ app.route("/users").post((req, res, next) => {
 app.route("/chats").get(auth, (req, res, next) => {
     //Get all chats of auth user
     console.log(("Getting " + req.user.username + " chats").blue);
-    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0 }).then((documents) => {
+    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0 }).populate({path: 'chatList', model: chat.getModel(), populate:[{path: 'user1ID', model: user.getModel(), select: 'username -_id'},{path: 'user2ID', model: user.getModel(), select: 'username -_id'}]}).then((documents) => {
         return res.status(200).json(documents);
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
