@@ -6,27 +6,29 @@
     <p>Inserisci le tue credenziali per accedere</p>
   </div>
 </div>
-<div class="row py-2">
-  <div class="col-sm-6">
-    <p>Username</p>
+<form>
+  <div class="row py-2">
+    <div class="col-sm-6">
+      <p>Username</p>
+    </div>
+    <div class="col-sm-6">
+      <input type="text" #usertxt required placeholder="username" id="inputuser" class="form-control" name="username">
+    </div>
   </div>
-  <div class="col-sm-6">
-    <input type="text" #usertxt required placeholder="username" id="inputuser" class="form-control">
+  <div class="row py-2">
+    <div class="col-sm-6">
+      <p>Password</p>
+    </div>
+    <div class="col-sm-6">
+      <input type="password" #passwordtxt required placeholder="password" id="inputpassword" class="form-control" name="password" >
+    </div>
   </div>
-</div>
-<div class="row py-2">
-  <div class="col-sm-6">
-    <p>Password</p>
+  <div class="row col-sm-12">
+    <label>
+      <input type="checkbox" #checklogin value="remember-me"> Ricordami
+    </label>
   </div>
-  <div class="col-sm-6">
-    <input type="password" #passwordtxt required placeholder="password" id="inputpassword" class="form-control">
-  </div>
-</div>
-<div class="row col-sm-12">
-  <label>
-    <input type="checkbox" #checklogin value="remember-me"> Ricordami
-  </label>
-</div>
+</form>
 <div *ngIf="errmessage" class="alert alert-danger" role="alert">
   Errore di login: {{errmessage}}
 </div>

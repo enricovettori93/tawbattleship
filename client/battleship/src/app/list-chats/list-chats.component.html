@@ -5,5 +5,5 @@
   <h2>Nessuna chat presente</h2>
 </div>
 <div *ngFor="let chat of chats">
-  <p><a href='/chats/{{chat}} '>{{chat._id}}</a> tra l'utente <a href='/users/{{chat.user1ID.username}} '>{{chat.user1ID.username}}</a> e l'utente <a href='/users/{{chat.user2ID.username}} '>{{chat.user2ID.username}}</a></p>
+  <p><a href='/chats/{{chat._id}} '>{{chat._id}}</a> tra l'utente <a href='/users/{{chat.user1ID.username}} '>{{chat.user1ID.username}}</a> e l'utente <a href='/users/{{chat.user2ID.username}} '>{{chat.user2ID.username}}</a></p>
 </div>

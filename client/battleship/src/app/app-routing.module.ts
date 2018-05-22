@@ -8,6 +8,7 @@ import { UserSignupComponent } from './user-signup/user-signup.component';
 import { ScoreboardComponent } from './scoreboard/scoreboard.component';
 import { PlayersComponent } from './players/players.component';
 import { ListChatsComponent } from './list-chats/list-chats.component';
+import { ChatComponent } from './chat/chat.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -17,7 +18,8 @@ const routes: Routes = [
   {path: 'scoreboard', component: ScoreboardComponent},
   {path: 'players', component: PlayersComponent},
   {path: 'chats', component: ListChatsComponent},
-  {path: 'user/:username', component: UserInfoComponent}
+  {path: 'user/:username', component: UserInfoComponent},
+  {path: 'chats/:id',component: ChatComponent}
 ]
 
 @NgModule({
