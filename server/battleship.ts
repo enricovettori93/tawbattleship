@@ -112,8 +112,8 @@ app.route("/users/:username").get(auth, (req, res, next) => {
     }
     if (req.body.password === undefined) {
         //Utente admin non modifica i dati dell'altro utente, ma solo l'attributo isAdmin
-        if(!req.user.isAdmin){
-            return res.status(500).json({error: true, errormessage: "User is not admin"});
+        if (!req.user.isAdmin) {
+            return res.status(500).json({ error: true, errormessage: "User is not admin" });
         }
         user.getModel().updateOne({ username: req.body.username }, { "$set": { "isAdmin": req.body.isAdmin } }).then(() => {
             console.log(("User with username " + req.body.username + " updated").yellow);
@@ -193,7 +193,7 @@ app.route("/users").post((req, res, next) => {
 app.route("/chats").get(auth, (req, res, next) => {
     //Get all chats of auth user
     console.log(("Getting " + req.user.username + " chats").blue);
-    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0 }).populate({path: 'chatList', model: chat.getModel(), populate:[{path: 'user1ID', model: user.getModel(), select: 'username -_id'},{path: 'user2ID', model: user.getModel(), select: 'username -_id'}]}).then((documents) => {
+    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0 }).populate({ path: 'chatList', model: chat.getModel(), populate: [{ path: 'user1ID', model: user.getModel(), select: 'username -_id' }, { path: 'user2ID', model: user.getModel(), select: 'username -_id' }] }).then((documents) => {
         return res.status(200).json(documents);
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
@@ -245,18 +245,18 @@ app.route("/chats").get(auth, (req, res, next) => {
     //Cancella la chat con parametro destinatario nel body
     console.log(("Deleting chat between " + req.user.username + " and " + req.body.destinatario).cyan);
 
-    var query_id_dest = user.getModel().findOne({ username: req.body.destinatario },{_id: 1});
-    var query_id_sender = user.getModel().findOne({ username: req.user.username },{_id: 1});
+    var query_id_dest = user.getModel().findOne({ username: req.body.destinatario }, { _id: 1 });
+    var query_id_sender = user.getModel().findOne({ username: req.user.username }, { _id: 1 });
 
     var promise_query_id_dest = query_id_dest.exec();
     var promise_query_id_sender = query_id_sender.exec();
 
     Promise.all([promise_query_id_sender, promise_query_id_dest]).then(values => {
         console.log("1° promise ok, uid1: " + values[0]._id + " uid2: " + values[1]._id)
-        var filter = {$or: [{ user1ID: values[0]._id, user2ID: values[1]._id },{ user1ID: values[1]._id, user2ID: values[0]._id }]};
+        var filter = { $or: [{ user1ID: values[0]._id, user2ID: values[1]._id }, { user1ID: values[1]._id, user2ID: values[0]._id }] };
         var query_get_id_chat = chat.getModel().findOne(filter);//.then((test)=> {console.log(JSON.stringify(test))});
         var query_delete_chat = chat.getModel().deleteOne(filter);
-        
+
         var promise_query_get_id_chat = query_get_id_chat.exec();
         var promise_query_delete_chat = query_delete_chat.exec();
 
@@ -272,30 +272,40 @@ app.route("/chats").get(auth, (req, res, next) => {
         }).catch((error) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
         })
-
-        /*
-        chat.getModel().deleteOne({user1ID: values[0]._id,user2ID: values[1]._id}).then((data) => {
-            console.log(("Chat deleted succesfully").zebra);
-            return res.status(200).json({error: false, errormessage: ""});
-        }).catch(function(error) {
-            console.log("MongoDB error deleting chat: " + error);
-            return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});
-        });*/
     }).catch((error) => {
-        return next({statusCode: 404, error: true, errormessage: "MongoDB error: " + error});  
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
     });
 })
 
-app.get("/chats/:id", auth, (req,res,next) => {
-    chat.getModel().find({"_id": req.params.id}).then((chat) => {
+app.route("/chats/:id").get(auth, (req, res, next) => {
+    chat.getModel().find({ "_id": req.params.id }).populate({path: 'listMessage', model: message.getModel()}).then((chat) => {
         //La chat per forza è univoca con l'id, quindi documents avrà un singolo elemento
-        if(chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id){
+        if (chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id) {
             return res.status(200).json(chat);
         }
-        return res.status(200).json({statusCode: 500, error: true, errormessage: "User not allowed to see this chat"});
-    }).catch((error) =>{
-        return next({statusCode: 404, error: true, errormessage : "MongoDB error: " + error})
+        return res.status(200).json({ statusCode: 500, error: true, errormessage: "User not allowed to see this chat" });
+    }).catch((error) => {
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error })
     })
+}).post(auth, (req, res, next) => {
+    if (chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id) {
+        var new_message = message.newMessage({
+            idChat: req.body.idChat,
+            sentAt: req.body.sentAt,
+            text: req.body.text,
+            senderID: req.user.id
+        });
+        new_message.save().then((data) => {
+            chat.getModel().updateOne({ "_id": req.params.id }, { $push: { listMessage: new_message._id } }).then((response) => {
+                return res.status(200).json({ error: false, errormessage: "" });
+            }).catch((err) => {
+                return next({ statusCode: 500, error: true, errormessage: "MongoDB error saving message into chat: " + err })
+            })
+        }).catch((err) => {
+            return next({ statusCode: 500, error: true, errormessage: "MongoDB error saving message: " + err })
+        })
+    }
+    return res.status(200).json({ statusCode: 500, error: true, errormessage: "User not allowed to modify this chat" });
 })
 
 //---------------------- Scoreboard Endpoints ----------------------

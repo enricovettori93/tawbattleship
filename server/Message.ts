@@ -2,14 +2,14 @@ import mongoose = require("mongoose");
 import { Timestamp } from "bson";
 
 export interface Message extends mongoose.Document{
-    belongToChat: string,
+    idChat: string,
     sentAt: Date,
     senderID: string,
     text: string
 }
 
 var messageSchema = new mongoose.Schema({
-    belongToChat:{
+    idChat:{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Chat',
         required: true
