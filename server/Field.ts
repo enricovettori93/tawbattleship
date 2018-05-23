@@ -46,3 +46,50 @@ export function newField(UID : string) : Field {
     })
     return field;
 }
+
+function checkSubsequent( nave : any) : boolean{
+
+    var isSub = true;
+    var prev = nave[0];
+    for(var i = 1; i <= nave.length-1; i++){
+        isSub = isSub && ((prev.x == (nave[i].x)-1) || (prev.y == (nave[i].y)-1));
+    }
+
+    return isSub;
+}
+
+FieldSchema.methods.insertShips = function (jFile : any) {
+
+    var navi = {}
+    navi[2] = {'quantity' : 4, 'actualQuantity' : 0};
+    navi[3] = {'quantity' : 2, 'actualQuantity' : 0};
+    navi[4] = {'quantity' : 2, 'actualQuantity' : 0};
+    navi[5] = {'quantity' : 1, 'actualQuantity' : 0};
+    jFile.ships.foreach(element => {
+        
+        if (element.length > 5 || element.length < 2) {
+            this.matrix = {};
+            throw "nave di dimensione errata"
+        }
+
+        if (navi[element.length].quantity == navi[element.length].actualQuantity){
+            this.matrix = {};
+            throw "troppe navi dello stesso tipo"
+        }
+
+        if (checkSubsequent(element)){
+            navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
+            //crea una nuova nave
+        }
+        else{
+            this.matrix = {};
+            throw "non sono successive le posizioni inserite"
+        }
+        
+    });
+
+    return true;
+
+
+}
+
