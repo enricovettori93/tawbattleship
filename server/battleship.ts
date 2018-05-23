@@ -278,7 +278,7 @@ app.route("/chats").get(auth, (req, res, next) => {
 })
 
 app.route("/chats/:id").get(auth, (req, res, next) => {
-    chat.getModel().find({ "_id": req.params.id }).populate({path: 'listMessage', model: message.getModel()}).then((chat) => {
+    chat.getModel().find({ "_id": req.params.id }).populate({ path: 'listMessage', model: message.getModel(), select: 'sentAt text senderID -_id idCHat' }).then((chat) => {
         //La chat per forza è univoca con l'id, quindi documents avrà un singolo elemento
         if (chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id) {
             return res.status(200).json(chat);
@@ -288,31 +288,50 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error })
     })
 }).post(auth, (req, res, next) => {
-    if (chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id) {
-        var new_message = message.newMessage({
-            idChat: req.body.idChat,
-            sentAt: req.body.sentAt,
-            text: req.body.text,
-            senderID: req.user.id
-        });
-        new_message.save().then((data) => {
-            chat.getModel().updateOne({ "_id": req.params.id }, { $push: { listMessage: new_message._id } }).then((response) => {
-                return res.status(200).json({ error: false, errormessage: "" });
+    let chatModel = chat.getModel();
+    chatModel.find({ "_id": req.body.idChat }).then((chat) => {
+        if (chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id) {
+            var new_message = message.newMessage({
+                idChat: req.body.idChat,
+                sentAt: req.body.sentAt,
+                text: req.body.text,
+                senderID: req.user.id
+            });
+            new_message.save().then((data) => {
+                chatModel.updateOne({ "_id": req.params.id }, { $push: { listMessage: new_message._id } }).then((response) => {
+                    return res.status(200).json({ error: false, errormessage: "" });
+                }).catch((err) => {
+                    return next({ statusCode: 500, error: true, errormessage: "MongoDB error saving message into chat: " + err })
+                })
             }).catch((err) => {
-                return next({ statusCode: 500, error: true, errormessage: "MongoDB error saving message into chat: " + err })
+                return next({ statusCode: 500, error: true, errormessage: "MongoDB error saving message: " + err })
             })
-        }).catch((err) => {
-            return next({ statusCode: 500, error: true, errormessage: "MongoDB error saving message: " + err })
-        })
-    }
-    return res.status(200).json({ statusCode: 500, error: true, errormessage: "User not allowed to modify this chat" });
+        }
+        else {
+            return res.status(200).json({ statusCode: 500, error: true, errormessage: "User not allowed to modify this chat" });
+        }
+    }).catch((err) => {
+        return next({ statusCode: 500, error: true, errormessage: "MongoBD error: " + err });
+    })
 })
 
 //---------------------- Scoreboard Endpoints ----------------------
-app.get("/scoreboard", (req, res, next) => {
+app.get("/scoreboard", auth, (req, res, next) => {
     req.query.limit = parseInt(req.query.limit || "10") || 10;
-    console.log(("Printing scoreboard with limit: " + req.query.limit).magenta);
-    user.getModel().find({}, { "username": 1, "partiteVinte": 1, "_id": 0 }).sort({ partiteVinte: -1 }).limit(req.query.limit).then((documents) => {
+    req.query.type = (req.query.type || "undefinied") || "undefinied";
+    let sort_type = req.query.type;
+    switch (sort_type) {
+        case "undefinied": {
+            sort_type = "partiteVinte";
+            break;
+        }
+        case "total": {
+            sort_type = '$add: ["$partiteVinte", "$partitePerse"]';
+            break;
+        }
+    }
+    console.log(("Printing scoreboard with limit: " + req.query.limit + " and sort type: " + sort_type).magenta);
+    user.getModel().find({}, { username: 1, [sort_type]:1, _id: 0 }).sort({ [sort_type]: -1 }).limit(req.query.limit).then((documents) => {
         return res.status(200).json(documents);
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });

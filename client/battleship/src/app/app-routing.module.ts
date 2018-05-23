@@ -14,12 +14,12 @@ const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
   {path: 'login', component: UserLoginComponent},
   {path: 'user', component: UserInfoComponent},
+  {path: 'user/:username', component: UserInfoComponent},
   {path: 'signup', component: UserSignupComponent},
   {path: 'scoreboard', component: ScoreboardComponent},
   {path: 'players', component: PlayersComponent},
   {path: 'chats', component: ListChatsComponent},
-  {path: 'user/:username', component: UserInfoComponent},
-  {path: 'chats/:id',component: ChatComponent}
+  {path: 'chats/:_id',component: ChatComponent}
 ]
 
 @NgModule({

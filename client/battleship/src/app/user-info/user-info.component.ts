@@ -16,6 +16,7 @@ export class UserInfoComponent implements OnInit {
   private routingNotCurrentUser = undefined;
   private otherUser = undefined;
   private otherUserIsAdmin = undefined;
+  private username = undefined;
 
   constructor(private userService: UserService, private router: Router, private utilities: UtilitiesService) { }
 
@@ -27,6 +28,9 @@ export class UserInfoComponent implements OnInit {
       this.routingNotCurrentUser = this.router.url.split('/').pop();
       console.log("User: " + this.routingNotCurrentUser);
       this.getUser();
+    }
+    else{
+      this.username = this.userService.get_username();
     }
     this.isAdmin = this.userService.is_admin();
   }
@@ -78,13 +82,19 @@ export class UserInfoComponent implements OnInit {
   }
 
   deleteThisUser() {
+    console.log("USERNAME " + this.username);
     var answer = confirm("Sei sicuro di cancellare l'utente?");
-    var userToDelete = this.userService.get_username();
+    var userToDelete = this.username;
     if (answer) {
       this.userService.deleteUser(userToDelete).subscribe((d) => {
         console.log("User " + userToDelete + " deleted");
-        this.userService.logout();
-        this.router.navigate(['/']);
+        if(userToDelete === this.userService.get_username()){
+          this.userService.logout();
+          this.router.navigate(['/']);
+        }
+        else{
+          this.router.navigate(['/players']);
+        }
       }), (err) => {
         console.log("Delete user " + userToDelete + " error " + err);
       }
@@ -96,6 +106,7 @@ export class UserInfoComponent implements OnInit {
       console.log("Getting user " + JSON.stringify(d) + " OK");
       this.otherUser = d;
       this.otherUserIsAdmin = this.otherUser.isAdmin;
+      this.username = this.otherUser.username;
     }), (err) => {
       console.log("Error getting user " + err);
     }

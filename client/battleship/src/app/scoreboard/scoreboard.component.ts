@@ -12,9 +12,12 @@ import { UtilitiesService } from '../utilities.service';
 })
 export class ScoreboardComponent implements OnInit {
   private scoreboard = [];
+  private tipologiaScoreboard;
   constructor(private http: HttpClient, private userService: UserService, private utilities: UtilitiesService) { }
 
   ngOnInit() {
+    this.tipologiaScoreboard = 'Partite vinte';
+    this.utilities.check_auth(this.userService.get_token());
     this.getScoreboard();
   }
 
@@ -22,11 +25,28 @@ export class ScoreboardComponent implements OnInit {
    * Metodo che viene attivato quando si cambia il 'select' nella pagina, cambia dinamicamente il numero di utenti da visualizzare
    * @param n : numero di utenti da visualizzare
    */
-  changeLimit(n: number){
-    this.getScoreboard({'limit': n});
+  changeScoreboard(n: number, type: string) {
+    switch (type) {
+      case "partiteVinte": {
+        this.tipologiaScoreboard = "Partite vinte";
+        break;
+      }
+      case "partitePerse": {
+        this.tipologiaScoreboard = "Partite perse";
+        break;
+      }
+      case "total": {
+        this.tipologiaScoreboard = "Totali";
+        break;
+      }
+    }
+    this.getScoreboard({ 'limit': n, 'type': type });
   }
 
-  getScoreboard(params = {}){
+  /**
+   * Richiama il metodo getScoreboard in userService
+   */
+  getScoreboard(params = {}) {
     this.scoreboard = [];
     this.userService.getScoreboard(params).subscribe((scoreboard) => {
       this.scoreboard = scoreboard;

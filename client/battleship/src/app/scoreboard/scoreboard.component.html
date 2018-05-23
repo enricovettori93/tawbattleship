@@ -5,7 +5,7 @@
   <h2>Nessun giocatore in classifica!</h2>
 </div>
 <!-- Header-->
-<div *ngIf="!scoreboard.length === 0" class="row">
+<div *ngIf="scoreboard.length !== 0" class="row">
   <div class="col-md-8">
     <p>
       <b>Username</b>
@@ -13,7 +13,7 @@
   </div>
   <div class="col-md-4">
     <p>
-      <b>Punteggio</b>
+      <b> {{tipologiaScoreboard}} </b>
     </p>
   </div>
 </div>
@@ -34,10 +34,18 @@
 </div>
 <div class="row">
   <p>Mostra le prime posizioni nella classifica:</p>
-  <select class="form-control" (click)="changeLimit(limitScoreboard.value)" #limitScoreboard>
+  <select class="form-control" (click)="changeScoreboard(limitScoreboard.value, typeScoreboard.value)" #limitScoreboard>
     <option value="5">5</option>
     <option value="10" selected>10</option>
     <option value="20">20</option>
     <option value="100">100</option>
+  </select>
+</div>
+<div class="row">
+  <p>Ordina la classifica in base a:</p>
+  <select class="form-control" (click)="changeScoreboard(limitScoreboard.value, typeScoreboard.value)" #typeScoreboard>
+    <option value="partiteVinte">Partite vinte</option>
+    <option value="partitePerse">Partite perse</option>
+    <option value="total">Totale delle partite</option>
   </select>
 </div>

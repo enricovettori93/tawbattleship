@@ -16,7 +16,7 @@ export class UserLoginComponent implements OnInit {
   ngOnInit() {
     console.log("UserLoginComponent istanziato");
     /*
-      Da sistemare
+      TOTO: Da sistemare
       this.userService.renew().subscribe((d) => {
       this.router.navigate(['/user']);
     }, (err) => {
