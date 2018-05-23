@@ -28,7 +28,7 @@
         "concurrently": "3.5.1"
     },
     "scripts": {
-        "compile": "tsc",
+        "compile": "tsc *.ts",
         "start": "concurrently \"mongod --dbpath ./data\" \"sleep 2 && node battleship\""
     },
     "private": true
