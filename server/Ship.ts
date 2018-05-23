@@ -14,7 +14,7 @@ export class Point{
 
 export interface Ship {
     posArray: [Point],
-    sunk: Boolean,
+    sunk: Boolean
 }
 
 var PointSchema = new mongoose.Schema({
@@ -31,9 +31,23 @@ export function getSchema() { return PointSchema; }
 
 // Mongoose Model
 var shipModel;
-export function getModel(): mongoose.Model<mongoose.Document> { // Return Model as singleton
+export function getModel(): mongoose.Model<mongoose.Ship> { // Return Model as singleton
     if (!shipModel) {
         shipModel = mongoose.model('Ship', getSchema())
     }
     return shipModel;
+}
+
+export function newShip(positions : any) : Ship {
+
+    var _shipModel = getModel();
+    var ship = new _shipModel();
+
+    ship.sunk = false;
+
+    positions.foreach(pos => {
+        ship.posArray.push(new Point(pos.x, pos.y));
+    })
+
+    return ship;
 }

@@ -1,6 +1,7 @@
 
 import mongoose = require('mongoose');
 import { StringifyOptions } from 'querystring';
+import { newShip } from './Ship';
 
 export interface Field extends mongoose.Document{
     playerId: string,
@@ -79,7 +80,9 @@ FieldSchema.methods.insertShips = function (jFile : any) {
 
         if (checkSubsequent(element)){
             navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
+            
             //crea una nuova nave
+
         }
         else{
             this.matrix = {};
