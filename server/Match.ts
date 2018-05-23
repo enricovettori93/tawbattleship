@@ -1,10 +1,10 @@
-
 import mongoose = require('mongoose');
-//import { newField } from './Field';
 import { Field } from './Field';
 import * as field from './Field';
+
 export enum MatchStatus {
     Wait,
+    Building,
     Active,
     Ended
 }
@@ -13,13 +13,14 @@ export interface Match extends mongoose.Document {
     timestamp: Date,
     owner: string,
     opponent: string,
-    fieldPlayer1: Field,
-    fieldPlayer2: Field,
+    fieldOwner: Field,
+    fieldOpponent: Field,
     status: MatchStatus,
     winnerId: string,
     setStatus: (status: MatchStatus) => void,
     getStatus: () => MatchStatus,
-    getWinnerId: () => string
+    getWinnerId: () => string,
+    insertField: (ownerId: string, shipJSON: any) => void
 }
 
 // We use Mongoose to perform the ODM between our application and
@@ -45,11 +46,11 @@ var MatchSchema = new mongoose.Schema({
         ref: 'User'
     },
 
-    fieldPlayer1: {
+    fieldOwner: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "Field"
     },
-    fieldPlayer2: {
+    fieldOpponent: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "Field"
     },
@@ -62,18 +63,18 @@ var MatchSchema = new mongoose.Schema({
     },
 })
 
-MatchSchema.methods.getStatus = function () : MatchStatus {
+MatchSchema.methods.getStatus = function (): MatchStatus {
     return this.status;
 }
 
-MatchSchema.methods.getWinnerId = function () : string{
+MatchSchema.methods.getWinnerId = function (): string {
     if (this.status == MatchStatus.Wait || this.status == MatchStatus.Active)
         return null;
     else
         return this.winnderId;
 }
 
-MatchSchema.methods.setStatus = function(status : MatchStatus) {
+MatchSchema.methods.setStatus = function (status: MatchStatus) {
     this.status = status;
 }
 
@@ -81,7 +82,7 @@ MatchSchema.methods.setStatus = function(status : MatchStatus) {
 export function getSchema() { return MatchSchema; }
 
 // Mongoose Model
-var matchModel; 
+var matchModel;
 export function getModel(): mongoose.Model<Match> { // Return Model as singleton
     if (!matchModel) {
         matchModel = mongoose.model('Match', getSchema())
@@ -89,7 +90,7 @@ export function getModel(): mongoose.Model<Match> { // Return Model as singleton
     return matchModel;
 }
 
-export function newMatch(owner : string) : Match{
+export function newMatch(owner: string): Match {
     var _matchModel = getModel();
     var match = new _matchModel();
 
@@ -98,9 +99,24 @@ export function newMatch(owner : string) : Match{
     // inizializzo i due ID proprietari della partita
     match.owner = owner
     // inizializzo il campo di owner
-    match.fieldPlayer1 = field.newField(owner)
+    match.fieldOwner = field.newField(owner)
     // setto lo status del match come Wait, in attesa del secondo player
     match.status = MatchStatus.Wait
 
     return match
+}
+
+export function insertField(owner: string, shipJSON: any): void {
+    var field = field.newField();
+    try {
+        field.insertShip(shipJSON)
+        if (this.owner == owner) {
+            this.fieldOwner = field;
+        }
+        else {
+            this.fieldOpponent = field;
+        }
+    } catch (y) {
+        throw ("Invalid field");
+    }
 }
