@@ -3,7 +3,7 @@ import mongoose = require('mongoose');
 //import { newField } from './Field';
 import { Field } from './Field';
 import * as field from './Field';
-enum MatchStatus {
+export enum MatchStatus {
     Wait,
     Active,
     Ended
@@ -11,8 +11,8 @@ enum MatchStatus {
 
 export interface Match extends mongoose.Document {
     timestamp: Date,
-    player1Id: string,
-    player2Id: string,
+    owner: string,
+    opponent: string,
     fieldPlayer1: Field,
     fieldPlayer2: Field,
     status: MatchStatus,
@@ -35,22 +35,22 @@ var MatchSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.Date,
         required: true
     },
-    player1Id: { //per ora diamo per scontato che sia l'owner
-        type: mongoose.SchemaTypes.Number,
+    owner: { //per ora diamo per scontato che sia l'owner
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
         required: true
     },
-    player2Id: {
-        type: mongoose.SchemaTypes.Number
+    opponent: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User'
     },
 
     fieldPlayer1: {
         type: mongoose.SchemaTypes.ObjectId,
-        required: true,
         ref: "Field"
     },
     fieldPlayer2: {
         type: mongoose.SchemaTypes.ObjectId,
-        required: true,
         ref: "Field"
     },
     status: {
@@ -58,11 +58,8 @@ var MatchSchema = new mongoose.Schema({
         required: true,
     },
     winnerId: {
-        type: mongoose.SchemaTypes.Number,
-        required: true,
+        type: mongoose.SchemaTypes.ObjectId
     },
-
-
 })
 
 MatchSchema.methods.getStatus = function () : MatchStatus {
@@ -99,7 +96,7 @@ export function newMatch(owner : string) : Match{
     // inizializzo la data della partita
     match.timestamp = new Date()
     // inizializzo i due ID proprietari della partita
-    match.player1Id = owner
+    match.owner = owner
     // inizializzo il campo di owner
     match.fieldPlayer1 = field.newField(owner)
     // setto lo status del match come Wait, in attesa del secondo player

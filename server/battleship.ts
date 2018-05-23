@@ -278,7 +278,7 @@ app.route("/chats").get(auth, (req, res, next) => {
 })
 
 app.route("/chats/:id").get(auth, (req, res, next) => {
-    chat.getModel().find({ "_id": req.params.id }).populate({ path: 'listMessage', model: message.getModel(), select: 'sentAt text senderID -_id idCHat' }).then((chat) => {
+    chat.getModel().find({ "_id": req.params.id }).populate({ path: 'listMessage', model: message.getModel(), select: 'sentAt text senderID -_id idChat' }).then((chat) => {
         //La chat per forza è univoca con l'id, quindi documents avrà un singolo elemento
         if (chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id) {
             return res.status(200).json(chat);
@@ -338,6 +338,34 @@ app.get("/scoreboard", auth, (req, res, next) => {
     })
 })
 
+//---------------------- Match Endpoints ---------------------------
+
+app.route("/matches").get(auth, (req, res, next) => {
+    match.getModel().find({"status" : match.MatchStatus.Wait}).then((documents) => {
+        return res.status(200).json(documents);
+    }).catch((error) => {
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+    })
+}).post(auth,(req, res, next) => {
+    let new_match = match.newMatch(req.user.id)
+    match.getModel().find({"owner" : req.user.id}).count().then((data) => {
+        if(JSON.stringify(data) === "0"){
+            new_match.save().then((data) => {
+                console.log(("Match created succesfully. Owner UID: " + data.owner).green);
+                return res.status(200).json({ error: false, errormessage: "", id: data._id });
+            }).catch((error) => {
+                return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+            })
+        }
+        else{
+            return res.status(400).json({ error: false, errormessage: "User already got waiting match"});
+        }
+    }).catch((err) => {
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err });
+    })
+})
+
+
 //Error handling middleware
 app.use(function (err, req, res, next) {
     console.log("Error middleware endpoint: ".red + JSON.stringify(err));
@@ -387,21 +415,3 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
         process.exit(-2);
     }
 )
-
-//---------------------- Match Endpoints ---------------------------
-
-app.route("/matches").get(auth, (req, res, next) => {
-    match.getModel().find().then((documents) => {
-        return res.status(200).json(documents);
-    }).catch((error) => {
-        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
-    })
-}).post((req, res, next) => {
-    var new_match = match.newMatch(req.user.id)
-    new_match.save().then((data) => {
-        console.log(("Match created succesfully. Owner UID: " + data.player1Id).green);
-        return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch((error) => {
-        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
-    })
-})

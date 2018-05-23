@@ -4,7 +4,7 @@ import { StringifyOptions } from 'querystring';
 
 export interface Field extends mongoose.Document{
     playerId: string,
-    matrix: Number[][],
+    matrix: string[][],
 }
 
 // We use Mongoose to perform the ODM between our application and
@@ -21,7 +21,7 @@ var FieldSchema = new mongoose.Schema({
         required: true
     }, 
     matrix: [[{
-        type: Number,
+        type: mongoose.SchemaTypes.ObjectId,
         required: true
     }]]
 })
@@ -40,9 +40,9 @@ export function newField(UID : string) : Field {
     var _fieldModel = getModel();
     var field = new _fieldModel();
     field.playerId = UID;
-    field.matrix = new Array<Array<Number>>(10);
+    field.matrix = new Array<Array<string>>(10);
     field.matrix.forEach(array => {
-        array = new Array <Number>(10);
+        array = new Array <string>(10);
     })
     return field;
 }
