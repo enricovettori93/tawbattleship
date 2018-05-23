@@ -16,6 +16,7 @@ import { UtilitiesService } from './utilities.service';
 import { PlayersComponent } from './players/players.component';
 import { ListChatsComponent } from './list-chats/list-chats.component';
 import { ChatComponent } from './chat/chat.component';
+import { MatchComponent } from './match/match.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { ChatComponent } from './chat/chat.component';
     ScoreboardComponent,
     PlayersComponent,
     ListChatsComponent,
-    ChatComponent
+    ChatComponent,
+    MatchComponent
   ],
   imports: [
     BrowserModule,

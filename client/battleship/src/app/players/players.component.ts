@@ -16,13 +16,13 @@ export class PlayersComponent implements OnInit {
     this.searchPlayer('');
   }
 
-  searchPlayer(keyword: string){
-    console.log("Search player with: " + keyword);
+  searchPlayer(keyword: string) {
+    console.log('Search player with: ' + keyword);
     this.userService.searchUser(keyword).subscribe((value) => {
-      //console.log(JSON.stringify(d));
+      // console.log(JSON.stringify(d));
       this.players = value;
-    }),(err) => {
-      console.log("Errore durante la ricerca: " + err);
-    }
+    }, (err) => {
+      console.log('Errore durante la ricerca: ' + err);
+    });
   }
 }

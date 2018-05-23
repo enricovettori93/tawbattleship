@@ -9,11 +9,11 @@ export class UtilitiesService {
 
   constructor(private router: Router) { }
 
-  public create_options(token,params = {}) {
-    console.log("PARAMS QUERY " + JSON.stringify(params))
+  public create_options(token, params = {}) {
+    console.log('PARAMS QUERY ' + JSON.stringify(params));
     return {
       headers: new HttpHeaders({
-        authorization: 'Bearer ' + token,
+        'authorization': 'Bearer ' + token,
         'cache-control': 'no-cache',
         'Content-Type': 'application/json',
       }),
@@ -21,7 +21,7 @@ export class UtilitiesService {
     };
   }
 
-  public check_auth(token: string){
+  public check_auth(token: string) {
     if (token.length === 0) {
       this.router.navigate(['/']);
     }
