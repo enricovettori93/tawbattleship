@@ -25,6 +25,8 @@ import { Chat } from './Chat';
 import * as chat from './Chat';
 import { Match } from './Match';
 import * as match from './Match';
+import { Field } from './Field';
+import * as field from './Field';
 
 import express = require('express');
 import bodyparser = require('body-parser');      // body-parser middleware is used to parse the request body and
@@ -358,13 +360,37 @@ app.route("/matches").get(auth, (req, res, next) => {
             })
         }
         else{
-            return res.status(400).json({ error: false, errormessage: "User already got waiting match"});
+            return res.status(400).json({ error: true, errormessage: "User already got waiting match"});
         }
     }).catch((err) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err });
     })
 })
 
+app.put("/matches/:id/board", auth, (req,res,next) => {
+    match.getModel().findOne({"_id": req.params.id}).then((data) => {
+        if(req.user.id == data.owner || req.user.id == data.opponent){
+            if(data.getStatus() != match.MatchStatus.Building || data.getStatus() != match.MatchStatus.Building ){
+                return res.status(404).json({error: true, errormessage: "This match is active!"});
+            }
+            else{
+                match.getModel().findByIdAndUpdate({"_id": req.params.id},{"status": match.MatchStatus.Building});
+                try{
+                    var new_field = data.insertField(req.user.id, req.body.positioning);
+                    return res.status(200).json({error: false, errormessage: ""});
+                }
+                catch(e){
+                    return res.status(400).json({error: true, errormessage: "Invalid ship positioning"});
+                }
+            }
+        }
+        else{
+            return res.status(400).json({error: true, errormessage: "User not allowed to modify this match"});
+        }
+    }).catch((err) => {
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err });
+    })
+})
 
 //Error handling middleware
 app.use(function (err, req, res, next) {

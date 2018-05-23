@@ -4,7 +4,7 @@ import { StringifyOptions } from 'querystring';
 
 export interface Field extends mongoose.Document{
     playerId: string,
-    matrix: string[][],
+    matrix: string[][]
 }
 
 // We use Mongoose to perform the ODM between our application and
