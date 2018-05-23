@@ -11,12 +11,15 @@ enum MatchStatus {
 
 export interface Match extends mongoose.Document {
     timestamp: Date,
-    player1Id: Number,
-    player2Id: Number,
+    player1Id: string,
+    player2Id: string,
     fieldPlayer1: Field,
     fieldPlayer2: Field,
     status: MatchStatus,
-    winnerId: Number
+    winnerId: string,
+    setStatus: (status: MatchStatus) => void,
+    getStatus: () => MatchStatus,
+    getWinnerId: () => string
 }
 
 // We use Mongoose to perform the ODM between our application and
@@ -62,11 +65,11 @@ var MatchSchema = new mongoose.Schema({
 
 })
 
-MatchSchema.methods.getStatus = function () : Number {
+MatchSchema.methods.getStatus = function () : MatchStatus {
     return this.status;
 }
 
-MatchSchema.methods.getWinnerId = function () : Number{
+MatchSchema.methods.getWinnerId = function () : string{
     if (this.status == MatchStatus.Wait || this.status == MatchStatus.Active)
         return null;
     else
@@ -89,21 +92,18 @@ export function getModel(): mongoose.Model<Match> { // Return Model as singleton
     return matchModel;
 }
 
-export function newMatch(owner : Number) : Match{
+export function newMatch(owner : string) : Match{
     var _matchModel = getModel();
     var match = new _matchModel();
 
     // inizializzo la data della partita
     match.timestamp = new Date()
-
     // inizializzo i due ID proprietari della partita
     match.player1Id = owner
-
     // inizializzo il campo di owner
     match.fieldPlayer1 = field.newField(owner)
-
     // setto lo status del match come Wait, in attesa del secondo player
-    match.setStatus(MatchStatus.Wait)
+    match.status = MatchStatus.Wait
 
     return match
 }

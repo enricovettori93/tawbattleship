@@ -1,10 +1,10 @@
 
 import mongoose = require('mongoose');
+import { StringifyOptions } from 'querystring';
 
 export interface Field extends mongoose.Document{
-    playerId: Number,
-    matrix: [[Number]],
-
+    playerId: string,
+    matrix: Number[][],
 }
 
 // We use Mongoose to perform the ODM between our application and
@@ -17,16 +17,13 @@ export interface Field extends mongoose.Document{
 // Mongoose Schema
 var FieldSchema = new mongoose.Schema({
     playerId: {
-        type: mongoose.SchemaTypes.Number,
+        type: mongoose.SchemaTypes.String,
         required: true
     }, 
-    matrix: {
-        type: [[Number]],
+    matrix: [[{
+        type: Number,
         required: true
-    },
-   
-
-
+    }]]
 })
 export function getSchema() { return FieldSchema; }
 
@@ -39,12 +36,12 @@ export function getModel(): mongoose.Model<Field> { // Return Model as singleton
     return fieldModel;
 }
 
-export function newField(UID : Number) : Field {
+export function newField(UID : string) : Field {
     var _fieldModel = getModel();
     var field = new _fieldModel();
-    field.playerID = UID;
+    field.playerId = UID;
     field.matrix = new Array<Array<Number>>(10);
-    field.matrix.foreach(array => {
+    field.matrix.forEach(array => {
         array = new Array <Number>(10);
     })
     return field;
