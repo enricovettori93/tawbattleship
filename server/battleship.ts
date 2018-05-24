@@ -392,6 +392,22 @@ app.put("/matches/:id/board", auth, (req,res,next) => {
     })
 })
 
+app.get("/matches/:id_utente", auth, (req, res, next) => {
+    match.getModel().find({"owner" : req.params.id}).then((matches) => {
+        return res.status(200).json(matches);
+    }).catch((err) => {
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err})
+    })
+})
+
+app.get("/matches/:id_match", auth, (req, res, next) => {
+    match.getModel().findOne({"_id": req.params.id}).then((match) => {
+        return res.status(200).json(match);
+    }).catch((err) => {
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error:" + err})
+    })
+})
+
 //Error handling middleware
 app.use(function (err, req, res, next) {
     console.log("Error middleware endpoint: ".red + JSON.stringify(err));
