@@ -10,13 +10,14 @@ import { UserInfoComponent } from './user-info/user-info.component';
 import { UserSignupComponent } from './user-signup/user-signup.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ScoreboardComponent } from './scoreboard/scoreboard.component';
+import { PlayersComponent } from './players/players.component';
+import { ListChatsComponent } from './list-chats/list-chats.component';
+import { MatchComponent } from './match/match.component';
+import { ChatComponent } from './chat/chat.component';
+
 //Services
 import { UserService } from './user.service';
 import { UtilitiesService } from './utilities.service';
-import { PlayersComponent } from './players/players.component';
-import { ListChatsComponent } from './list-chats/list-chats.component';
-import { ChatComponent } from './chat/chat.component';
-import { MatchComponent } from './match/match.component';
 
 
 @NgModule({
@@ -29,8 +30,8 @@ import { MatchComponent } from './match/match.component';
     ScoreboardComponent,
     PlayersComponent,
     ListChatsComponent,
-    ChatComponent,
-    MatchComponent
+    MatchComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,

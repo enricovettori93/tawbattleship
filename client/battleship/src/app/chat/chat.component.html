@@ -1,3 +1,46 @@
-<p>
-  chat works!
-</p>
+<div class="row col">
+  <h1>Messaggi</h1>
+</div>
+<div class="container py-2">
+  <div *ngFor="let message of messagges">
+    <div *ngIf="message.senderID == id_user">
+      <div class="alert alert-dark py-2 me">
+        <span>{{message.text}}</span>
+        <br>
+        <span style="font-size: .8em">{{message.sentAt}}</span>
+      </div>
+    </div>
+    <div *ngIf="message.senderID != id_user">
+      <div class="alert alert-dark py-2 other">
+        <span>{{message.text}}</span>
+        <br>
+        <span style="font-size: .8em">{{message.sentAt}}</span>
+      </div>
+    </div>
+
+    <!--<div *ngIf="message.senderID == id_user; then thisUser; else otherUser">
+
+      <ng-template #thisUser>
+        <div class="alert alert-dark py-2 me">
+          <span>{{message.text}}</span>
+        </div>
+      </ng-template>
+
+      <ng-template #otherUser>
+        <div class="alert alert-dark py-2 other">
+          <span>{{message.text}}</span>
+        </div>
+      </ng-template>
+
+    </div>-->
+  </div>
+  <form>
+    <div class="form-group">
+      <label for="exampleFormControlTextarea1"></label>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+    </div>
+    <div class="row col-sm-12">
+      <button type="button" class="btn btn-primary">Invia il messaggio</button>
+    </div>
+  </form>
+</div>

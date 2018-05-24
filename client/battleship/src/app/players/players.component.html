@@ -35,13 +35,16 @@
 <div *ngFor="let player of players">
   <div class="row col py-2">
     <div class="col-4">
-      <a routerLink='/user/{{player.username}}'>{{player.username}}</a>
+      <a *ngIf="player.username != userLogged" routerLink='/user/{{player.username}}'>{{player.username}}</a>
+      <a *ngIf="player.username == userLogged" routerLink='/user'>{{player.username}}</a>
     </div>
     <div class="col-4">
-      <a routerLink='/user/{{player.username}}'>{{player.name}}</a>
+      <a *ngIf="player.username != userLogged" routerLink='/user/{{player.username}}'>{{player.name}}</a>
+      <a *ngIf="player.username == userLogged" routerLink='/user'>{{player.name}}</a>
     </div>
     <div class="col-4">
-      <a routerLink='/user/{{player.username}}'>{{player.surname}}</a>
+      <a *ngIf="player.username != userLogged" routerLink='/user/{{player.username}}'>{{player.surname}}</a>
+      <a *ngIf="player.username == userLogged" routerLink='/user'>{{player.surname}}</a>
     </div>
   </div>
 </div>

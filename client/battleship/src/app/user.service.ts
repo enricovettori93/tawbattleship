@@ -150,6 +150,14 @@ export class UserService {
     )
   }
 
+  getUserSingleChat(idChat: string):Observable<any>{
+    return this.http.get(this.url + '/chats/' + idChat, this.utilities.create_options(this.get_token())).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
+
   //----------------- JTW GETTER -----------------
 
   get_token() {
@@ -166,6 +174,10 @@ export class UserService {
 
   get_username() {
     return jwt_decode(this.token).username;
+  }
+
+  get_userId(){
+    return jwt_decode(this.token).id;
   }
 
   get_mail() {

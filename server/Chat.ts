@@ -35,6 +35,12 @@ var chatSchema = new mongoose.Schema({
 //Chat between user1 and user2 -> singleton
 chatSchema.index({"user1ID": 1, "user2ID": 1},{unique: true});
 
+
+//Remove all messagges if chat is deleted
+chatSchema.pre('remove', function(next) {
+    this.model('Message').remove({ idChat: this._id }, next);
+});
+
 export function getSchema(){return chatSchema};
 
 var chatModel;
