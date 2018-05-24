@@ -230,9 +230,11 @@ app.route("/chats").get(auth, (req, res, next) => {
             var promise2 = user.getModel().update({ _id: id_dest }, { $push: { chatList: data._id } });
             Promise.all([promise1, promise2]).then(function () {
                 console.log(("Chat addedd succesfully").green);
+                ios.emit('broadcast', new_chat);
                 return res.status(200).json({ error: false, errormessage: "" });
             }).catch(function (error) {
                 console.log("MongoDB error saving chats: " + error);
+                ios.emit('error','MongoDB error:'  + error);
                 return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
             });
         }).catch((error) => {

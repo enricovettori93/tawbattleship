@@ -9,10 +9,12 @@ import { UtilitiesService } from '../utilities.service';
 })
 export class PlayersComponent implements OnInit {
   private players = [];
+  private userLogged;
   constructor(private userService: UserService, private utilities: UtilitiesService) { }
 
   ngOnInit() {
     this.utilities.check_auth(this.userService.get_token());
+    this.userLogged = this.userService.get_username();
     this.searchPlayer('');
   }
 
