@@ -21,7 +21,7 @@ const routes: Routes = [
   {path: 'players', component: PlayersComponent},
   {path: 'chats', component: ListChatsComponent},
   {path: 'chats/:_id', component: ChatComponent},
-  {path: 'match/', component: MatchComponent }
+  {path: 'match', component: MatchComponent }
 ];
 
 @NgModule({
