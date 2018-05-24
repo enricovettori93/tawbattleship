@@ -18,6 +18,7 @@ import { ChatComponent } from './chat/chat.component';
 //Services
 import { UserService } from './user.service';
 import { UtilitiesService } from './utilities.service';
+import { SocketioService } from './socketio.service';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { UtilitiesService } from './utilities.service';
   ],
   providers: [
     {provide: UserService, useClass: UserService},
-    {provide: UtilitiesService, useClass: UtilitiesService}
+    {provide: UtilitiesService, useClass: UtilitiesService},
+    {provide: SocketioService, useClass: SocketioService}
   ],
   bootstrap: [AppComponent]
 })

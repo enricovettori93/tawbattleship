@@ -2,7 +2,8 @@
   <h1>Messaggi</h1>
 </div>
 <div class="container py-2">
-  <div *ngFor="let message of messagges">
+  <div *ngIf="messages.length === 0">Nessun messaggio presente nella chat</div>
+  <div *ngFor="let message of messages">
     <div *ngIf="message.senderID == id_user">
       <div class="alert alert-dark py-2 me">
         <span>{{message.text}}</span>
@@ -37,10 +38,13 @@
   <form>
     <div class="form-group">
       <label for="exampleFormControlTextarea1"></label>
-      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" #textmessage maxlength="1000"></textarea>
+    </div>
+    <div *ngIf="error"class="alert alert-danger" role="alert">
+        {{error}}
     </div>
     <div class="row col-sm-12">
-      <button type="button" class="btn btn-primary">Invia il messaggio</button>
+      <button type="button" class="btn btn-primary" (click)="sendMessage(textmessage.value)">Invia il messaggio</button>
     </div>
   </form>
 </div>
