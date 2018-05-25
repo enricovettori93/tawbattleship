@@ -150,7 +150,8 @@ export class UserInfoComponent implements OnInit {
    */
   createChat() {
     this.userService.createChat(this.username).subscribe((newChat) => {
-      this.router.navigate(['/chats/' + newChat._id]);
+      console.log("CHAT CREATA " + JSON.stringify(newChat));
+      this.router.navigate(['/chats/' + newChat['id']]);
     }), (err) => {
       console.log("Error creating user chat " + err);
     }

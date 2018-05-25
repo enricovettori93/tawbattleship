@@ -3,8 +3,20 @@
 </div>
 <div *ngIf="chats.length === 0">
   <h2>Nessuna chat presente</h2>
-  <p><a routerLink="/players">Cerca</a> un giocatore per iniziare una chat con lui</p>
+  <p>
+    <a routerLink="/players">Cerca</a> un giocatore per iniziare una chat con lui</p>
 </div>
 <div *ngFor="let chat of chats">
-  <p><a routerLink='/chats/{{chat._id}}'>Clicca</a> per visualizzare la tra l'utente <a routerLink='/user/{{chat.user1ID.username}}'>{{chat.user1ID.username}}</a> e l'utente <a routerLink='/user/{{chat.user2ID.username}}'>{{chat.user2ID.username}}</a></p>
+  <div class="row">
+    <div class="col-8">
+      <span class="align-middle">
+        <a routerLink='/chats/{{chat._id}}'>Clicca</a> per visualizzare la tra l'utente
+        <a routerLink='/user/{{chat.user1ID.username}}'>{{chat.user1ID.username}}</a> e l'utente
+        <a routerLink='/user/{{chat.user2ID.username}}'>{{chat.user2ID.username}}</a>
+      </span>
+    </div>
+    <!--<div class="col-4">
+      <button class="alert alert-danger align-middle" style="padding:0" (click)="deleteChat({{chat._id)}}">Cancella la chat</button>
+    </div>-->
+  </div>
 </div>

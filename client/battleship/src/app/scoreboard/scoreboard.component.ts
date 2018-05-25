@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../user.service';
-import { Observable } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
 import { UtilitiesService } from '../utilities.service';
 
 @Component({
@@ -13,7 +10,7 @@ import { UtilitiesService } from '../utilities.service';
 export class ScoreboardComponent implements OnInit {
   private scoreboard = [];
   private tipologiaScoreboard;
-  constructor(private http: HttpClient, private userService: UserService, private utilities: UtilitiesService) { }
+  constructor(private userService: UserService, private utilities: UtilitiesService) { }
 
   ngOnInit() {
     this.tipologiaScoreboard = 'Partite vinte';

@@ -22,9 +22,9 @@ export class ChatComponent implements OnInit {
     this.id_user = this.userService.get_userId();
     this.id_chat = this.router.url.split('/').pop();
     this.getMessagge();
-    /*this.socketService.connect().subscribe((m) => {
+    this.socketService.connect(this.id_chat).subscribe((m) => {
       this.getMessagge();
-    })*/
+    })
   }
 
   getMessagge(){
@@ -43,7 +43,6 @@ export class ChatComponent implements OnInit {
       this.userService.sendMessage(this.id_chat,this.textMessage).subscribe((data) => {
         this.textMessage = "";
         console.log(JSON.stringify(data));
-        this.getMessagge();
       })
       this.error = undefined;
     }

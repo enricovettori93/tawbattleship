@@ -230,8 +230,8 @@ app.route("/chats").get(auth, (req, res, next) => {
             var promise2 = user.getModel().update({ _id: id_dest }, { $push: { chatList: data._id } });
             Promise.all([promise1, promise2]).then(function () {
                 console.log(("Chat addedd succesfully").green);
-                ios.emit('broadcast', new_chat);
-                return res.status(200).json({ error: false, errormessage: "" });
+                //ios.emit('broadcast', new_chat);
+                return res.status(200).json({ error: false, errormessage: "", id: new_chat._id });
             }).catch(function (error) {
                 console.log("MongoDB error saving chats: " + error);
                 ios.emit('error','MongoDB error:'  + error);
@@ -303,6 +303,10 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
             });
             new_message.save().then((data) => {
                 chatModel.updateOne({ "_id": req.params.id }, { $push: { listMessage: new_message._id } }).then((response) => {
+                    /**
+                     * Emette il segnale nel socket riguardante la specifica chat passata tramite parametro
+                     */
+                    ios.emit('broadcast ' + req.params.id,data);
                     return res.status(200).json({ error: false, errormessage: "" });
                 }).catch((err) => {
                     return next({ statusCode: 500, error: true, errormessage: "MongoDB error saving message into chat: " + err })

@@ -159,7 +159,7 @@ export class UserService {
   }
 
   createChat(username: string): Observable<any> {
-    return this.http.post(this.url + '/chats', { 'username': username }, this.utilities.create_options(this.get_token())).pipe(
+    return this.http.post(this.url + '/chats', { 'destinatario': username }, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
