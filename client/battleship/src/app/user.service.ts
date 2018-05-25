@@ -19,11 +19,11 @@ export class UserService {
 
   public is_logged: EventEmitter<any> = new EventEmitter();
 
-  private handleError(error: HttpErrorResponse){
-    if(error.error instanceof ErrorEvent){
+  private handleError(error: HttpErrorResponse) {
+    if (error.error instanceof ErrorEvent) {
       console.error("Errore generato: ", error.error.message);
     }
-    else{
+    else {
       console.error(
         `Backend returned code ${error.status}, ` +
         'body was: ' + JSON.stringify(error.error)
@@ -65,7 +65,7 @@ export class UserService {
   }
 
   //Modifica le informazioni dell'utente
-  updateInfo(username: string, name: string, surname: string, mail: string, password: string, isAdmin: boolean):Observable<any>{
+  updateInfo(username: string, name: string, surname: string, mail: string, password: string, isAdmin: boolean): Observable<any> {
     var user = {
       username: username,
       name: name,
@@ -76,7 +76,7 @@ export class UserService {
     }
 
     console.log("Updating at: " + this.url + '/users/' + this.get_username() + " user: " + JSON.stringify(user));
-    
+
     return this.http.put(this.url + '/users/' + this.get_username(), user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
@@ -85,17 +85,17 @@ export class UserService {
   }
 
   //Modifica lo status isAdmin dell'utente username
-  updateInfoAdmin(username: string, isAdmin: boolean):Observable<any>{
-    return this.http.put(this.url + '/users/' + username, {'username':username,'isAdmin': isAdmin},this.utilities.create_options(this.get_token())).pipe(
+  updateInfoAdmin(username: string, isAdmin: boolean): Observable<any> {
+    return this.http.put(this.url + '/users/' + username, { 'username': username, 'isAdmin': isAdmin }, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
     )
   }
 
-  deleteUser(username: string):Observable<any>{
+  deleteUser(username: string): Observable<any> {
     console.log("Deleting user " + username);
-    return this.http.delete(this.url + "/users/" + username,this.utilities.create_options(this.get_token())).pipe(
+    return this.http.delete(this.url + "/users/" + username, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -109,7 +109,7 @@ export class UserService {
     this.router.navigate(['/']);
   }
 
-  getInfoUser(user: string):Observable<any>{
+  getInfoUser(user: string): Observable<any> {
     return this.http.get(this.url + '/users/' + user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log("Getting info user: " + JSON.stringify(data));
@@ -117,16 +117,16 @@ export class UserService {
     )
   }
 
-  searchUser(keyword: string):Observable<any>{
-    if(keyword === undefined || keyword === ''){
+  searchUser(keyword: string): Observable<any> {
+    if (keyword === undefined || keyword === '') {
       return this.http.get(this.url + '/users', this.utilities.create_options(this.get_token())).pipe(
         tap((data) => {
           console.log("Searching user: " + JSON.stringify(data));
         })
       )
     }
-    else{
-      return this.http.get(this.url + '/users', this.utilities.create_options(this.get_token(),{'keysearched': keyword})).pipe(
+    else {
+      return this.http.get(this.url + '/users', this.utilities.create_options(this.get_token(), { 'keysearched': keyword })).pipe(
         tap((data) => {
           console.log("Searching user: " + JSON.stringify(data));
         })
@@ -134,15 +134,15 @@ export class UserService {
     }
   }
 
-  getScoreboard(params = {}):Observable<any>{
-    return this.http.get(this.url + '/scoreboard',this.utilities.create_options(this.get_token(),params)).pipe(
+  getScoreboard(params = {}): Observable<any> {
+    return this.http.get(this.url + '/scoreboard', this.utilities.create_options(this.get_token(), params)).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
     )
   }
 
-  getUserChats():Observable<any>{
+  getUserChats(): Observable<any> {
     return this.http.get(this.url + '/chats', this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
@@ -150,8 +150,25 @@ export class UserService {
     )
   }
 
-  getUserSingleChat(idChat: string):Observable<any>{
+  getUserSingleChat(idChat: string): Observable<any> {
     return this.http.get(this.url + '/chats/' + idChat, this.utilities.create_options(this.get_token())).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
+
+  createChat(username: string): Observable<any> {
+    return this.http.post(this.url + '/chats', { 'username': username }, this.utilities.create_options(this.get_token())).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
+
+  sendMessage(idChat: string, text: string) {
+    var date = Date.now()
+    return this.http.post(this.url + '/chats/' + idChat, {'sentAt': date, 'text': text }, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -176,7 +193,7 @@ export class UserService {
     return jwt_decode(this.token).username;
   }
 
-  get_userId(){
+  get_userId() {
     return jwt_decode(this.token).id;
   }
 

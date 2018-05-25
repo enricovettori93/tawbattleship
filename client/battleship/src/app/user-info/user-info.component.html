@@ -67,7 +67,7 @@
       <button *ngIf="otherUser && isAdmin" type="button" class="btn btn-danger" (click)="deleteThisUser()">Elimina l'utente</button>
     </div>
     <div class="row col py-2">
-      <button class="btn btn-primary">Invia un messaggio</button>
+      <button class="btn btn-primary" (click)="clickButtonSendMessageUserInfo()">Invia un messaggio</button>
     </div>
   </div>
 </ng-template>

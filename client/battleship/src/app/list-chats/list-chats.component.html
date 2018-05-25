@@ -6,5 +6,5 @@
   <p><a routerLink="/players">Cerca</a> un giocatore per iniziare una chat con lui</p>
 </div>
 <div *ngFor="let chat of chats">
-  <p><a routerLink='/chats/{{chat._id}}'>Clicca</a> per visualizzare la tra l'utente <a routerLink='/users/{{chat.user1ID.username}} '>{{chat.user1ID.username}}</a> e l'utente <a routerLink='/users/{{chat.user2ID.username}} '>{{chat.user2ID.username}}</a></p>
+  <p><a routerLink='/chats/{{chat._id}}'>Clicca</a> per visualizzare la tra l'utente <a routerLink='/user/{{chat.user1ID.username}}'>{{chat.user1ID.username}}</a> e l'utente <a routerLink='/user/{{chat.user2ID.username}}'>{{chat.user2ID.username}}</a></p>
 </div>

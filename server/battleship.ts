@@ -101,7 +101,7 @@ app.get("/login", passport.authenticate("basic", { session: false }), (req, res,
 app.route("/users/:username").get(auth, (req, res, next) => {
     console.log("Called endpoint user info with username: " + req.params.username);
     //Get /users/:username information
-    user.getModel().findOne({ username: req.params.username }, { salt: 0, digest: 0, _id: 0, __v: 0 }).then((user) => {
+    user.getModel().findOne({ username: req.params.username }, { salt: 0, digest: 0, __v: 0 }).then((user) => {
         return res.status(200).json(user);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "Error get user info: " + reason });
@@ -195,7 +195,7 @@ app.route("/users").post((req, res, next) => {
 app.route("/chats").get(auth, (req, res, next) => {
     //Get all chats of auth user
     console.log(("Getting " + req.user.username + " chats").blue);
-    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0 }).populate({ path: 'chatList', model: chat.getModel(), populate: [{ path: 'user1ID', model: user.getModel(), select: 'username -_id' }, { path: 'user2ID', model: user.getModel(), select: 'username -_id' }] }).then((documents) => {
+    user.getModel().find({ username: req.user.username }, { "chatList": 1, "_id": 0 }).populate({ path: 'chatList', model: chat.getModel(), populate: [{ path: 'user1ID', model: user.getModel(), select: 'username _id' }, { path: 'user2ID', model: user.getModel(), select: 'username _id' }] }).then((documents) => {
         return res.status(200).json(documents);
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
@@ -293,10 +293,10 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
     })
 }).post(auth, (req, res, next) => {
     let chatModel = chat.getModel();
-    chatModel.find({ "_id": req.body.idChat }).then((chat) => {
+    chatModel.find({ "_id": req.params.id }).then((chat) => {
         if (chat[0].user1ID == req.user.id || chat[0].user2ID == req.user.id) {
             var new_message = message.newMessage({
-                idChat: req.body.idChat,
+                idChat: req.params.id,
                 sentAt: req.body.sentAt,
                 text: req.body.text,
                 senderID: req.user.id

@@ -13,11 +13,14 @@ export class ChatComponent implements OnInit {
   private messages = [];
   private id_user;
   private error = undefined;
+  private id_chat;
+  private textMessage;
   constructor(private userService: UserService, private utilities: UtilitiesService, private router: Router, private socketService: SocketioService) { }
 
   ngOnInit() {
     this.utilities.check_auth(this.userService.get_token());
     this.id_user = this.userService.get_userId();
+    this.id_chat = this.router.url.split('/').pop();
     this.getMessagge();
     /*this.socketService.connect().subscribe((m) => {
       this.getMessagge();
@@ -27,15 +30,21 @@ export class ChatComponent implements OnInit {
   getMessagge(){
     this.userService.getUserSingleChat(this.router.url.split('/').pop()).subscribe((messages) => {
       this.messages = messages[0]['listMessage'];
-      console.log("MESSAGGI: " + JSON.stringify(this.messages));
+      //console.log("MESSAGGI: " + JSON.stringify(this.messages));
     })
   }
 
-  sendMessage(text: string){
-    if(text === ""){
+  sendMessage(){
+    if(this.textMessage === ""){
       this.error = "Messaggio vuoto"
     }
     else{
+      console.log(this.textMessage);
+      this.userService.sendMessage(this.id_chat,this.textMessage).subscribe((data) => {
+        this.textMessage = "";
+        console.log(JSON.stringify(data));
+        this.getMessagge();
+      })
       this.error = undefined;
     }
   }

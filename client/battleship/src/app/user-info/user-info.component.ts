@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UtilitiesService } from '../utilities.service';
 
 @Component({
@@ -12,10 +12,17 @@ export class UserInfoComponent implements OnInit {
 
   private errmessage = undefined;
   private okmessage = undefined;
+
+  //Variabile per controllare se l'utente corrente è admin
   private isAdmin = undefined;
+
+  //Variabili usate per la view di altri utenti
   private routingNotCurrentUser = undefined;
   private otherUser = undefined;
   private otherUserIsAdmin = undefined;
+  private otherUserId = undefined;
+
+  //Variabile per salvare il nome dell'utente visualizzato
   private username = undefined;
 
   constructor(private userService: UserService, private router: Router, private utilities: UtilitiesService) { }
@@ -29,7 +36,7 @@ export class UserInfoComponent implements OnInit {
       console.log("User: " + this.routingNotCurrentUser);
       this.getUser();
     }
-    else{
+    else {
       this.username = this.userService.get_username();
     }
     this.isAdmin = this.userService.is_admin();
@@ -88,11 +95,11 @@ export class UserInfoComponent implements OnInit {
     if (answer) {
       this.userService.deleteUser(userToDelete).subscribe((d) => {
         console.log("User " + userToDelete + " deleted");
-        if(userToDelete === this.userService.get_username()){
+        if (userToDelete === this.userService.get_username()) {
           this.userService.logout();
           this.router.navigate(['/']);
         }
-        else{
+        else {
           this.router.navigate(['/players']);
         }
       }), (err) => {
@@ -105,10 +112,47 @@ export class UserInfoComponent implements OnInit {
     this.userService.getInfoUser(this.routingNotCurrentUser).subscribe((d) => {
       console.log("Getting user " + JSON.stringify(d) + " OK");
       this.otherUser = d;
+      this.otherUserId = d._id;
       this.otherUserIsAdmin = this.otherUser.isAdmin;
       this.username = this.otherUser.username;
     }), (err) => {
       console.log("Error getting user " + err);
+    }
+  }
+
+  /**
+   * Click del pulsante 'Invia messaggio' sulla scheda dell'utente
+   * Inizialmente richiede al server la lista delle chat dell'utente loggato, se scorrendo la lista
+   * trova la chat tra i 2 utenti, si viene reindirizzati a quella chat, altrimenti ne
+   * viene creata una nuova
+   */
+  clickButtonSendMessageUserInfo() {
+    this.userService.getUserChats().subscribe((data) => {
+      let chats = data[0]['chatList'];
+      let find = false;
+      chats.forEach(element => {
+        //console.log(JSON.stringify(element) + " ID 1 USER CHAT " + element['user1ID']['_id'] + " ID 2 USER " + element['user2ID']['_id']);
+        //console.log("OTHER USER ID " + this.otherUserId + " CURRENT ID " + this.userService.get_userId());
+        if((element['user1ID']['_id'] == this.otherUserId &&  element['user2ID']['_id'] == this.userService.get_userId()) || (element['user2ID']['_id'] == this.otherUserId &&  element['user1ID']['_id'] == this.userService.get_userId())){
+          find = true;
+          this.router.navigate(['/chats/' + element['_id']]);
+        }
+      });
+      if(!find)
+        this.createChat();
+    }), (err) => {
+      console.log("Error getting active user chat " + err);
+    }
+  }
+
+  /**
+   * Crea la chat tra l'utente loggato e l'utente visualizzato nella scheda, infine si viene reindirizzati alla nuova chat
+   */
+  createChat() {
+    this.userService.createChat(this.username).subscribe((newChat) => {
+      this.router.navigate(['/chats/' + newChat._id]);
+    }), (err) => {
+      console.log("Error creating user chat " + err);
     }
   }
 }

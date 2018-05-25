@@ -12,7 +12,7 @@
       </div>
     </div>
     <div *ngIf="message.senderID != id_user">
-      <div class="alert alert-dark py-2 other">
+      <div class="alert alert-info py-2 other">
         <span>{{message.text}}</span>
         <br>
         <span style="font-size: .8em">{{message.sentAt}}</span>
@@ -37,14 +37,14 @@
   </div>
   <form>
     <div class="form-group">
-      <label for="exampleFormControlTextarea1"></label>
-      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" #textmessage maxlength="1000"></textarea>
+      <label for="messageTextArea"></label>
+      <textarea class="form-control" id="messageTextArea" rows="3" [(ngModel)] = "textMessage" maxlength="1000" name="message"></textarea>
     </div>
     <div *ngIf="error"class="alert alert-danger" role="alert">
         {{error}}
     </div>
     <div class="row col-sm-12">
-      <button type="button" class="btn btn-primary" (click)="sendMessage(textmessage.value)">Invia il messaggio</button>
+      <button type="button" class="btn btn-primary" (click)="sendMessage()">Invia il messaggio</button>
     </div>
   </form>
 </div>

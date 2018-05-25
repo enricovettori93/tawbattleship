@@ -35,7 +35,12 @@ export class UserLoginComponent implements OnInit {
         this.router.navigate(['/user']);
       }, (err) => {
         console.log("Login error: " + JSON.stringify(err.error.errormessage));
-        this.errmessage = err.error.errormessage;
+        if(JSON.stringify(err.error.errormessage) == undefined){
+          this.errmessage = "impossibile contattare il server"
+        }
+        else{
+          this.errmessage = err.error.errormessage;
+        }
       })
     }
   }
