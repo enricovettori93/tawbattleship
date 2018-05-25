@@ -6,29 +6,37 @@
 </div>
 <!-- Header-->
 <div *ngIf="scoreboard.length !== 0" class="row">
-  <div class="col-md-8">
+  <div class="col-8">
     <p>
       <b>Username</b>
     </p>
   </div>
-  <div class="col-md-4">
+  <div class="col-4">
     <p>
       <b> {{tipologiaScoreboard}} </b>
     </p>
   </div>
 </div>
 <!-- Content-->
-<div *ngFor = "let score of scoreboard">
+<div *ngFor="let score of scoreboard">
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-8">
       <p>
         <a routerLink='/user/{{score.username}}'>{{score.username}}</a>
       </p>
     </div>
-    <div class="col-md-4">
-      <p>
-        {{score.partiteVinte}}
-      </p>
+    <div class="col-4">
+      <div ng-switch="tipologiaScoreboard">
+        <div ng-switch-when="Partite vinte">
+          {{score.partiteVinte}}
+        </div>
+        <div ng-switch-when="Partite perse">
+          {{score.partitePerse}}
+        </div>
+        <div ng-switch-when="Totali">
+          {{score.total}}
+        </div>
+      </div>
     </div>
   </div>
 </div>

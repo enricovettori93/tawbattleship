@@ -333,17 +333,28 @@ app.get("/scoreboard", auth, (req, res, next) => {
             sort_type = "partiteVinte";
             break;
         }
-        case "total": {
-            sort_type = '$add: ["$partiteVinte", "$partitePerse"]';
-            break;
-        }
     }
     console.log(("Printing scoreboard with limit: " + req.query.limit + " and sort type: " + sort_type).magenta);
-    user.getModel().find({}, { username: 1, [sort_type]:1, _id: 0 }).sort({ [sort_type]: -1 }).limit(req.query.limit).then((documents) => {
-        return res.status(200).json(documents);
-    }).catch((error) => {
-        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
-    })
+    if(req.query.type === "total"){
+        user.getModel().aggregate([
+            {$match: {}},
+            {$project: {
+                'username': '$username',
+                'total': {$add: ['$partiteVinte', '$partitePerse']}
+            }}
+        ]).sort({'total': -1}).then((documents) => {
+            return res.status(200).json(documents);
+        }).catch((error) => {
+            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+        })
+    }
+    else{
+        user.getModel().find({}, { username: 1, [sort_type]:1, _id: 0 }).sort({ [sort_type]: -1 }).limit(req.query.limit).then((documents) => {
+            return res.status(200).json(documents);
+        }).catch((error) => {
+            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+        })
+    }
 })
 
 //---------------------- Match Endpoints ---------------------------

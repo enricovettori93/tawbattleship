@@ -18,7 +18,7 @@ export class ListChatsComponent implements OnInit {
 
   getUserChats(){
     this.userService.getUserChats().subscribe((data)=>{
-      console.log("Chat trovate" + JSON.stringify(data));
+      //console.log("Chat trovate" + JSON.stringify(data));
       this.chats = data[0]['chatList'];
     });
   }
