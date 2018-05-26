@@ -22,8 +22,9 @@ export class UserInfoComponent implements OnInit {
   private otherUserIsAdmin = undefined;
   private otherUserId = undefined;
 
-  //Variabile per salvare il nome dell'utente visualizzato
+  //Variabile per l'utente visualizzato
   private username = undefined;
+  private totalePartite = undefined;
 
   constructor(private userService: UserService, private router: Router, private utilities: UtilitiesService) { }
 
@@ -89,7 +90,6 @@ export class UserInfoComponent implements OnInit {
   }
 
   deleteThisUser() {
-    console.log("USERNAME " + this.username);
     var answer = confirm("Sei sicuro di cancellare l'utente?");
     var userToDelete = this.username;
     if (answer) {
@@ -115,6 +115,7 @@ export class UserInfoComponent implements OnInit {
       this.otherUserId = d._id;
       this.otherUserIsAdmin = this.otherUser.isAdmin;
       this.username = this.otherUser.username;
+      this.totalePartite = this.otherUser.partiteVinte + this.otherUser.partitePerse;
     }), (err) => {
       console.log("Error getting user " + err);
     }

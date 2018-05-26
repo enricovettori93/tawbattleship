@@ -175,6 +175,14 @@ export class UserService {
     )
   }
 
+  deleteChat(id: string){
+    return this.http.delete(this.url + '/chats/' + id, this.utilities.create_options(this.get_token())).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
+
   //----------------- JTW GETTER -----------------
 
   get_token() {

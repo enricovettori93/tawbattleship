@@ -245,7 +245,7 @@ app.route("/chats").get(auth, (req, res, next) => {
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error retrieving ids for new chat: " + error });
     });
-}).delete(auth, (req, res, next) => {
+})/*.delete(auth, (req, res, next) => {
     //Cancella la chat con parametro destinatario nel body
     console.log(("Deleting chat between " + req.user.username + " and " + req.body.destinatario).cyan);
 
@@ -279,7 +279,7 @@ app.route("/chats").get(auth, (req, res, next) => {
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
     });
-})
+})*/
 
 app.route("/chats/:id").get(auth, (req, res, next) => {
     chat.getModel().find({ "_id": req.params.id }).populate({ path: 'listMessage', model: message.getModel(), select: 'sentAt text senderID -_id idChat' }).then((chat) => {
@@ -321,6 +321,29 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
     }).catch((err) => {
         return next({ statusCode: 500, error: true, errormessage: "MongoBD error: " + err });
     })
+}).delete(auth, (req, res, next) => {
+    chat.getModel().findOne({'_id':req.params.id},{}).then((retChat) => {
+        //var filter = { $or: [{ user1ID: chat.user1ID, user2ID: chat.user2ID }, { user1ID: chat.user2ID, user2ID: chat.user1ID }] };
+        if(req.user.id == retChat.user1ID || req.user.id == retChat.user2ID){
+            //L'utente che ha fatto richiesta di cancellare è uno dei 2 partecipanti
+            var query_delete_chat = chat.getModel().deleteOne({'_id': req.params.id});
+            var query_delete_chat_from_user = user.getModel().updateMany({},{$pull: {chatList: req.params.id}});
+            var promise_query_delete_chat = query_delete_chat.exec();
+            var promise_query_delete_chat_from_user = query_delete_chat_from_user.exec();
+            Promise.all([promise_query_delete_chat, promise_query_delete_chat_from_user]).then(values => {
+                console.log("Chat " + req.params.id + " deleted");
+                return res.status(200).json({ error: false, errormessage: "" });
+            }).catch((error) => {
+                return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+            })
+        }
+        else{
+            //L'utente è un intruso
+            return next({statusCode: 400, error: true, errormessage: "Utente non autorizzato a cancellare la chat"});
+        }
+    }).catch((error) => {
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+    });
 })
 
 //---------------------- Scoreboard Endpoints ----------------------

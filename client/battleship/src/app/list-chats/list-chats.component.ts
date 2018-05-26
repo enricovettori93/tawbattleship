@@ -22,4 +22,14 @@ export class ListChatsComponent implements OnInit {
       this.chats = data[0]['chatList'];
     });
   }
+
+  deleteChat(id: string){
+    var answer = confirm('Sei sicuro di voler cancellare questa chat?');
+    if (answer){
+      this.userService.deleteChat(id).subscribe((data) => {
+        console.log(JSON.stringify(data));
+        this.getUserChats();
+      })
+    }
+  }
 }
