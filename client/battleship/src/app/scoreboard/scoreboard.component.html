@@ -22,7 +22,8 @@
   <div class="row">
     <div class="col-8">
       <p>
-        <a routerLink='/user/{{score.username}}'>{{score.username}}</a>
+        <a *ngIf="score.username != userService.get_username()" routerLink='/user/{{score.username}}'>{{score.username}}</a>
+        <a *ngIf="score.username == userService.get_username()" routerLink='/user'>{{score.username}}</a>
       </p>
     </div>
     <div class="col-4">

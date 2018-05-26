@@ -23,17 +23,17 @@
       <input type="password" #passwordtxt required placeholder="password" id="inputpassword" class="form-control" name="password" >
     </div>
   </div>
-  <div class="row col-sm-12">
+  <!--<div class="row col-sm-12">
     <label>
       <input type="checkbox" #checklogin value="remember-me"> Ricordami
     </label>
-  </div>
+  </div>-->
 </form>
 <div *ngIf="errmessage" class="alert alert-danger" role="alert">
   Errore di login: {{errmessage}}
 </div>
 <div class="row col-sm-12 py-2">
-  <button type="button" class="btn btn-primary" (click)="login(usertxt.value, passwordtxt.value, checklogin.checked)">Login</button>
+  <button type="button" class="btn btn-primary" (click)="login(usertxt.value, passwordtxt.value)">Login</button>
 </div>
 <div class="row col-sm-12 py-2">
   <button type="button" class="btn btn-primary" routerLink="/signup">Registrati</button>

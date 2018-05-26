@@ -31,7 +31,7 @@ export class UserService {
     }
   }
 
-  login(user: string, password: string, remember: boolean): Observable<any> {
+  login(user: string, password: string): Observable<any> {
     const optionsLogin = {
       headers: new HttpHeaders({
         authorization: 'Basic ' + btoa(user + ':' + password),
@@ -45,15 +45,17 @@ export class UserService {
         console.log(JSON.stringify(data));
         this.is_logged.emit(true);
         this.token = data.token;
-        if (remember) {
-          localStorage.setItem('battleship_token', this.token);
-        }
+        localStorage.setItem('battleship_token', this.token);
       }));
   }
 
   renew(): Observable<any> {
-    //Da fare
-    return of({});
+    return this.http.get(this.url + '/renew',this.utilities.create_options(this.get_token())).pipe(
+      tap((data) => {
+        this.token = data.token;
+        localStorage.setItem('battleship_token', this.token);
+      })
+    )
   }
 
   register(user): Observable<any> {

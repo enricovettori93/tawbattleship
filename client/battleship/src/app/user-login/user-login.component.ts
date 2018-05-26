@@ -30,7 +30,7 @@ export class UserLoginComponent implements OnInit {
     }
     else {
       console.log(username + " try to login");
-      this.userService.login(username, password, remember).subscribe((d) => {
+      this.userService.login(username, password).subscribe((d) => {
         this.errmessage = undefined;
         this.router.navigate(['/user']);
       }, (err) => {

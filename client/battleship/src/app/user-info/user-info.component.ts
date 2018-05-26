@@ -19,8 +19,6 @@ export class UserInfoComponent implements OnInit {
   //Variabili usate per la view di altri utenti
   private routingNotCurrentUser = undefined;
   private otherUser = undefined;
-  private otherUserIsAdmin = undefined;
-  private otherUserId = undefined;
 
   //Variabile per l'utente visualizzato
   private username = undefined;
@@ -55,9 +53,17 @@ export class UserInfoComponent implements OnInit {
       }
       else {
         this.userService.updateInfo(username, name, surname, mail, password1, this.isAdmin).subscribe((d) => {
-          console.log("User info " + username + " update");
-          this.errmessage = undefined;
-          this.okmessage = "Account aggiornato con successo."
+          this.userService.renew().subscribe((returnData) => {
+            console.log(JSON.stringify(returnData));
+            console.log("User info " + username + " update");
+            this.username = username;
+            this.errmessage = undefined;
+            this.okmessage = "Account aggiornato con successo."
+          }),(err) => {
+            console.log("User info " + username + " update error: " + err);
+            this.errmessage = err.error.errormessage || err.error.message;
+            this.okmessage = undefined;
+          }
         }), (err) => {
           console.log("User info " + username + " update error: " + err);
           this.errmessage = err.error.errormessage || err.error.message;
@@ -67,7 +73,7 @@ export class UserInfoComponent implements OnInit {
     }
   }
 
-  updateInfoAdmin(username: string, isAdmin: boolean) {
+  updateInfoAdminOtherUser(username: string, isAdmin: boolean) {
     this.userService.updateInfoAdmin(username, isAdmin).subscribe((d) => {
       console.log("User info " + username + " update in status admin: " + isAdmin);
       this.errmessage = undefined;
@@ -80,8 +86,8 @@ export class UserInfoComponent implements OnInit {
   }
 
   changeStatusAdminOtherAccount() {
-    console.log("Stato vecchio: " + this.otherUserIsAdmin + " stato nuovo " + !this.otherUserIsAdmin);
-    this.otherUserIsAdmin = !this.otherUserIsAdmin;
+    console.log("Stato vecchio: " + this.otherUser.isAdmin + " stato nuovo " + !this.otherUser.isAdmin);
+    this.otherUser.isAdmin = !this.otherUser.isAdmin;
   }
 
   changeStatusAdminThisAccount() {
@@ -112,8 +118,6 @@ export class UserInfoComponent implements OnInit {
     this.userService.getInfoUser(this.routingNotCurrentUser).subscribe((d) => {
       console.log("Getting user " + JSON.stringify(d) + " OK");
       this.otherUser = d;
-      this.otherUserId = d._id;
-      this.otherUserIsAdmin = this.otherUser.isAdmin;
       this.username = this.otherUser.username;
       this.totalePartite = this.otherUser.partiteVinte + this.otherUser.partitePerse;
     }), (err) => {
@@ -133,8 +137,8 @@ export class UserInfoComponent implements OnInit {
       let find = false;
       chats.forEach(element => {
         //console.log(JSON.stringify(element) + " ID 1 USER CHAT " + element['user1ID']['_id'] + " ID 2 USER " + element['user2ID']['_id']);
-        //console.log("OTHER USER ID " + this.otherUserId + " CURRENT ID " + this.userService.get_userId());
-        if((element['user1ID']['_id'] == this.otherUserId &&  element['user2ID']['_id'] == this.userService.get_userId()) || (element['user2ID']['_id'] == this.otherUserId &&  element['user1ID']['_id'] == this.userService.get_userId())){
+        //console.log("OTHER USER ID " + this.otherUser._id + " CURRENT ID " + this.userService.get_userId());
+        if((element['user1ID']['_id'] == this.otherUser._id &&  element['user2ID']['_id'] == this.userService.get_userId()) || (element['user2ID']['_id'] == this.otherUser._id &&  element['user1ID']['_id'] == this.userService.get_userId())){
           find = true;
           this.router.navigate(['/chats/' + element['_id']]);
         }

@@ -76,11 +76,25 @@ passport.use(new passportHTTP.BasicStrategy(
 //Renew Endpoint
 app.get("/renew", auth, (req, res, next) => {
     console.log((req.user.username + " renew JWT").rainbow);
-    var tokenrenew = req.user;
+
+    /*var tokenrenew = req.user;
     delete tokenrenew.iat;
     delete tokenrenew.exp;
     var token_renew = jsonwebtoken.sign(tokenrenew, process.env.JWT_SECRET, { expiresIn: "2h" });
-    return res.status(200).json({ error: false, errormessage: "", token: tokenrenew })
+    return res.status(200).json({ error: false, errormessage: "", token: tokenrenew });*/
+
+    user.getModel().findOne({'_id':req.user.id}).then((user) => {
+        var tokendata = {
+            username: user.username,
+            isAdmin: user.isAdmin,
+            mail: user.mail,
+            id: user.id,
+            name: user.name,
+            surname: user.surname
+        };
+        var token_renew = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
+        return res.status(200).json({ error: false, errormessage: "", token: token_renew });
+    })
 })
 
 //Login Endpoint
@@ -230,7 +244,6 @@ app.route("/chats").get(auth, (req, res, next) => {
             var promise2 = user.getModel().update({ _id: id_dest }, { $push: { chatList: data._id } });
             Promise.all([promise1, promise2]).then(function () {
                 console.log(("Chat addedd succesfully").green);
-                //ios.emit('broadcast', new_chat);
                 return res.status(200).json({ error: false, errormessage: "", id: new_chat._id });
             }).catch(function (error) {
                 console.log("MongoDB error saving chats: " + error);
@@ -323,7 +336,6 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
     })
 }).delete(auth, (req, res, next) => {
     chat.getModel().findOne({'_id':req.params.id},{}).then((retChat) => {
-        //var filter = { $or: [{ user1ID: chat.user1ID, user2ID: chat.user2ID }, { user1ID: chat.user2ID, user2ID: chat.user1ID }] };
         if(req.user.id == retChat.user1ID || req.user.id == retChat.user2ID){
             //L'utente che ha fatto richiesta di cancellare è uno dei 2 partecipanti
             var query_delete_chat = chat.getModel().deleteOne({'_id': req.params.id});
@@ -350,14 +362,14 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
 app.get("/scoreboard", auth, (req, res, next) => {
     req.query.limit = parseInt(req.query.limit || "10") || 10;
     req.query.type = (req.query.type || "undefinied") || "undefinied";
-    let sort_type = req.query.type;
-    switch (sort_type) {
+    let type = req.query.type;
+    switch (type) {
         case "undefinied": {
-            sort_type = "partiteVinte";
+            type = "partiteVinte";
             break;
         }
     }
-    console.log(("Printing scoreboard with limit: " + req.query.limit + " and sort type: " + sort_type).magenta);
+    console.log(("Printing scoreboard with limit: " + req.query.limit + " and type: " + type).magenta);
     if(req.query.type === "total"){
         user.getModel().aggregate([
             {$match: {}},
@@ -372,7 +384,7 @@ app.get("/scoreboard", auth, (req, res, next) => {
         })
     }
     else{
-        user.getModel().find({}, { username: 1, [sort_type]:1, _id: 0 }).sort({ [sort_type]: -1 }).limit(req.query.limit).then((documents) => {
+        user.getModel().find({}, { username: 1, [type]:1, _id: 0 }).sort({ [type]: -1 }).limit(req.query.limit).then((documents) => {
             return res.status(200).json(documents);
         }).catch((error) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });

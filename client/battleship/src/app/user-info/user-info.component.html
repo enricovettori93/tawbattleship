@@ -85,7 +85,7 @@
       {{okmessage}}
     </div>
     <div class="row col py-2">
-      <button *ngIf="otherUser && isAdmin" class="btn btn-primary" (click)="updateInfoAdmin(otherUser.username, otherUserIsAdmin)">Aggiorna le informazioni</button>
+      <button *ngIf="otherUser && isAdmin" class="btn btn-primary" (click)="updateInfoAdminOtherUser(otherUser.username, otherUser.isAdmin)">Aggiorna le informazioni</button>
     </div>
     <div class="row col py-2">
       <button *ngIf="otherUser && isAdmin" type="button" class="btn btn-danger" (click)="deleteThisUser()">Elimina l'utente</button>
@@ -148,7 +148,7 @@
         <input type="password" #newpassword2 required="true" placeholder="Ripeti nuova password" class="form-control">
       </div>
     </div>
-    <div *ngIf="isAdmin" style="padding-left:0" class="col-12 py-2">
+    <div *ngIf="userService.is_admin()" style="padding-left:0" class="col-12 py-2">
       <input type="checkbox" [checked]="isAdmin" #changeThisAdmin (click)="changeStatusAdminThisAccount()"> Amministratore
     </div>
     <div class="row py-2">
