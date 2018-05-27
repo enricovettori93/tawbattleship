@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { UtilitiesService } from '../utilities.service';
+import { SocketioService } from '../socketio.service';
+
+declare var $: any;
 
 @Component({
   selector: 'app-list-chats',
@@ -9,11 +12,18 @@ import { UtilitiesService } from '../utilities.service';
 })
 export class ListChatsComponent implements OnInit {
   private chats = [];
-  constructor(private userService: UserService, private utilities: UtilitiesService) { }
+  constructor(private userService: UserService, private utilities: UtilitiesService, private socket: SocketioService) { }
 
   ngOnInit() {
     this.utilities.check_auth(this.userService.get_token());
     this.getUserChats();
+    this.socket.connect(this.userService.get_userId()).subscribe((m) => {
+      $("#myModal").modal('show');
+      $('.modal-backdrop').removeClass("modal-backdrop");
+      setTimeout(function(){
+        $('#myModal').modal('hide')
+      }, 2000);
+    })
   }
 
   getUserChats(){

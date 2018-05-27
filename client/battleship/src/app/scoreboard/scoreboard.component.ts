@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { UtilitiesService } from '../utilities.service';
+import { SocketioService } from '../socketio.service';
+
+declare var $: any;
 
 @Component({
   selector: 'app-scoreboard',
@@ -10,12 +13,19 @@ import { UtilitiesService } from '../utilities.service';
 export class ScoreboardComponent implements OnInit {
   private scoreboard = [];
   private tipologiaScoreboard;
-  constructor(private userService: UserService, private utilities: UtilitiesService) { }
+  constructor(private userService: UserService, private utilities: UtilitiesService, private socket: SocketioService) { }
 
   ngOnInit() {
     this.tipologiaScoreboard = 'Partite vinte';
     this.utilities.check_auth(this.userService.get_token());
     this.getScoreboard();
+    this.socket.connect(this.userService.get_userId()).subscribe((m) => {
+      $("#myModal").modal('show');
+      $('.modal-backdrop').removeClass("modal-backdrop");
+      setTimeout(function(){
+        $('#myModal').modal('hide')
+      }, 2000);
+    })
   }
 
   /**

@@ -29,6 +29,10 @@ export class SocketioService {
         console.log('Error socket received: ' + JSON.stringify(err));
         observer.error(err);
       });
+      this.socket.on('new_message_for ' + id, (m) => {
+        console.log('Received messa message: ' + JSON.stringify(m));
+        observer.next(m);
+      })
       return {
         unsubscribe() {
           this.socket.disconnect();

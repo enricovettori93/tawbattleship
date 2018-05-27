@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { Router, RouterLink } from '@angular/router';
 import { UtilitiesService } from '../utilities.service';
+import { SocketioService } from '../socketio.service';
+
+declare var $: any;
 
 @Component({
   selector: 'app-user-info',
@@ -24,7 +27,7 @@ export class UserInfoComponent implements OnInit {
   private username = undefined;
   private totalePartite = undefined;
 
-  constructor(private userService: UserService, private router: Router, private utilities: UtilitiesService) { }
+  constructor(private userService: UserService, private router: Router, private utilities: UtilitiesService, private socket: SocketioService) { }
 
   ngOnInit() {
     //console.log(this.userService.get_token());
@@ -39,6 +42,13 @@ export class UserInfoComponent implements OnInit {
       this.username = this.userService.get_username();
     }
     this.isAdmin = this.userService.is_admin();
+    this.socket.connect(this.userService.get_userId()).subscribe((m) => {
+      $("#myModal").modal('show');
+      $('.modal-backdrop').removeClass("modal-backdrop");
+      setTimeout(function(){
+        $('#myModal').modal('hide')
+      }, 2000);
+    })
   }
 
   updateInfo(username: string, name: string, surname: string, mail: string, password1: string, password2: string) {

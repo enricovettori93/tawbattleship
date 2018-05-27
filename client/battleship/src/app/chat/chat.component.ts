@@ -30,6 +30,7 @@ export class ChatComponent implements OnInit {
   getMessagge(){
     this.userService.getUserSingleChat(this.router.url.split('/').pop()).subscribe((messages) => {
       this.messages = messages[0]['listMessage'];
+      window.scrollTo(0,document.body.scrollHeight);
       //console.log("MESSAGGI: " + JSON.stringify(this.messages));
     })
   }

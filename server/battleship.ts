@@ -320,6 +320,15 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
                      * Emette il segnale nel socket riguardante la specifica chat passata tramite parametro
                      */
                     ios.emit('broadcast ' + req.params.id,data);
+                    /**
+                     * Emette un segnale nel socket del ricevente per segnalare una nuova chat
+                     */
+                    if(new_message.senderID == chat[0].user1ID){
+                        ios.emit('new_message_for ' + chat[0].user1ID, new_message);
+                    }
+                    else{
+                        ios.emit('new_message_for ' + chat[0].user2ID, new_message);
+                    }
                     return res.status(200).json({ error: false, errormessage: "" });
                 }).catch((err) => {
                     return next({ statusCode: 500, error: true, errormessage: "MongoDB error saving message into chat: " + err })
