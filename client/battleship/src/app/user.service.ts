@@ -185,6 +185,14 @@ export class UserService {
     )
   }
 
+  getMatches(user:string){
+    return this.http.get(this.url + "/users/:user/matches", this.utilities.create_options(this.get_token())).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
+
   //----------------- JTW GETTER -----------------
 
   get_token() {

@@ -14,11 +14,14 @@ import { PlayersComponent } from './players/players.component';
 import { ListChatsComponent } from './list-chats/list-chats.component';
 import { MatchComponent } from './match/match.component';
 import { ChatComponent } from './chat/chat.component';
+import { NotfoundComponent } from './notfound/notfound.component';
+import { ListMatchesComponent } from './list-matches/list-matches.component';
 
 //Services
 import { UserService } from './user.service';
 import { UtilitiesService } from './utilities.service';
 import { SocketioService } from './socketio.service';
+import { MatchService } from './match.service';
 
 
 @NgModule({
@@ -32,7 +35,9 @@ import { SocketioService } from './socketio.service';
     PlayersComponent,
     ListChatsComponent,
     MatchComponent,
-    ChatComponent
+    ChatComponent,
+    NotfoundComponent,
+    ListMatchesComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +48,8 @@ import { SocketioService } from './socketio.service';
   providers: [
     {provide: UserService, useClass: UserService},
     {provide: UtilitiesService, useClass: UtilitiesService},
-    {provide: SocketioService, useClass: SocketioService}
+    {provide: SocketioService, useClass: SocketioService},
+    {provide: MatchService, useClass: MatchService}
   ],
   bootstrap: [AppComponent]
 })

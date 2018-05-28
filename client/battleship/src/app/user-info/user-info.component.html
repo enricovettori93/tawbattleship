@@ -75,7 +75,7 @@
     </div>
     <div class="row py-2">
       <div class="col-12">
-        <a routerLink="/match">Partite giocate</a>
+        <a *ngIf="otherUser" routerLink="/user/{{otherUser.username}}/matches">Partite giocate</a>
       </div>
     </div>
     <div *ngIf="errmessage" class="alert alert-danger" role="alert">
@@ -153,7 +153,7 @@
     </div>
     <div class="row py-2">
       <div class="col-12">
-        <a routerLink="/match">Partite giocate</a>
+        <a routerLink="/user/{{this.userService.get_username()}}/matches">Partite giocate</a>
       </div>
     </div>
     <div *ngIf="errmessage" class="alert alert-danger" role="alert">
