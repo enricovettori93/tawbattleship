@@ -128,8 +128,10 @@ export class UserInfoComponent implements OnInit {
     this.userService.getInfoUser(this.routingNotCurrentUser).subscribe((d) => {
       console.log("Getting user " + JSON.stringify(d) + " OK");
       this.otherUser = d;
-      this.username = this.otherUser.username;
-      this.totalePartite = this.otherUser.partiteVinte + this.otherUser.partitePerse;
+      if(this.otherUser != null){
+        this.username = this.otherUser.username;
+        this.totalePartite = this.otherUser.partiteVinte + this.otherUser.partitePerse;
+      }
     }), (err) => {
       console.log("Error getting user " + err);
     }
