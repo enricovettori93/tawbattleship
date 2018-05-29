@@ -30,7 +30,7 @@ export class UserService {
     }
   }
 
-  public login(user: string, password: string, remember: boolean): Observable<any> {
+  public login(user: string, password: string, remember?: boolean): Observable<any> {
     const optionsLogin = {
       headers: new HttpHeaders({
         authorization: "Basic " + btoa(user + ":" + password),
@@ -44,17 +44,17 @@ export class UserService {
         console.log(JSON.stringify(data));
         this.is_logged.emit(true);
         this.token = data.token;
-        localStorage.setItem('battleship_token', this.token);
+        localStorage.setItem("battleship_token", this.token);
       }));
   }
 
   renew(): Observable<any> {
-    return this.http.get(this.url + '/renew',this.utilities.create_options(this.get_token())).pipe(
+    return this.http.get(this.url + "/renew", this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         this.token = data.token;
-        localStorage.setItem('battleship_token', this.token);
+        localStorage.setItem("battleship_token", this.token);
       })
-    )
+    );
   }
 
   register(user): Observable<any> {
@@ -160,7 +160,7 @@ export class UserService {
   }
 
   createChat(username: string): Observable<any> {
-    return this.http.post(this.url + '/chats', { 'destinatario': username }, this.utilities.create_options(this.get_token())).pipe(
+    return this.http.post(this.url + "/chats", { "destinatario": username }, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
@@ -177,23 +177,23 @@ export class UserService {
       );
     }
 
-  deleteChat(id: string){
-    return this.http.delete(this.url + '/chats/' + id, this.utilities.create_options(this.get_token())).pipe(
+  deleteChat(id: string) {
+    return this.http.delete(this.url + "/chats/" + id, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
-    )
+    );
   }
 
-  getMatches(user:string){
+  getMatches(user: string) {
     return this.http.get(this.url + "/users/:user/matches", this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
-    )
+    );
   }
 
-  //----------------- JTW GETTER -----------------
+  // ----------------- JTW GETTER -----------------
 
   get_token() {
     return this.token;

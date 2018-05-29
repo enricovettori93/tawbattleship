@@ -95,8 +95,8 @@ app.get("/renew", auth, (req, res, next) => {
         };
         var token_renew = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
         return res.status(200).json({ error: false, errormessage: "", token: token_renew });
-    })
-})
+    });
+});
 
 // Login Endpoint
 // TODO sanitize the user request 

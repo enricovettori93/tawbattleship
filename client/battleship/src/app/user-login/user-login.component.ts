@@ -40,7 +40,7 @@ export class UserLoginComponent implements OnInit {
         console.log("Login error: " + JSON.stringify(err.error.errormessage));
         if (JSON.stringify(err.error.errormessage) === undefined) {
           this.errmessage = "impossibile contattare il server";
-        } else{
+        } else {
           this.errmessage = err.error.errormessage;
         }
       });
