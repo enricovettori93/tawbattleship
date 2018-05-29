@@ -20,4 +20,12 @@ export class MatchService {
       })
     )
   }
+
+  getMatches(user:string):Observable<any>{
+    return this.http.get(this.userService.url + "/users/:user/matches", this.utilities.create_options(this.userService.get_token())).pipe(
+      tap((data) => {
+        console.log(JSON.stringify(data));
+      })
+    )
+  }
 }

@@ -1,12 +1,23 @@
-<h1>Lista dei match</h1>
-<div *ngIf="matches.length === 0">
-  <h2>Nessun match pronto per essere giocato!</h2>
-</div>
-<div *ngFor="let match of matches">
-  <p><b>Data di creazione</b> {{match.timestamp}}</p>
-  <p *ngIf="match.owner != null && match.owner.username != userService.get_username()"><b>Entra nella partita di: </b><a routerLink="/user/{{match.owner.username}}">{{match.owner.username}}</a></p>
-  <p *ngIf="match.owner != null && match.owner.username == userService.get_username()"><b>Entra nella partita di: </b><a routerLink="/user">{{match.owner.username}}</a></p>
-  <button class="btn btn-primary" routerLink="/match/{{match._id}}">Entra nella partita!</button>
-  <hr>
-</div>
-<button class="btn btn-primary" routerLink="/match/new">Crea una nuova partita</button>
+<div *ngIf="userRoutingMatch; then matchUser; else matchWaiting"></div>
+
+<ng-template #matchUser>
+  <h1>Lista dei match</h1>
+  <div *ngIf="matches.length === 0">
+    <h2>Il giocatore non ha giocato alcun match!</h2>
+  </div>
+</ng-template>
+
+<ng-template #matchWaiting>
+  <h1>Lista dei match</h1>
+  <div *ngIf="matches.length === 0">
+    <h2>Nessun match pronto per essere giocato!</h2>
+  </div>
+  <div *ngFor="let match of matches">
+    <p><b>Data di creazione</b> {{match.timestamp}}</p>
+    <p *ngIf="match.owner != null && match.owner.username != userService.get_username()"><b>Entra nella partita di: </b><a routerLink="/user/{{match.owner.username}}">{{match.owner.username}}</a></p>
+    <p *ngIf="match.owner != null && match.owner.username == userService.get_username()"><b>Entra nella partita di: </b><a routerLink="/user">{{match.owner.username}}</a></p>
+    <button class="btn btn-primary" routerLink="/match/{{match._id}}">Entra nella partita!</button>
+    <hr>
+  </div>
+  <button class="btn btn-primary" routerLink="/match/new">Crea una nuova partita</button>
+</ng-template>

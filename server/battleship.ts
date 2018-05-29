@@ -168,8 +168,12 @@ app.route("/users/:username").get(auth, (req, res, next) => {
 })
 
 app.get("/users/:username/matches", auth, (req, res, next) => {
-    match.getModel().find({"owner" : req.user.id}).then((matches) => {
-        return res.status(200).json(matches);
+    user.getModel().findOne({username:req.params.username}).then((data) => {
+        match.getModel().find({owner : data._id}).then((matches) => {
+            return res.status(200).json(matches);
+        }).catch((err) => {
+            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err})
+        })
     }).catch((err) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err})
     })
