@@ -8,6 +8,9 @@ import { UtilitiesService } from '../utilities.service';
   styleUrls: ['./match.component.css']
 })
 export class MatchComponent implements OnInit {
+  private userName: string;
+  private userMatches: string;
+  private matchService: MatchService;
 
   constructor(private userService: UserService, private utilities: UtilitiesService) { }
 

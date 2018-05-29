@@ -75,6 +75,7 @@ passport.use(new passportHTTP.BasicStrategy(
 
 //Renew Endpoint
 app.get("/renew", auth, (req, res, next) => {
+    if(req.user.remindMe){
     console.log((req.user.username + " renew JWT").rainbow);
 
     /*var tokenrenew = req.user;
@@ -97,15 +98,18 @@ app.get("/renew", auth, (req, res, next) => {
     })
 })
 
-//Login Endpoint
+// Login Endpoint
+// TODO sanitize the user request 
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
+    console.log(req);
     var tokendata = {
         username: req.user.username,
         isAdmin: req.user.isAdmin,
         mail: req.user.mail,
         id: req.user.id,
         name: req.user.name,
-        surname: req.user.surname
+        surname: req.user.surname,
+        //remindMe: req.user.remindMe
     };
     var tokensigned = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
     return res.status(200).json({ error: false, errormessage: "", token: tokensigned });

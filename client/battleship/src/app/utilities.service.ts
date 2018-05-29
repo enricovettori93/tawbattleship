@@ -7,6 +7,9 @@ import { Router } from '@angular/router';
 })
 export class UtilitiesService {
 
+  public static getPublicUrl() {
+    return 'http://localhost:8080';
+  }
   constructor(private router: Router) { }
 
   public create_options(token, params = {}) {
@@ -26,4 +29,5 @@ export class UtilitiesService {
       this.router.navigate(['/']);
     }
   }
+
 }
