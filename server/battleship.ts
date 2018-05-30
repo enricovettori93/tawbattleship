@@ -83,7 +83,7 @@ app.get("/renew", auth, (req, res, next) => {
     var token_renew = jsonwebtoken.sign(tokenrenew, process.env.JWT_SECRET, { expiresIn: "2h" });
     return res.status(200).json({ error: false, errormessage: "", token: tokenrenew });*/
 
-    user.getModel().findOne({'_id':req.user.id}).then((user) => {
+    user.getModel().findOne({ '_id': req.user.id }).then((user) => {
         var tokendata = {
             username: user.username,
             isAdmin: user.isAdmin,
@@ -168,14 +168,14 @@ app.route("/users/:username").get(auth, (req, res, next) => {
 })
 
 app.get("/users/:username/matches", auth, (req, res, next) => {
-    user.getModel().findOne({username:req.params.username}).then((data) => {
-        match.getModel().find({owner : data._id}).then((matches) => {
+    user.getModel().findOne({ username: req.params.username }).then((data) => {
+        match.getModel().find({ owner: data._id }).then((matches) => {
             return res.status(200).json(matches);
         }).catch((err) => {
-            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err})
+            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err })
         })
     }).catch((err) => {
-        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err})
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err })
     })
 })
 
@@ -259,7 +259,7 @@ app.route("/chats").get(auth, (req, res, next) => {
                 return res.status(200).json({ error: false, errormessage: "", id: new_chat._id });
             }).catch(function (error) {
                 console.log("MongoDB error saving chats: " + error);
-                ios.emit('error','MongoDB error:'  + error);
+                ios.emit('error', 'MongoDB error:' + error);
                 return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
             });
         }).catch((error) => {
@@ -270,41 +270,7 @@ app.route("/chats").get(auth, (req, res, next) => {
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error retrieving ids for new chat: " + error });
     });
-})/*.delete(auth, (req, res, next) => {
-    //Cancella la chat con parametro destinatario nel body
-    console.log(("Deleting chat between " + req.user.username + " and " + req.body.destinatario).cyan);
-
-    var query_id_dest = user.getModel().findOne({ username: req.body.destinatario }, { _id: 1 });
-    var query_id_sender = user.getModel().findOne({ username: req.user.username }, { _id: 1 });
-
-    var promise_query_id_dest = query_id_dest.exec();
-    var promise_query_id_sender = query_id_sender.exec();
-
-    Promise.all([promise_query_id_sender, promise_query_id_dest]).then(values => {
-        console.log("1° promise ok, uid1: " + values[0]._id + " uid2: " + values[1]._id)
-        var filter = { $or: [{ user1ID: values[0]._id, user2ID: values[1]._id }, { user1ID: values[1]._id, user2ID: values[0]._id }] };
-        var query_get_id_chat = chat.getModel().findOne(filter);//.then((test)=> {console.log(JSON.stringify(test))});
-        var query_delete_chat = chat.getModel().deleteOne(filter);
-
-        var promise_query_get_id_chat = query_get_id_chat.exec();
-        var promise_query_delete_chat = query_delete_chat.exec();
-
-        Promise.all([promise_query_get_id_chat, promise_query_delete_chat]).then(values2 => {
-            console.log("2° promise ok, chatid: " + values2[0]._id + " delete status: " + JSON.stringify(values2[1]))
-            user.getModel().updateMany({}, { $pull: { chatList: values2[0]._id } }).then((data) => {
-                console.log("Chat " + values2[0]._id + " deleted");
-                return res.status(200).json({ error: false, errormessage: "" });
-            }).catch((err) => {
-                console.log("Error deleting chat between user");
-                return next({ statusCode: 404, error: true, errormessage: "MongoBD error " + err });
-            });
-        }).catch((error) => {
-            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
-        })
-    }).catch((error) => {
-        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
-    });
-})*/
+})
 
 app.route("/chats/:id").get(auth, (req, res, next) => {
     chat.getModel().find({ "_id": req.params.id }).populate({ path: 'listMessage', model: message.getModel(), select: 'sentAt text senderID -_id idChat' }).then((chat) => {
@@ -331,14 +297,14 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
                     /**
                      * Emette il segnale nel socket riguardante la specifica chat passata tramite parametro
                      */
-                    ios.emit('broadcast ' + req.params.id,data);
+                    ios.emit('broadcast ' + req.params.id, data);
                     /**
                      * Emette un segnale nel socket del ricevente per segnalare una nuova chat
                      */
-                    if(new_message.senderID == chat[0].user1ID){
+                    if (new_message.senderID == chat[0].user1ID) {
                         ios.emit('new_message_for ' + chat[0].user1ID, new_message);
                     }
-                    else{
+                    else {
                         ios.emit('new_message_for ' + chat[0].user2ID, new_message);
                     }
                     return res.status(200).json({ error: false, errormessage: "" });
@@ -356,11 +322,11 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
         return next({ statusCode: 500, error: true, errormessage: "MongoBD error: " + err });
     })
 }).delete(auth, (req, res, next) => {
-    chat.getModel().findOne({'_id':req.params.id},{}).then((retChat) => {
-        if(req.user.id == retChat.user1ID || req.user.id == retChat.user2ID){
+    chat.getModel().findOne({ '_id': req.params.id }, {}).then((retChat) => {
+        if (req.user.id == retChat.user1ID || req.user.id == retChat.user2ID) {
             //L'utente che ha fatto richiesta di cancellare è uno dei 2 partecipanti
-            var query_delete_chat = chat.getModel().deleteOne({'_id': req.params.id});
-            var query_delete_chat_from_user = user.getModel().updateMany({},{$pull: {chatList: req.params.id}});
+            var query_delete_chat = chat.getModel().deleteOne({ '_id': req.params.id });
+            var query_delete_chat_from_user = user.getModel().updateMany({}, { $pull: { chatList: req.params.id } });
             var promise_query_delete_chat = query_delete_chat.exec();
             var promise_query_delete_chat_from_user = query_delete_chat_from_user.exec();
             Promise.all([promise_query_delete_chat, promise_query_delete_chat_from_user]).then(values => {
@@ -370,9 +336,9 @@ app.route("/chats/:id").get(auth, (req, res, next) => {
                 return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
             })
         }
-        else{
+        else {
             //L'utente è un intruso
-            return next({statusCode: 400, error: true, errormessage: "Utente non autorizzato a cancellare la chat"});
+            return next({ statusCode: 400, error: true, errormessage: "Utente non autorizzato a cancellare la chat" });
         }
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
@@ -391,21 +357,23 @@ app.get("/scoreboard", auth, (req, res, next) => {
         }
     }
     console.log(("Printing scoreboard with limit: " + req.query.limit + " and type: " + type).magenta);
-    if(req.query.type === "total"){
+    if (req.query.type === "total") {
         user.getModel().aggregate([
-            {$match: {}},
-            {$project: {
-                'username': '$username',
-                'total': {$add: ['$partiteVinte', '$partitePerse']}
-            }}
-        ]).sort({'total': -1}).then((documents) => {
+            { $match: {} },
+            {
+                $project: {
+                    'username': '$username',
+                    'total': { $add: ['$partiteVinte', '$partitePerse'] }
+                }
+            }
+        ]).sort({ 'total': -1 }).then((documents) => {
             return res.status(200).json(documents);
         }).catch((error) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
         })
     }
-    else{
-        user.getModel().find({}, { username: 1, [type]:1, _id: 0 }).sort({ [type]: -1 }).limit(req.query.limit).then((documents) => {
+    else {
+        user.getModel().find({}, { username: 1, [type]: 1, _id: 0 }).sort({ [type]: -1 }).limit(req.query.limit).then((documents) => {
             return res.status(200).json(documents);
         }).catch((error) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
@@ -416,15 +384,15 @@ app.get("/scoreboard", auth, (req, res, next) => {
 //---------------------- Match Endpoints ---------------------------
 
 app.route("/matches").get(auth, (req, res, next) => {
-    match.getModel().find({"status" : match.MatchStatus.Wait}).populate({path: 'owner', model: user.getModel(), select: 'username -_id'}).then((documents) => {
+    match.getModel().find({ "status": match.MatchStatus.Wait }).populate({ path: 'owner', model: user.getModel(), select: 'username _id' }).then((documents) => {
         return res.status(200).json(documents);
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
     })
-}).post(auth,(req, res, next) => {
+}).post(auth, (req, res, next) => {
     let new_match = match.newMatch(req.user.id)
-    match.getModel().find({"owner" : req.user.id}).count().then((data) => {
-        if(JSON.stringify(data) === "0"){
+    match.getModel().find({ "owner": req.user.id }).count().then((data) => {
+        if (JSON.stringify(data) === "0") {
             new_match.save().then((data) => {
                 console.log(("Match created succesfully. Owner UID: " + data.owner).green);
                 return res.status(200).json({ error: false, errormessage: "", id: data._id });
@@ -432,33 +400,33 @@ app.route("/matches").get(auth, (req, res, next) => {
                 return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
             })
         }
-        else{
-            return res.status(400).json({ error: true, errormessage: "User already got waiting match"});
+        else {
+            return res.status(400).json({ error: true, errormessage: "User already got waiting match" });
         }
     }).catch((err) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err });
     })
 })
 
-app.put("/matches/:id/board", auth, (req,res,next) => {
-    match.getModel().findOne({"_id": req.params.id}).then((data) => {
-        if(req.user.id == data.owner || req.user.id == data.opponent){
-            if(data.getStatus() != match.MatchStatus.Building || data.getStatus() != match.MatchStatus.Building ){
-                return res.status(404).json({error: true, errormessage: "This match is active!"});
+app.put("/matches/:id/board", auth, (req, res, next) => {
+    match.getModel().findOne({ "_id": req.params.id }).then((data) => {
+        if (req.user.id == data.owner || req.user.id == data.opponent) {
+            if (data.getStatus() != match.MatchStatus.Building || data.getStatus() != match.MatchStatus.Building) {
+                return res.status(404).json({ error: true, errormessage: "This match is active!" });
             }
-            else{
-                match.getModel().findByIdAndUpdate({"_id": req.params.id},{"status": match.MatchStatus.Building});
-                try{
+            else {
+                match.getModel().findByIdAndUpdate({ "_id": req.params.id }, { "status": match.MatchStatus.Building });
+                try {
                     var new_field = data.insertField(req.user.id, req.body.positioning);
-                    return res.status(200).json({error: false, errormessage: ""});
+                    return res.status(200).json({ error: false, errormessage: "" });
                 }
-                catch(e){
-                    return res.status(400).json({error: true, errormessage: "Invalid ship positioning"});
+                catch (e) {
+                    return res.status(400).json({ error: true, errormessage: "Invalid ship positioning" });
                 }
             }
         }
-        else{
-            return res.status(400).json({error: true, errormessage: "User not allowed to modify this match"});
+        else {
+            return res.status(400).json({ error: true, errormessage: "User not allowed to modify this match" });
         }
     }).catch((err) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err });
@@ -466,10 +434,10 @@ app.put("/matches/:id/board", auth, (req,res,next) => {
 })
 
 app.get("/matches/:id_match", auth, (req, res, next) => {
-    match.getModel().findOne({"_id": req.params.id}).then((match) => {
+    match.getModel().findOne({ "_id": req.params.id }).then((match) => {
         return res.status(200).json(match);
     }).catch((err) => {
-        return next({ statusCode: 404, error: true, errormessage: "MongoDB error:" + err})
+        return next({ statusCode: 404, error: true, errormessage: "MongoDB error:" + err })
     })
 })
 

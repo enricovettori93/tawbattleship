@@ -25,7 +25,7 @@ const routes: Routes = [
   { path: 'chats', component: ListChatsComponent },
   { path: 'chats/:id', component: ChatComponent },
   { path: 'match', component: ListMatchesComponent },
-  { path: 'match/new', component: MatchComponent},
+  { path: 'match/:id/board', component: MatchComponent},
   { path: '**', component: NotfoundComponent }
 ];
 
