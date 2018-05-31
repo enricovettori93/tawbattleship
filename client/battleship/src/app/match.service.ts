@@ -16,7 +16,7 @@ export class MatchService {
   getWaitingMatch(): Observable<any> {
     return this.http.get(this.userService.url + '/matches', this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        console.log("Waiting match: " + JSON.stringify(data));
       })
     )
   }
@@ -24,7 +24,7 @@ export class MatchService {
   getUserMatches(user: string): Observable<any> {
     return this.http.get(this.userService.url + '/users/:user/matches', this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        console.log("Logged user match: " + JSON.stringify(data));
       })
     )
   }
@@ -32,7 +32,15 @@ export class MatchService {
   createMatch(): Observable<any> {
     return this.http.post(this.userService.url + '/matches', {}, this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        console.log("Creating match: " + JSON.stringify(data));
+      })
+    )
+  }
+
+  getSingleMatch(id: string):Observable<any>{
+    return this.http.get(this.userService.url + '/matches/' + id, this.utilities.create_options(this.userService.get_token())).pipe(
+      tap((data) => {
+        console.log("Get single match info: " + JSON.stringify(data));
       })
     )
   }
