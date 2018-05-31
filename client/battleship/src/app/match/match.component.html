@@ -1,7 +1,8 @@
-<div class="container">
-  <h2>
-    Start the match
-  </h2>
-  {{userName}}
-  {{userMatches}}
+<h1>Schermata del match</h1>
+{{match.status}}
+<div ng-switch="match.status">
+  <h2 ng-switch-when="0">Match in attesa dei partecipanti</h2>
+  <h2 ng-switch-when="1">Match in fase di costruzione</h2>
+  <h2 ng-switch-when="2">Match in fase di gioco</h2>
+  <h2 ng-switch-when="3">Match finito</h2>
 </div>
