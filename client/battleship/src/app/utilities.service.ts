@@ -13,7 +13,7 @@ export class UtilitiesService {
   constructor(private router: Router) { }
 
   public create_options(token, params = {}) {
-    console.log("PARAMS QUERY " + JSON.stringify(params));
+    console.log('TOKEN: ' + JSON.stringify(token) + 'PARAMS QUERY ' + JSON.stringify(params));
     return {
       headers: new HttpHeaders({
         "authorization": "Bearer " + token,

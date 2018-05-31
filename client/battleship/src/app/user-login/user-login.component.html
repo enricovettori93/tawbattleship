@@ -20,7 +20,7 @@
       <p>Password</p>
     </div>
     <div class="col-sm-6">
-      <input type="password" #passwordtxt required placeholder="password" id="inputpassword" class="form-control" name="password" >
+      <input type="password" #passwordtxt required placeholder="password" id="inputpassword" class="form-control" name="password" (keyup.enter)="login(usertxt.value, passwordtxt.value)" >
     </div>
   </div>
   <!--<div class="row col-sm-12">
