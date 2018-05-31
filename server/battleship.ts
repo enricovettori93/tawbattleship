@@ -75,33 +75,37 @@ passport.use(new passportHTTP.BasicStrategy(
 
 //Renew Endpoint
 app.get("/renew", auth, (req, res, next) => {
+    console.log(req.user);
     if(req.user.remindMe){
-    console.log((req.user.username + " renew JWT").rainbow);
+        console.log((req.user.username + " renew JWT").rainbow);
 
-    /*var tokenrenew = req.user;
-    delete tokenrenew.iat;
-    delete tokenrenew.exp;
-    var token_renew = jsonwebtoken.sign(tokenrenew, process.env.JWT_SECRET, { expiresIn: "2h" });
-    return res.status(200).json({ error: false, errormessage: "", token: tokenrenew });*/
+        /*var tokenrenew = req.user;
+        delete tokenrenew.iat;
+        delete tokenrenew.exp;
+        var token_renew = jsonwebtoken.sign(tokenrenew, process.env.JWT_SECRET, { expiresIn: "2h" });
+        return res.status(200).json({ error: false, errormessage: "", token: tokenrenew });*/
 
-    user.getModel().findOne({ '_id': req.user.id }).then((user) => {
-        var tokendata = {
-            username: user.username,
-            isAdmin: user.isAdmin,
-            mail: user.mail,
-            id: user.id,
-            name: user.name,
-            surname: user.surname
-        };
-        var token_renew = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
-        return res.status(200).json({ error: false, errormessage: "", token: token_renew });
-    });
+        user.getModel().findOne({ '_id': req.user.id }).then((user) => {
+            var tokendata = {
+                username: user.username,
+                isAdmin: user.isAdmin,
+                mail: user.mail,
+                id: user.id,
+                name: user.name,
+                surname: user.surname
+            };
+            var token_renew = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
+            return res.status(200).json({ error: false, errormessage: "", token: token_renew });
+        });
+    }
+    return res.status(400).json({ error: true, errormessage: "Renew impossibile, please insert username and password again"});
 });
+
 
 // Login Endpoint
 // TODO sanitize the user request 
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
-    console.log(req);
+    console.log(req.user);
     var tokendata = {
         username: req.user.username,
         isAdmin: req.user.isAdmin,
@@ -109,7 +113,7 @@ app.get("/login", passport.authenticate("basic", { session: false }), (req, res,
         id: req.user.id,
         name: req.user.name,
         surname: req.user.surname,
-        //remindMe: req.user.remindMe
+        remindMe: req.user.remindMe
     };
     var tokensigned = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
     return res.status(200).json({ error: false, errormessage: "", token: tokensigned });
@@ -463,23 +467,30 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
     function onconnected() {
 
         console.log("Connected to MongoDB");
-        //Creating Admin
-        var admin = user.newUser({
-            name: "admin",
-            surname: "admin",
-            username: "admin",
-            mail: "admin@battleship.it",
-            partiteVinte: 0,
-            partitePerse: 0
-        });
-        admin.setAdmin();
-        admin.setPassword("ciaobelli");
-        admin.save().then(() => {
-            console.log("Admin created");
-        }).catch((err) => {
-            console.log("Unable to create admin user: " + err);
-        });
-
+        user.getModel().findOne({ "username": "admin" }).count().then(
+            (data) => {
+                console.log(data);
+                if(data == 0){
+                    //Creating Admin
+                    var admin = user.newUser({
+                        name: "admin",
+                        surname: "admin",
+                        username: "admin",
+                        mail: "admin@battleship.it",
+                        partiteVinte: 0,
+                        partitePerse: 0
+                    });
+                    admin.setAdmin();
+                    admin.setPassword("ciaobelli");
+                    admin.save().then(() => {
+                        console.log("Admin created");
+                    }).catch((err) => {
+                        console.log("Unable to create admin user: " + err);
+                    });
+                }
+            }
+        )
+        
         //Starting server
         let server = http.createServer(app);
         ios = io(server);

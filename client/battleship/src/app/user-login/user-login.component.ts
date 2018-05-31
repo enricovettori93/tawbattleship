@@ -15,17 +15,9 @@ export class UserLoginComponent implements OnInit {
   constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit() {
-
-    /*
-    TODO Da sistemare
     if (this.userService.is_user_logged()) {
       this.router.navigate(["/user"]);
     }
-    this.userService.renew().subscribe((d) => {
-      this.router.navigate(["/user"]);
-    }, (err) => {
-      console.log("Renew error: " + JSON.stringify(err.error.errormessage));
-    })*/
   }
 
   login(username: string, password: string, remember: boolean) {

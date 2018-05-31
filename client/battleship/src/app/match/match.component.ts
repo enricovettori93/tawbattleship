@@ -17,8 +17,10 @@ export class MatchComponent implements OnInit {
 
   ngOnInit() {
     this.utilities.check_auth(this.userService.get_token());
-    this.matchService = new MatchService(this.userService.get_userId(), this.utilities, this.userService);
+    /**
+     * this.matchService = new MatchService(this.userService.get_userId(), this.utilities, this.userService);
     this.matchService.createMatch();
+    **/
   }
 
 }

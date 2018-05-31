@@ -7,9 +7,10 @@ import { Router } from "@angular/router";
 import { UtilitiesService } from "./utilities.service";
 // import {ErrorObservable} from "rxjs/observable/ErrorObservable"
 
+const token_name = "battleship_token";
+
 @Injectable()
 export class UserService {
-
   constructor(private http: HttpClient, private router: Router, private utilities: UtilitiesService) {
     console.log("User Service istanziato");
   }
@@ -44,16 +45,25 @@ export class UserService {
         console.log(JSON.stringify(data));
         this.is_logged.emit(true);
         this.token = data.token;
-        localStorage.setItem("battleship_token", this.token);
+        localStorage.setItem(token_name, this.token);
       }));
   }
 
   renew(): Observable<any> {
-    return this.http.get(this.url + "/renew", this.utilities.create_options(this.get_token())).pipe(
-      tap((data) => {
-        this.token = data.token;
-        localStorage.setItem("battleship_token", this.token);
-      })
+    return this.http.get(this.url + "/renew", this.utilities.create_options(this.token)).pipe(
+      tap(
+        (data) => {
+          console.log("sono qui");
+          this.token = data.token;
+          localStorage.setItem(token_name, this.token);
+          this.is_logged.emit(true);
+        },
+        (error) => {
+          console.log("error");
+        },
+        () => {
+          console.log("complete");
+        })
     );
   }
 
@@ -107,7 +117,7 @@ export class UserService {
   logout() {
     this.token = "";
     this.is_logged.emit(false);
-    localStorage.setItem("battleship_token", this.token);
+    localStorage.setItem(token_name, this.token);
     this.router.navigate(["/"]);
   }
 
@@ -175,7 +185,7 @@ export class UserService {
           console.log(JSON.stringify(data));
         })
       );
-    }
+  }
 
   deleteChat(id: string) {
     return this.http.delete(this.url + "/chats/" + id, this.utilities.create_options(this.get_token())).pipe(
@@ -196,6 +206,12 @@ export class UserService {
   // ----------------- JTW GETTER -----------------
 
   get_token() {
+    if (this.token === "" && localStorage.getItem(token_name) !== null) {
+      this.token = localStorage.getItem(token_name);
+      console.log("prima di rinnovare");
+      const rinnovo = this.renew();
+      rinnovo.subscribe();
+    }
     return this.token;
   }
 
