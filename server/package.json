@@ -25,11 +25,16 @@
         "@types/passport": "0.4.3",
         "@types/jsonwebtoken": "7.2.6",
         "@types/express-jwt": "0.0.38",
+        "@types/passport-http": "^0.3.6",
+        "@types/cors": "^2.8.4",
+        "@types/socket.io": "^1.4.33",
         "concurrently": "3.5.1"
     },
     "scripts": {
         "compile": "tsc *.ts",
-        "start": "concurrently \"mongod --dbpath ./data\" \"sleep 2 && node battleship\""
+        "dump": "mongodump  --db battleship",
+        "start-mongo": "mongod --dbpath ./data",
+        "start": "concurrently \"tsc *.ts & mongod --dbpath ./data\"  \"sleep 2 && node battleship\""
     },
     "private": true
 }
