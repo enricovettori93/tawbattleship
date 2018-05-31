@@ -70,7 +70,7 @@ export class ListMatchesComponent implements OnInit {
   createMatch() {
     this.matchService.createMatch().subscribe((data) => {
       this.errormessage = undefined;
-      this.router.navigate(['/matches/' + data._id + '/board']);
+      this.router.navigate(['/matches/' + data.id + '/board']);
     }), (err) => {
       this.errormessage = err.error.errormessage;
     }

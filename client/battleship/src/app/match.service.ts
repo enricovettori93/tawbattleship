@@ -13,24 +13,24 @@ export class MatchService {
 
   constructor(private http: HttpClient, private router: Router, private utilities: UtilitiesService, private userService: UserService) { }
 
-  getWaitingMatch():Observable<any>{
-    return this.http.get(this.userService.url + '/matches',this.utilities.create_options(this.userService.get_token())).pipe(
+  getWaitingMatch(): Observable<any> {
+    return this.http.get(this.userService.url + '/matches', this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
     )
   }
 
-  getUserMatches(user:string):Observable<any>{
-    return this.http.get(this.userService.url + "/users/:user/matches", this.utilities.create_options(this.userService.get_token())).pipe(
+  getUserMatches(user: string): Observable<any> {
+    return this.http.get(this.userService.url + '/users/:user/matches', this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })
     )
   }
 
-  createMatch():Observable<any>{
-    return this.http.post(this.userService.url + "/matches", this.utilities.create_options(this.userService.get_token())).pipe(
+  createMatch(): Observable<any> {
+    return this.http.post(this.userService.url + '/matches', {}, this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
       })

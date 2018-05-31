@@ -17,6 +17,7 @@ export interface Match extends mongoose.Document {
     fieldOpponent: Field,
     status: MatchStatus,
     winnerId: string,
+    lastIdAttacker: string,
     setStatus: (status: MatchStatus) => void,
     getStatus: () => MatchStatus,
     getWinnerId: () => string,
@@ -59,8 +60,13 @@ var MatchSchema = new mongoose.Schema({
         required: true,
     },
     winnerId: {
-        type: mongoose.SchemaTypes.ObjectId
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User'
     },
+    lastIdAttacker:{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User'
+    }
 })
 
 MatchSchema.methods.getStatus = function (): MatchStatus {
