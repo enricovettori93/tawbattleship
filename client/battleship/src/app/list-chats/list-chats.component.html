@@ -11,11 +11,13 @@
     <div class="col-8">
       <span class="align-middle">
         <a routerLink='/chats/{{chat._id}}'>Clicca</a> per visualizzare la tra l'utente
-        <a *ngIf="chat.user1ID.username != userService.get_username()" routerLink='/user/{{chat.user1ID.username}}'>{{chat.user1ID.username}}</a>
-        <a *ngIf="chat.user1ID.username == userService.get_username()" routerLink='/user'>{{chat.user1ID.username}}</a>
+        <span *ngIf="chat.user1ID == null"><i>utente eliminato</i></span>
+        <a *ngIf="chat.user1ID != null && chat.user1ID.username != userService.get_username()" routerLink='/user/{{chat.user1ID.username}}'>{{chat.user1ID.username}}</a>
+        <a *ngIf="chat.user1ID != null && chat.user1ID.username == userService.get_username()" routerLink='/user'>{{chat.user1ID.username}}</a>
         e l'utente
-        <a *ngIf="chat.user2ID.username != userService.get_username()" routerLink='/user/{{chat.user2ID.username}}'>{{chat.user2ID.username}}</a>
-        <a *ngIf="chat.user2ID.username == userService.get_username()" routerLink='/user'>{{chat.user2ID.username}}</a>
+        <span *ngIf="chat.user2ID == null"><i>utente eliminato</i></span>
+        <a *ngIf="chat.user2ID != null && chat.user2ID.username != userService.get_username()" routerLink='/user/{{chat.user2ID.username}}'>{{chat.user2ID.username}}</a>
+        <a *ngIf="chat.user2ID != null && chat.user2ID.username == userService.get_username()" routerLink='/user'>{{chat.user2ID.username}}</a>
       </span>
     </div>
     <div class="col-4">

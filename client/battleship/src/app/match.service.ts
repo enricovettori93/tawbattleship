@@ -22,7 +22,7 @@ export class MatchService {
   }
 
   getUserMatches(user: string): Observable<any> {
-    return this.http.get(this.userService.url + "/users/:user/matches", this.utilities.create_options(this.userService.get_token())).pipe(
+    return this.http.get(this.userService.url + "/users/" + user + "/matches", this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
         console.log("Logged user match: " + JSON.stringify(data));
       })
@@ -38,6 +38,7 @@ export class MatchService {
   }
 
   joinMatch(id: string, user_id: string): Observable<any> {
+    console.log(user_id + " PROVA A ENTRARE NEL MATCH " + id);
     const jsonPayload = {
       "user_id": user_id
     };

@@ -41,6 +41,7 @@ export class ListMatchesComponent implements OnInit {
     } else {
       const arrayString = this.router.url.split("/");
       this.userRoutingMatch = arrayString[2];
+      this.getUserMatch();
     }
   }
 
