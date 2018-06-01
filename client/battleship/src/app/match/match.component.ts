@@ -16,8 +16,11 @@ export class MatchComponent implements OnInit {
   private match;
   private id_match;
 
-  constructor(private userService: UserService, private utilities: UtilitiesService,
-    private matchService: MatchService, private router: Router) { }
+  constructor(
+    private userService: UserService,
+    private utilities: UtilitiesService,
+    private matchService: MatchService,
+    private router: Router) { }
 
   ngOnInit() {
     this.utilities.check_auth(this.userService.get_token());
