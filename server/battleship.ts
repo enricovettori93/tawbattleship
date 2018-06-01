@@ -98,14 +98,19 @@ app.get("/renew", auth, (req, res, next) => {
             return res.status(200).json({ error: false, errormessage: "", token: token_renew });
         });
     }
-    return res.status(400).json({ error: true, errormessage: "Renew impossibile, please insert username and password again"});
+    return res.status(400).json({ error: true, errormessage: "Renew impossible, please insert username and password again"});
 });
 
 
 // Login Endpoint
 // TODO sanitize the user request 
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
-    console.log(req.user);
+    var remindMe;
+    if(req.query.remindMe){
+        remindMe = true;
+    } else {
+        remindMe = false;
+    }
     var tokendata = {
         username: req.user.username,
         isAdmin: req.user.isAdmin,
@@ -113,7 +118,7 @@ app.get("/login", passport.authenticate("basic", { session: false }), (req, res,
         id: req.user.id,
         name: req.user.name,
         surname: req.user.surname,
-        remindMe: req.user.remindMe
+        remindMe: remindMe
     };
     var tokensigned = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
     return res.status(200).json({ error: false, errormessage: "", token: tokensigned });

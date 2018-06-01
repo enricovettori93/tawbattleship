@@ -32,13 +32,17 @@ export class UserService {
   }
 
   public login(user: string, password: string, remember?: boolean): Observable<any> {
+    console.log(remember);
     const optionsLogin = {
       headers: new HttpHeaders({
         authorization: "Basic " + btoa(user + ":" + password),
         "cache-control": "no-cache",
         "Content-Type": "application/x-www-form-urlencoded",
-      })
+      }),
     };
+    if (remember === true) {
+      optionsLogin["params"] = new HttpParams().set("remindMe", "true");
+    }
     console.log("Login: " + this.url + "/login " + JSON.stringify(optionsLogin));
     return this.http.get(this.url + "/login", optionsLogin).pipe(
       tap((data) => {
@@ -208,9 +212,7 @@ export class UserService {
   get_token() {
     if (this.token === "" && localStorage.getItem(token_name) !== null) {
       this.token = localStorage.getItem(token_name);
-      console.log("prima di rinnovare");
-      const rinnovo = this.renew();
-      rinnovo.subscribe();
+      this.renew().subscribe();
     }
     return this.token;
   }

@@ -11,6 +11,9 @@ import { UtilitiesService } from "../utilities.service";
 export class UserLoginComponent implements OnInit {
 
   private errmessage = undefined;
+  username = "";
+  password = "";
+  rememberAccess = "true";
 
   constructor(private userService: UserService, private router: Router) { }
 
@@ -20,12 +23,12 @@ export class UserLoginComponent implements OnInit {
     }
   }
 
-  login(username: string, password: string, remember: boolean) {
-    if (username === "" || password === "") {
+  login() {
+    if (this.username === "" || this.username === "") {
       this.errmessage = "dati mancanti.";
     } else {
-      console.log(username + " try to login");
-      this.userService.login(username, password).subscribe((d) => {
+      console.log(this.username + " try to login");
+      this.userService.login(this.username, this.password, Boolean(this.rememberAccess)).subscribe((d) => {
         this.errmessage = undefined;
         this.router.navigate(["/user"]);
       }, (err) => {
