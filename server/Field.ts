@@ -1,6 +1,6 @@
 import mongoose = require('mongoose');
 import { StringifyOptions } from 'querystring';
-//import { newShip } from './Ship';
+import { Ship } from './Ship';
 
 export interface Field extends mongoose.Document{
     playerId: string,
