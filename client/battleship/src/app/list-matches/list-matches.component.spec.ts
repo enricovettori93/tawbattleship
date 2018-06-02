@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ListMatchesComponent } from './list-matches.component';
+import { ListMatchesComponent } from "./list-matches.component";
 
-describe('ListMatchesComponent', () => {
+describe("ListMatchesComponent", () => {
   let component: ListMatchesComponent;
   let fixture: ComponentFixture<ListMatchesComponent>;
 
@@ -19,7 +19,7 @@ describe('ListMatchesComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
