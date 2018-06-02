@@ -1,12 +1,12 @@
-
 import mongoose = require('mongoose');
 import { StringifyOptions } from 'querystring';
-//import { newShip } from './Ship';
+import { Ship } from './Ship';
 
 export interface Field extends mongoose.Document{
     playerId: string,
     matrix: string[][]
 }
+
 
 // We use Mongoose to perform the ODM between our application and
 // mongodb. To do that we need to create a Schema and an associated
@@ -15,18 +15,40 @@ export interface Field extends mongoose.Document{
 // Type checking cannot be enforced at runtime so we must take care
 // of correctly matching the Message interface with the messageSchema 
 //
+
 // Mongoose Schema
 var FieldSchema = new mongoose.Schema({
-    playerId: {
-        type: mongoose.SchemaTypes.String,
-        required: true
+    playerId : {
+        type : mongoose.SchemaTypes.String,
+        required : true
     }, 
-    matrix: [[{
-        type: mongoose.SchemaTypes.ObjectId,
-        required: true
-    }]]
+    matrix : [[{
+        type : mongoose.SchemaTypes.ObjectId,
+        required : true
+    }]], 
+
+    aliveShips: {
+        type : mongoose.SchemaTypes.Number,
+        required : false
+    },
+
+    ships: {
+        type : [mongoose.SchemaTypes.Object],
+        required : false
+    }
 })
+
 export function getSchema() { return FieldSchema; }
+
+//colori delle celle, temporanei (da modificare a seconda dell'estetica)
+
+enum cellColor {
+    unknown = "#00ffff", //azzurro chiaro
+    water = "#000080", //blu scuro
+    hit = "#ff0000", //rosso
+    shipDestroyed = "#00ff00" //verde lime
+}
+
 
 // Mongoose Model
 var fieldModel;
@@ -44,6 +66,9 @@ export function newField(UID : string) : Field {
     field.matrix = new Array<Array<string>>(10);
     field.matrix.forEach(array => {
         array = new Array <string>(10);
+        array.forEach(cell => {
+            cell = cellColor.unknown;
+        })
     })
     return field;
 }
@@ -69,12 +94,14 @@ FieldSchema.methods.insertShips = function (jFile : any) {
     jFile.ships.foreach(element => {
         
         if (element.length > 5 || element.length < 2) {
-            this.matrix = {};
+            this.matrix = this.ships = [];
+            this.aliveShips;
             throw "nave di dimensione errata"
         }
 
         if (navi[element.length].quantity == navi[element.length].actualQuantity){
-            this.matrix = {};
+            this.matrix = this.ships = [];
+            this.aliveShips = 0;
             throw "troppe navi dello stesso tipo"
         }
 
@@ -82,17 +109,18 @@ FieldSchema.methods.insertShips = function (jFile : any) {
             navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
             
             //crea una nuova nave
+            this.ships.push(new Ship(element));
+            this.aliveShips = this.aliveShips + 1;
 
         }
         else{
-            this.matrix = {};
+            this.matrix = this.ships = [];
+            this.aliveShips = 0;
             throw "non sono successive le posizioni inserite"
         }
         
     });
 
     return true;
-
-
 }
 

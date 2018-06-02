@@ -1,7 +1,45 @@
 
-/**import mongoose = require('mongoose');
+import mongoose = require('mongoose');
 
-export class Point{
+
+export class Ship {
+
+    cells : Array<Object>;
+
+    // in input array di posizioni nel formato {x: Number, y: Number}
+    constructor(positions : Array<Object>) {
+        positions.forEach(position => {
+            var tmp = String(position["x"])+","+String(position["y"])
+            this.cells.push({ pos : tmp, hit : false});
+        })
+    }
+
+    // in input una posizione nel formato {x: Number, y: Number}
+    hit (position : Object) : boolean {
+        this.cells.forEach( cell => {
+            var tmp = String(position["x"])+","+String(position["y"])
+            if (cell["pos"] == tmp){
+                cell["hit"] == true;
+                return true;
+            } 
+        })
+        return false;
+    }
+
+    isSunk() : boolean{
+        var sunk = true;
+
+        this.cells.forEach(cell =>{
+            sunk = sunk && cell["hit"];
+        })
+
+        return sunk;
+    }
+}
+
+
+
+/*export class Point{
     x: Number;
     y: Number;
     alreadyHit: Boolean;
@@ -52,5 +90,4 @@ export function newShip(positions : any) : Ship {
     })
 
     return ship;
-}
-**/
+}*/
