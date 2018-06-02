@@ -62,7 +62,17 @@ export class ListMatchesComponent implements OnInit {
   }
 
   enterMatch(idMatch: string) {
-    this.router.navigate(["/match/" + idMatch + "/board"]);
+    const request = this.matchService.joinMatch(idMatch, this.userService.get_userId());
+    request.subscribe(
+      (data) => {
+        if (!data.error) {
+          this.router.navigate(["/match/" + idMatch + "/board"]);
+        }
+      },
+      (error) => {
+        console.log("Impossibile entrare nella partita");
+      }
+    );
   }
 
   getUserMatch() {
