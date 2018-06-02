@@ -4,22 +4,25 @@
 
 <ng-template #notThisUser>
   <div class="row col">
-    <h1 *ngIf="otherUser">Stai visualizzando il profilo di {{otherUser.username}}</h1>
+    <h1 *ngIf="otherUser != null">Stai visualizzando il profilo di {{otherUser.username}}</h1>
   </div>
-  <!-- Profile image-->
+  <div class="row col">
+    <h1 *ngIf="otherUser == null">Giocatore non trovato</h1>
+  </div>
+  <!-- Profile image
   <div class="row">
     <div class="col text-center">
       <img src="https://pbs.twimg.com/profile_images/1532886460/He-man_400x400.jpg" style="width:13em;border-radius:50%" class="center-block">
     </div>
-  </div>
+  </div>-->
   <!-- Info account-->
-  <div class="container py-5">
+  <div *ngIf="otherUser != null" class="container py-5">
     <div class="row py-2">
       <div class="col-6">
         <b>Username</b>
       </div>
       <div class="col-6">
-        <p *ngIf="otherUser">{{otherUser.username}}</p>
+        <p>{{otherUser.username}}</p>
       </div>
     </div>
     <div class="row py-2">
@@ -27,15 +30,15 @@
         <b>Nome</b>
       </div>
       <div class="col-6">
-        <p *ngIf="otherUser">{{otherUser.name}}</p>
+        <p>{{otherUser.name}}</p>
       </div>
     </div>
     <div class="row py-2">
       <div class="col-6">
-        <b *ngIf="otherUser">Cognome</b>
+        <b>Cognome</b>
       </div>
       <div class="col-6">
-        <p *ngIf="otherUser">{{otherUser.surname}}</p>
+        <p>{{otherUser.surname}}</p>
       </div>
     </div>
     <div class="row py-2">
@@ -43,7 +46,7 @@
         <b>Email</b>
       </div>
       <div class="col-6">
-        <p *ngIf="otherUser">{{otherUser.mail}}</p>
+        <p>{{otherUser.mail}}</p>
       </div>
     </div>
     <div class="row py-2">
@@ -51,7 +54,7 @@
         <b>Partite vinte</b>
       </div>
       <div class="col-6">
-        <p *ngIf="otherUser">{{otherUser.partiteVinte}}</p>
+        <p>{{otherUser.partiteVinte}}</p>
       </div>
     </div>
     <div class="row py-2">
@@ -59,7 +62,7 @@
         <b>Partite perse</b>
       </div>
       <div class="col-6">
-        <p *ngIf="otherUser">{{otherUser.partitePerse}}</p>
+        <p>{{otherUser.partitePerse}}</p>
       </div>
     </div>
     <div class="row py-2">
@@ -67,15 +70,15 @@
         <b>Partite giocate</b>
       </div>
       <div class="col-6">
-        <p *ngIf="otherUser">{{totalePartite}}</p>
+        <p>{{totalePartite}}</p>
       </div>
     </div>
     <div *ngIf="isAdmin" style="padding-left:0" class="col-12 py-2">
-      <input *ngIf="otherUser" type="checkbox" [checked]="otherUserIsAdmin" (click)="changeStatusAdminOtherAccount()" #changeOtherAdmin> Amministratore
+      <input type="checkbox" [checked]="otherUserIsAdmin" (click)="changeStatusAdminOtherAccount()" #changeOtherAdmin> Amministratore
     </div>
     <div class="row py-2">
       <div class="col-12">
-        <a *ngIf="otherUser" routerLink="/user/{{otherUser.username}}/matches">Partite giocate</a>
+        <a routerLink="/user/{{otherUser.username}}/matches">Partite giocate</a>
       </div>
     </div>
     <div *ngIf="errmessage" class="alert alert-danger" role="alert">
@@ -85,10 +88,10 @@
       {{okmessage}}
     </div>
     <div class="row col py-2">
-      <button *ngIf="otherUser && isAdmin" class="btn btn-primary" (click)="updateInfoAdminOtherUser(otherUser.username, otherUser.isAdmin)">Aggiorna le informazioni</button>
+      <button *ngIf="isAdmin" class="btn btn-primary" (click)="updateInfoAdminOtherUser(otherUser.username, otherUser.isAdmin)">Aggiorna le informazioni</button>
     </div>
     <div class="row col py-2">
-      <button *ngIf="otherUser && isAdmin" type="button" class="btn btn-danger" (click)="deleteThisUser()">Elimina l'utente</button>
+      <button *ngIf="isAdmin" type="button" class="btn btn-danger" (click)="deleteThisUser()">Elimina l'utente</button>
     </div>
     <div class="row col py-2">
       <button class="btn btn-primary" (click)="clickButtonSendMessageUserInfo()">Invia un messaggio</button>
@@ -100,12 +103,12 @@
   <div class="row col">
     <h1>Il tuo profilo</h1>
   </div>
-  <!-- Profile image-->
+  <!-- Profile image
   <div class="row">
     <div class="col text-center">
       <img src="https://pbs.twimg.com/profile_images/1532886460/He-man_400x400.jpg" style="width:13em;border-radius:50%" class="center-block">
     </div>
-  </div>
+  </div>-->
   <!-- Info account-->
   <div class="container py-5">
     <div class="row py-2">

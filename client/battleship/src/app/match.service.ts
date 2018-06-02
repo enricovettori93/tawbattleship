@@ -1,31 +1,62 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { UtilitiesService } from './utilities.service';
-import { of, Observable } from 'rxjs';
-import { UserService } from './user.service';
-import { tap } from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Router } from "@angular/router";
+import { UtilitiesService } from "./utilities.service";
+import { of, Observable } from "rxjs";
+import { UserService } from "./user.service";
+import { tap } from "rxjs/operators";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class MatchService {
 
   constructor(private http: HttpClient, private router: Router, private utilities: UtilitiesService, private userService: UserService) { }
 
-  getWaitingMatch():Observable<any>{
-    return this.http.get(this.userService.url + '/matches',this.utilities.create_options(this.userService.get_token())).pipe(
+  getWaitingMatch(): Observable<any> {
+    return this.http.get(this.userService.url + "/matches", this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        console.log("Waiting match: " + JSON.stringify(data));
       })
-    )
+    );
   }
 
-  getMatches(user:string):Observable<any>{
-    return this.http.get(this.userService.url + "/users/:user/matches", this.utilities.create_options(this.userService.get_token())).pipe(
+  getUserMatches(user: string): Observable<any> {
+    return this.http.get(this.userService.url + "/users/" + user + "/matches", this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        console.log("Logged user match: " + JSON.stringify(data));
       })
-    )
+    );
+  }
+
+  createMatch(): Observable<any> {
+    return this.http.post(this.userService.url + "/matches", {}, this.utilities.create_options(this.userService.get_token())).pipe(
+      tap((data) => {
+        console.log("Creating match: " + JSON.stringify(data));
+      })
+    );
+  }
+
+  joinMatch(id: string, user_id: string): Observable<any> {
+    console.log(user_id + " PROVA A ENTRARE NEL MATCH " + id);
+    const jsonPayload = {
+      "user_id": user_id
+    };
+    return this.http.put(
+      this.userService.url + "/matches" + id,
+      jsonPayload,
+      this.utilities.create_options(this.userService.get_token())).pipe(
+        tap((data) => {
+          console.log("Creating match: " + JSON.stringify(data));
+        })
+      );
+  }
+
+  getSingleMatch(id: string): Observable<any> {
+    return this.http.get(this.userService.url + "/matches/" + id, this.utilities.create_options(this.userService.get_token())).pipe(
+      tap((data) => {
+        console.log("Get single match info: " + JSON.stringify(data));
+      })
+    );
   }
 }

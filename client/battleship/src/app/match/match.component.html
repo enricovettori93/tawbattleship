@@ -1,3 +1,10 @@
-<p>
-  match works!
-</p>
+<h1>Schermata del match</h1>
+<div *ngIf="match">
+  <div  [ngSwitch]="match.status">
+    <h2 *ngSwitchCase="0">Match in attesa del secondo partecipante</h2>
+    <h2 *ngSwitchCase="1">Match in fase di costruzione</h2>
+    <h2 *ngSwitchCase="2">Match in fase di gioco</h2>
+    <h2 *ngSwitchCase="3">Match finito</h2>
+  </div>
+</div>
+

@@ -1,27 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../user.service';
-import { UtilitiesService } from '../utilities.service';
+import { Component, OnInit } from "@angular/core";
+import { UserService } from "../user.service";
+import { UtilitiesService } from "../utilities.service";
 
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  selector: "app-navbar",
+  templateUrl: "./navbar.component.html",
+  styleUrls: ["./navbar.component.css"]
 })
 export class NavbarComponent implements OnInit {
-  private is_logged = undefined;
   constructor(private userService: UserService) { }
-  
-  ngOnInit() {
-    this.startEmiteService();
+  ngOnInit() {}
+  is_logged() {
+    return this.userService.is_user_logged();
   }
 
-  startEmiteService(){
-    this.userService.is_logged.subscribe((mode: any) => {
-      console.log("Emit user login: " + mode);
-      this.is_logged = mode;
-    })
-  }
-  logout(){
+  logout() {
     this.userService.logout();
   }
 }

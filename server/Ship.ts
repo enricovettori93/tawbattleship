@@ -68,6 +68,8 @@ var PointSchema = new mongoose.Schema({
 export function getSchema() { return PointSchema; }
 
 // Mongoose Model
+
+ * TODO delete if not used anymore
 var shipModel;
 export function getModel(): mongoose.Model<mongoose.Ship> { // Return Model as singleton
     if (!shipModel) {
@@ -89,5 +91,3 @@ export function newShip(positions : any) : Ship {
 
     return ship;
 }*/
-
-

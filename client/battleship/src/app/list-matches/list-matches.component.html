@@ -5,19 +5,37 @@
   <div *ngIf="matches.length === 0">
     <h2>Il giocatore non ha giocato alcun match!</h2>
   </div>
+  <div *ngFor="let match of matches">
+    <p>Data della partita: {{match.timestamp}}</p>
+    <div [ngSwitch]="match.status">
+      <p *ngSwitchCase="0">Match in attesa del secondo partecipante, <a style="color: #0056b3" (click)="matchService.joinMatch(match._id, userService.get_username())">sfidalo!</a></p>
+      <p *ngSwitchCase="1">Match in fase di costruzione</p>
+      <p *ngSwitchCase="2">Match in fase di gioco</p>
+      <p *ngSwitchCase="3">Match finito, <a style="color: #0056b3" routerLink="/match/{{match._id}}">guarda</a> com'è finita la partita</p>
+    </div>
+  </div>
 </ng-template>
 
 <ng-template #matchWaiting>
-  <h1>Lista dei match</h1>
+  <h1>Lista dei match in attesa</h1>
   <div *ngIf="matches.length === 0">
     <h2>Nessun match pronto per essere giocato!</h2>
   </div>
   <div *ngFor="let match of matches">
-    <p><b>Data di creazione</b> {{match.timestamp}}</p>
-    <p *ngIf="match.owner != null && match.owner.username != userService.get_username()"><b>Entra nella partita di: </b><a routerLink="/user/{{match.owner.username}}">{{match.owner.username}}</a></p>
-    <p *ngIf="match.owner != null && match.owner.username == userService.get_username()"><b>Entra nella partita di: </b><a routerLink="/user">{{match.owner.username}}</a></p>
-    <button class="btn btn-primary" routerLink="/match/{{match._id}}">Entra nella partita!</button>
-    <hr>
+    <div *ngIf="match.owner != null">
+      <p>
+        <b>Data di creazione</b> {{match.timestamp}}</p>
+      <p *ngIf="match.owner.username != userService.get_username()">
+        <b>Entra nella partita di: </b>
+        <a routerLink="/user/{{match.owner.username}}">{{match.owner.username}}</a>
+      </p>
+      <p *ngIf="match.owner.username == userService.get_username()">
+        <b>Guarda lo stato della tua partita</b>
+      </p>
+      <button class="btn btn-primary" (click)="enterMatch(match._id)">Entra nella partita!</button>
+      <hr>
+    </div>
   </div>
-  <button class="btn btn-primary" routerLink="/match/new">Crea una nuova partita</button>
+  <div *ngIf="errormessage" class="alert alert-primary-danger">{{errormessage}}</div>
+  <button *ngIf="userHadAlreadyWaitingMatch != true" class="btn btn-primary" (click)="createMatch()">Crea una nuova partita</button>
 </ng-template>
