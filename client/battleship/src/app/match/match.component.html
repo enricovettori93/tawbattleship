@@ -6,5 +6,7 @@
     <h2 *ngSwitchCase="2">Match in fase di gioco</h2>
     <h2 *ngSwitchCase="3">Match finito</h2>
   </div>
+  <div *ngIf="match.status == 1" id="canvas" #canvasDom>
+  </div>
 </div>
 

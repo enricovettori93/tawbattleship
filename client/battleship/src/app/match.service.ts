@@ -59,7 +59,7 @@ export class MatchService {
     // TODO update with real HTTP request
     const id_prova = "5b1117aad8af07796e69a41c";
     const obs = of({
-      status: "1"
+      "status": "1"
     });
     return obs;
 
