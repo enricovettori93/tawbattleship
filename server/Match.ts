@@ -105,7 +105,7 @@ export function newMatch(owner: string): Match {
     // inizializzo i due ID proprietari della partita
     match.owner = owner
     // inizializzo il campo di owner
-    match.fieldOwner = field.newField(owner)
+    //match.fieldOwner = field.newField(owner)
     // setto lo status del match come Wait, in attesa del secondo player
     match.status = MatchStatus.Wait
 
@@ -113,7 +113,7 @@ export function newMatch(owner: string): Match {
 }
 
 export function insertField(owner: string, shipJSON: any): void {
-    var field = field.newField();
+    var field = field.newField(owner);
     try {
         field.insertShip(shipJSON)
         if (this.owner == owner) {
@@ -123,6 +123,6 @@ export function insertField(owner: string, shipJSON: any): void {
             this.fieldOpponent = field;
         }
     } catch (y) {
-        throw ("Invalid field");
+        throw ("Invalid field: " + y);
     }
 }

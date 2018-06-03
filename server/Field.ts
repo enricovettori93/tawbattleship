@@ -76,9 +76,8 @@ export function newField(UID : string) : Field {
 function checkSubsequent( nave : any) : boolean{
 
     var isSub = true;
-    var prev = nave[0];
     for(var i = 1; i <= nave.length-1; i++){
-        isSub = isSub && ((prev.x == (nave[i].x)-1) || (prev.y == (nave[i].y)-1));
+        isSub = isSub && ((nave[i-1].x == (nave[i].x)-1) || (nave[i-1].y == (nave[i].y)-1));
     }
 
     return isSub;
