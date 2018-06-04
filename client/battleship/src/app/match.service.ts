@@ -77,6 +77,23 @@ export class MatchService {
       })
     );**/
   }
+
+  initShips() {
+    const ships = new Array();
+    for (let i = 0; i < 4; i++) {
+      ships.push(new Ship(ShipEnum.DESTROYER));
+    }
+    for (let i = 0; i < 3; i++) {
+      ships.push(new Ship(ShipEnum.SUBMARINE));
+    }
+    for (let i = 0; i < 2; i++) {
+      ships.push(new Ship(ShipEnum.BATTLESHIP));
+    }
+    for (let i = 0; i < 1; i++) {
+      ships.push(new Ship(ShipEnum.AIRCRAFTCARRIER));
+    }
+    return ships;
+  }
 }
 
 export class Ship {

@@ -6,9 +6,9 @@
     <h2 *ngSwitchCase="2">Match in fase di gioco</h2>
     <h2 *ngSwitchCase="3">Match finito</h2>
   </div>
-  <div *ngIf="match.status == 1" #battlefieldDOM>
+  <div *ngIf="match.status == 1" >
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-6" #battlefieldDOM>
         <h2>Posiziona le tue navi</h2>
       </div>
       <div class="col-md-6" #ships>

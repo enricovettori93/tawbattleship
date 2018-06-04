@@ -1,8 +1,13 @@
-.box {
+.shipPart {
   height: 40px;
   width: 40px;
   background-color: black;
   cursor: pointer;
+  display: inline-block;
+}
+
+.ship {
+  display: block;
 }
 
 .held {
@@ -13,7 +18,7 @@
 .holder {
   height: 50px;
   width: 50px;
-  border: solid 5px black;
+  border: solid 1px #666;
   background-color: white;
   display: inline-block;
 }
@@ -31,4 +36,18 @@
   top: 100px;
   width: 400px;
   position: relative;
+}
+
+.board-row {
+  line-height: 0px;
+  max-width: 100%;
+  display: block;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.red {
+  background-color: red;
 }
