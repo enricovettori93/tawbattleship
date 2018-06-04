@@ -1,10 +1,15 @@
 <h1>Schermata del match</h1>
 <div *ngIf="match">
-  <div  [ngSwitch]="match.status">
+  <div [ngSwitch]="match.status">
     <h2 *ngSwitchCase="0">Match in attesa del secondo partecipante</h2>
     <h2 *ngSwitchCase="1">Match in fase di costruzione</h2>
     <h2 *ngSwitchCase="2">Match in fase di gioco</h2>
     <h2 *ngSwitchCase="3">Match finito</h2>
   </div>
+  <div *ngIf="match.status == 1" #battlefieldDOM>
+    <h2>Posiziona le tue navi</h2>
+    <div *ngFor="let row of rows" class="row">
+      <div class="holder" *ngFor="let column of columns">
+    </div>
+  </div>
 </div>
-
