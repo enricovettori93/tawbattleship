@@ -424,11 +424,11 @@ app.route("/matches").get(auth, (req, res, next) => {
 app.put("/matches/:id/board", auth, (req, res, next) => {
     match.getModel().findOne({ "_id": req.params.id }).then((data) => {
         if (req.user.id == data.owner || req.user.id == data.opponent) {
-            if (data.getStatus() != match.MatchStatus.Building || data.getStatus() != match.MatchStatus.Building) {
-                return res.status(404).json({ error: true, errormessage: "This match is active!" });
+            if (data.getStatus() != match.MatchStatus.Building) {
+                return res.status(404).json({ error: true, errormessage: "Cannot add ships now!" });
             }
             else {
-                match.getModel().findByIdAndUpdate({ "_id": req.params.id }, { "status": match.MatchStatus.Building });
+                //match.getModel().findByIdAndUpdate({ "_id": req.params.id }, { "status": match.MatchStatus.Building });
                 try {
                     var new_field = data.insertField(req.user.id, req.body.positioning);
                     return res.status(200).json({ error: false, errormessage: "" });
@@ -454,8 +454,7 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
     })
 })
 
-// TODO meglio get o PUT come endpoint?
-// presuppone che l'id del match inserito sia di un match in attesa: non controlla lo status. (è possibile modificare)
+
 app.put("/matches/:id_match/join", auth, (req, res, next) => {
     match.getModel().find({ "$or": [{ "owner._id": req.user.id }, { "opponent._id": req.user.id }] }).count().then((data) => {
         if (data === 0) {
@@ -482,6 +481,32 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
         else {
             return res.status(400).json({ error: true, errormessage: "User already fighting in a different match." });
         }
+    })
+})
+
+// nel body si aspetta di trovare un file json del tipo
+/**
+ * {
+ *  "player" : ObjectId,
+ *  "position" : { "x" : Number, "y" : Number}
+ * }
+ */
+// TODO : modificare in che modo viene segnalato il vincitore
+app.put("/matches/:id_match", auth, (req, res, next) => {
+
+    match.getModel().find({"_id" : req.params.id_match}).then((data) => {
+        var field;
+        if(data.owner == req.body.player){
+            field = data.fieldOpponent;
+        }
+        else{
+            field = data.fieldOwner;
+        }
+        field.shoot(req.body.position);
+        if(field.aliveShips == 0)
+            return "ha vinto il player " + req.body.player //da modificare
+        else
+            return res.status(200).json({ error : false, errormessage : "Cella colpita correttamente"})
     })
 })
 

@@ -104,11 +104,8 @@ export function newMatch(owner: string): Match {
     match.timestamp = new Date()
     // inizializzo i due ID proprietari della partita
     match.owner = owner
-    // inizializzo il campo di owner
-    //match.fieldOwner = field.newField(owner)
     // setto lo status del match come Wait, in attesa del secondo player
     match.status = MatchStatus.Wait
-    //match.fieldOwner = match.opponent = match.fieldOpponent = match.winnerID = match.lastIdAttacker = ""
 
     return match
 }
@@ -116,7 +113,7 @@ export function newMatch(owner: string): Match {
 export function insertField(owner: string, shipJSON: any): void {
     var field = field.newField(owner);
     try {
-        field.insertShip(shipJSON)
+        field.insertShips(shipJSON)
         if (this.owner == owner) {
             this.fieldOwner = field;
         }

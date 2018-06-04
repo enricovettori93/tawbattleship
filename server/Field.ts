@@ -83,6 +83,33 @@ function checkSubsequent( nave : any) : boolean{
     return isSub;
 }
 
+
+FieldSchema.methods.shoot = function ( position : any) {
+    if (this.matrix[position.x][position.y] == cellColor.unknown){
+        var hit;
+        this.ships.foreach( ship => {
+
+            if (ship.hit(position)){
+
+                if (ship.isSunk()){ 
+                    this.aliveShips = this.aliveShips -1;
+                    ship.cells.foreach(cell => {
+                        this.matrix[cell.x][cell.y] = cellColor.shipDestroyed;
+                    })
+                }
+
+                this.matrix[position.x][position.y] = cellColor.hit;
+                hit = true;
+            }
+        })
+        
+        if (!hit)
+            this.matrix[position.x][position.y] = cellColor.water;
+    }
+    else
+        throw "cella già controllata!"
+}
+
 FieldSchema.methods.insertShips = function (jFile : any) {
 
     var navi = {}
