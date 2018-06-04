@@ -33,7 +33,7 @@ var FieldSchema = new mongoose.Schema({
     },
 
     ships: {
-        type : [mongoose.SchemaTypes.Object],
+        type : [mongoose.SchemaTypes.ObjectId],
         required : false
     }
 })
