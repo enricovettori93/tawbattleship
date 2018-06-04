@@ -1,11 +1,18 @@
-import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { UtilitiesService } from "./utilities.service";
-import { of, Observable } from "rxjs";
-import { UserService } from "./user.service";
+import { Observable, of } from "rxjs";
 import { tap } from "rxjs/operators";
+import { UserService } from "./user.service";
+import { UtilitiesService } from "./utilities.service";
 
+
+export const enum ShipEnum {
+  DESTROYER = 2,
+  SUBMARINE = 3,
+  BATTLESHIP = 4,
+  AIRCRAFTCARRIER = 5
+}
 @Injectable({
   providedIn: "root"
 })
@@ -24,10 +31,10 @@ export class MatchService {
   getUserMatches(user: string): Observable<any> {
     return this.http.get(
       this.userService.url + "/users/" + user + "/matches", this.utilities.create_options(this.userService.get_token())).pipe(
-      tap((data) => {
-        console.log("Logged user match: " + JSON.stringify(data));
-      })
-    );
+        tap((data) => {
+          console.log("Logged user match: " + JSON.stringify(data));
+        })
+      );
   }
 
   createMatch(): Observable<any> {
@@ -40,7 +47,7 @@ export class MatchService {
 
   joinMatch(id: string, user_id: string): Observable<any> {
     // TODO update with HTTP request to /matches/:id_match/join
-    const myObservable = of({error: false, errorMessage: ""});
+    const myObservable = of({ error: false, errorMessage: "" });
     const jsonPayload = {
       "user_id": user_id
     };
@@ -69,5 +76,34 @@ export class MatchService {
         console.log("Get single match info: " + JSON.stringify(data));
       })
     );**/
+  }
+}
+
+export class Ship {
+  private type: ShipEnum;
+  private row: number;
+  private column: number;
+
+  constructor(type: ShipEnum) {
+    this.type = type;
+  }
+
+  getLength(): number {
+    return this.type;
+  }
+
+  setRow(row: number) {
+    if (row <= 9 && row >= 0) {
+      this.row = row;
+    } else {
+      throw Error("Invalid row number");
+    }
+  }
+  setColumn(column: number) {
+    if (column <= 9 && column >= 0) {
+      this.column = column;
+    } else {
+      throw Error("Invalid column number");
+    }
   }
 }

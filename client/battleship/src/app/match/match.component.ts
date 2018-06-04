@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2 } from "@angular/core";
 import { UserService } from "../user.service";
 import { UtilitiesService } from "../utilities.service";
-import { MatchService } from "../match.service";
+import { MatchService, Ship, ShipEnum } from "../match.service";
 import { SocketioService } from "../socketio.service";
 import { Router } from "@angular/router";
 
@@ -10,10 +10,14 @@ import { Router } from "@angular/router";
   templateUrl: "./match.component.html",
   styleUrls: ["./match.component.css"]
 })
+
 export class MatchComponent implements OnInit, AfterViewInit {
-  @ViewChild("battlefieldDOM") battlefieldDOM: ElementRef;
+  @ViewChild("battlefieldDOM") battlefield: ElementRef;
+  @ViewChild("ships") shipsDom: ElementRef;
   private userName: string;
   private userMatches: string;
+  board: ElementRef[][];
+  ships: Ship[];
   columns: Array<string>;
   rows: Array<string>;
   private match;
@@ -24,6 +28,7 @@ export class MatchComponent implements OnInit, AfterViewInit {
     private utilities: UtilitiesService,
     private matchService: MatchService,
     private socketIoService: SocketioService,
+    private renderer: Renderer2,
     private router: Router) { }
 
   ngOnInit() {
@@ -41,13 +46,57 @@ export class MatchComponent implements OnInit, AfterViewInit {
     }, (err) => {
       console.log(JSON.stringify(err));
     });
+    this.ships = new Array();
+  }
+  private initShips() {
+    for (let i = 0; i < 4; i++) {
+      this.ships.push(new Ship(ShipEnum.DESTROYER));
+    }
+    for (let i = 0; i < 3; i++) {
+      this.ships.push(new Ship(ShipEnum.SUBMARINE));
+    }
+    for (let i = 0; i < 2; i++) {
+      this.ships.push(new Ship(ShipEnum.BATTLESHIP));
+    }
+    for (let i = 0; i < 1; i++) {
+      this.ships.push(new Ship(ShipEnum.AIRCRAFTCARRIER));
+    }
   }
   ngAfterViewInit() {
-    document.addEventListener("DOMContentLoaded", App.init);
-}
+    // init an empty array
+    this.board = new Array(10);
+    for (let i = 0; i < 10; i++) {
+      this.board[i] = new Array(10);
+    }
+    for (let i = 0; i < 10; i++) {
+      const row = this.renderer.createElement("div");
+      this.renderer.addClass(row, "row-" + i);
+      for (let j = 0; j < 10; j++) {
+        this.board[i][j] = this.renderer.createElement("div");
+        this.renderer.addClass(this.board[i][j], "holder");
+        this.renderer.addClass(this.board[i][j], "col-" + j);
+        this.renderer.appendChild(row, this.board[i][j]);
+      }
+      this.renderer.appendChild(this.battlefield.nativeElement, row);
+    }
+    this.initShips();
+    this.ships.forEach((ship) => {
+      for (let i = 0; i < ship.getLength(); i++) {
+        const shipPart = this.renderer.createElement("div");
+        this.renderer.addClass(shipPart, "box");
+        this.renderer.setAttribute(shipPart, "draggable", "true");
+        this.renderer.appendChild(this.shipsDom.nativeElement, shipPart);
+      }
+    });
+
+
+  }
 
 }
-
+/*function drop() {
+  this.className = "holder";
+  this.append(App.box);
+}
 class App {
   static box;
   static className;
@@ -58,13 +107,13 @@ class App {
     App.box.addEventListener("dragstart", App.dragstart);
     App.box.addEventListener("dragend", App.dragend);
 
-    const containers = document.getElementsByClassName("holder");
+    const containers = [].slice.call(document.getElementsByClassName("holder"));
 
     for (const container of containers) {
       container.addEventListener("dragover", App.dragover);
       container.addEventListener("dragenter", App.dragenter);
       container.addEventListener("dragleave", App.dragleave);
-      container.addEventListener("drop", App.drop);
+      container.addEventListener("drop", drop);
     }
   }
 
@@ -91,9 +140,4 @@ class App {
     this.className = "holder";
   }
 
-  static drop() {
-    this.className = "holder";
-    this.append(App.box);
-  }
-
-}
+}*/

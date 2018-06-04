@@ -7,9 +7,14 @@
     <h2 *ngSwitchCase="3">Match finito</h2>
   </div>
   <div *ngIf="match.status == 1" #battlefieldDOM>
-    <h2>Posiziona le tue navi</h2>
-    <div *ngFor="let row of rows" class="row">
-      <div class="holder" *ngFor="let column of columns">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>Posiziona le tue navi</h2>
+      </div>
+      <div class="col-md-6" #ships>
+        <!--  Destroyer -->
+      </div>
     </div>
   </div>
+
 </div>
