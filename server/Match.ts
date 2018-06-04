@@ -108,6 +108,7 @@ export function newMatch(owner: string): Match {
     //match.fieldOwner = field.newField(owner)
     // setto lo status del match come Wait, in attesa del secondo player
     match.status = MatchStatus.Wait
+    //match.fieldOwner = match.opponent = match.fieldOpponent = match.winnerID = match.lastIdAttacker = ""
 
     return match
 }

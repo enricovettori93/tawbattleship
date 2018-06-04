@@ -455,11 +455,11 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
 })
 
 // presuppone che l'id del match inserito sia di un match in attesa: non controlla lo status. (è possibile modificare)
-app.get("/matches/:id_match/join", auth, (req,res,next) => {
+app.put("/matches/:id_match/join", auth, (req,res,next) => {
     match.getModel().find({"$or" : [{"owner" : req.user.id}, {"opponent" : req.user.id}]}).count().then((data) => {
         if(JSON.stringify(data) === "0"){
-            match.getModel().findByIdAndUpdate({"_id" : req.params.id}, {"opponent" : req.user.id})
-            return res.status(200).json({error: false, errormessage: "User correctly joined the match"})
+            match.getModel().findOneAndUpdate({"_id" : req.params.id_match}, {"$set" : {"opponent" : req.user.id}})
+            return res.status(200).json({error: false, errormessage: "User correctly joined the match "+req.params.id_match})
         }
         else{
             return res.status(400).json({ error: true, errormessage: "User already fighting in a different match." });
