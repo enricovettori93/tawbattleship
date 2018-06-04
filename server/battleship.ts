@@ -76,6 +76,7 @@ passport.use(new passportHTTP.BasicStrategy(
 //Renew Endpoint
 app.get("/renew", auth, (req, res, next) => {
     console.log(req.user);
+    if (req.user.remindMe) {
         console.log((req.user.username + " renew JWT").rainbow);
 
         /*var tokenrenew = req.user;
@@ -97,6 +98,7 @@ app.get("/renew", auth, (req, res, next) => {
             return res.status(200).json({ error: false, errormessage: "", token: token_renew });
         });
     }
+    return res.status(400).json({ error: true, errormessage: "Renew impossible, please insert username and password again" });
 });
 
 
@@ -104,6 +106,7 @@ app.get("/renew", auth, (req, res, next) => {
 // TODO sanitize the user request 
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
     var remindMe;
+    if (req.query.remindMe) {
         remindMe = true;
     } else {
         remindMe = false;
@@ -451,13 +454,40 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
     })
 })
 
+// TODO meglio get o PUT come endpoint?
 // presuppone che l'id del match inserito sia di un match in attesa: non controlla lo status. (è possibile modificare)
+<<<<<<< HEAD
 app.put("/matches/:id_match/join", auth, (req,res,next) => {
     match.getModel().find({"$or" : [{"owner" : req.user.id}, {"opponent" : req.user.id}]}).count().then((data) => {
         if(JSON.stringify(data) === "0"){
             match.getModel().findOneAndUpdate({"_id" : req.params.id_match}, {"$set" : {"opponent" : req.user.id}})
             return res.status(200).json({error: false, errormessage: "User correctly joined the match "+req.params.id_match})
+=======
+app.get("/matches/:id_match/join", auth, (req, res, next) => {
+    match.getModel().find({ "$or": [{ "owner._id": req.user.id }, { "opponent._id": req.user.id }] }).count().then((data) => {
+        if (data === 0) {
+            match.getModel().findOne({ "_id": req.params.id_match }).then((data) => {
+                if (data.status != match.MatchStatus.Wait) {
+                    return res.status(400).json({ error: true, errormessage: "Match already setted up" });
+                }
+                else {
+                    match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match),
+                        {
+                            "opponent": { "_id": mongoose.Types.ObjectId(req.user.id) },
+                            "status": match.MatchStatus.Building
+                        }).then(
+                            (resolve) => {
+                                return res.status(200).json({ error: false, errormessage: "" });
+                            },
+                            (reject) => {
+                                return res.status(400).json({ error: true, errormessage: "An error occured: " + reject });
+                            }
+                        );
+                }
+            })
+>>>>>>> dbc6636942a60fb1af36391fd024da764e6cd28b
         }
+        else {
             return res.status(400).json({ error: true, errormessage: "User already fighting in a different match." });
         }
     })
@@ -484,6 +514,7 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
         user.getModel().findOne({ "username": "admin" }).count().then(
             (data) => {
                 console.log(data);
+                if (data == 0) {
                     //Creating Admin
                     var admin = user.newUser({
                         name: "admin",
@@ -503,6 +534,7 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
                 }
             }
         )
+
         //Starting server
         let server = http.createServer(app);
         ios = io(server);
