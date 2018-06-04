@@ -76,7 +76,6 @@ passport.use(new passportHTTP.BasicStrategy(
 //Renew Endpoint
 app.get("/renew", auth, (req, res, next) => {
     console.log(req.user);
-    if(req.user.remindMe){
         console.log((req.user.username + " renew JWT").rainbow);
 
         /*var tokenrenew = req.user;
@@ -98,7 +97,6 @@ app.get("/renew", auth, (req, res, next) => {
             return res.status(200).json({ error: false, errormessage: "", token: token_renew });
         });
     }
-    return res.status(400).json({ error: true, errormessage: "Renew impossible, please insert username and password again"});
 });
 
 
@@ -106,7 +104,6 @@ app.get("/renew", auth, (req, res, next) => {
 // TODO sanitize the user request 
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
     var remindMe;
-    if(req.query.remindMe){
         remindMe = true;
     } else {
         remindMe = false;
@@ -461,7 +458,6 @@ app.put("/matches/:id_match/join", auth, (req,res,next) => {
             match.getModel().findOneAndUpdate({"_id" : req.params.id_match}, {"$set" : {"opponent" : req.user.id}})
             return res.status(200).json({error: false, errormessage: "User correctly joined the match "+req.params.id_match})
         }
-        else{
             return res.status(400).json({ error: true, errormessage: "User already fighting in a different match." });
         }
     })
@@ -488,7 +484,6 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
         user.getModel().findOne({ "username": "admin" }).count().then(
             (data) => {
                 console.log(data);
-                if(data == 0){
                     //Creating Admin
                     var admin = user.newUser({
                         name: "admin",
@@ -508,7 +503,6 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
                 }
             }
         )
-        
         //Starting server
         let server = http.createServer(app);
         ios = io(server);
