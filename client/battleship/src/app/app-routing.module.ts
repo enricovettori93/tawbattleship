@@ -8,7 +8,7 @@ import { UserSignupComponent } from "./user-signup/user-signup.component";
 import { ScoreboardComponent } from "./scoreboard/scoreboard.component";
 import { PlayersComponent } from "./players/players.component";
 import { ListChatsComponent } from "./list-chats/list-chats.component";
-import { MatchComponent } from "./match/match.component";
+import { MatchBuilderComponent } from "./match-builder/match-builder.component";
 import { ChatComponent } from "./chat/chat.component";
 import { NotfoundComponent } from "./notfound/notfound.component";
 import { ListMatchesComponent } from "./list-matches/list-matches.component";
@@ -25,7 +25,7 @@ const routes: Routes = [
   { path: "chats", component: ListChatsComponent },
   { path: "chats/:id", component: ChatComponent },
   { path: "match", component: ListMatchesComponent },
-  { path: "match/:id/board", component: MatchComponent},
+  { path: "match/:id/board", component: MatchBuilderComponent},
   { path: "**", component: NotfoundComponent }
 ];
 

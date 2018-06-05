@@ -12,7 +12,7 @@ import { NavbarComponent } from "./navbar/navbar.component";
 import { ScoreboardComponent } from "./scoreboard/scoreboard.component";
 import { PlayersComponent } from "./players/players.component";
 import { ListChatsComponent } from "./list-chats/list-chats.component";
-import { MatchComponent } from "./match/match.component";
+import { MatchBuilderComponent } from "./match-builder/match-builder.component";
 import { ChatComponent } from "./chat/chat.component";
 import { NotfoundComponent } from "./notfound/notfound.component";
 import { ListMatchesComponent } from "./list-matches/list-matches.component";
@@ -36,7 +36,7 @@ import { MatchService } from "./match.service";
     ScoreboardComponent,
     PlayersComponent,
     ListChatsComponent,
-    MatchComponent,
+    MatchBuilderComponent,
     ChatComponent,
     NotfoundComponent,
     ListMatchesComponent

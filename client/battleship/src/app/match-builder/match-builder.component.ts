@@ -7,12 +7,12 @@ import { Router } from "@angular/router";
 
 @Component({
   selector: "app-match",
-  templateUrl: "./match.component.html",
-  styleUrls: ["./match.component.css"],
+  templateUrl: "./match-builder.component.html",
+  styleUrls: ["./match-builder.component.css"],
   encapsulation: ViewEncapsulation.None
 })
 
-export class MatchComponent implements OnInit {
+export class MatchBuilderComponent implements OnInit {
   @ViewChild("battlefieldDOM") battlefieldDom: ElementRef;
   private userName: string;
   private userMatches: string;
@@ -39,12 +39,13 @@ export class MatchComponent implements OnInit {
     this.id_match = (this.router.url.split("/"))[2];
     this.columns = Array(10).fill(0).map((x, i) => (String.fromCharCode(97 + i)));
     this.rows = Array(10).fill(0).map((x, i) => (i + ""));
-    /** TODO
+    /** TODO:
      * this.socketIoService.connect(this.id_match).subscribe((data) => {
 
     }
     );*/
     this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
+      console.log(match);
       this.match = match;
     }, (err) => {
       console.log(JSON.stringify(err));
