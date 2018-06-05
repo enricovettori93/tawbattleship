@@ -1,19 +1,19 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2, ViewEncapsulation } from "@angular/core";
-import { UserService } from "../user.service";
-import { UtilitiesService } from "../utilities.service";
-import { MatchService, Ship, ShipEnum, Cell, CellStatus, Orientation } from "../match.service";
-import { SocketioService } from "../socketio.service";
-import { Router } from "@angular/router";
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2, ViewEncapsulation } from '@angular/core';
+import { UserService } from '../user.service';
+import { UtilitiesService } from '../utilities.service';
+import { MatchService, Ship, ShipEnum, Cell, CellStatus, Orientation } from '../match.service';
+import { SocketioService } from '../socketio.service';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: "app-match",
-  templateUrl: "./match-builder.component.html",
-  styleUrls: ["./match-builder.component.css"],
+  selector: 'app-match',
+  templateUrl: './match-builder.component.html',
+  styleUrls: ['./match-builder.component.css'],
   encapsulation: ViewEncapsulation.None
 })
 
 export class MatchBuilderComponent implements OnInit {
-  @ViewChild("battlefieldDOM") battlefieldDom: ElementRef;
+  @ViewChild('battlefieldDOM') battlefieldDom: ElementRef;
   private userName: string;
   private userMatches: string;
   private draggingShip: Ship;
@@ -36,9 +36,9 @@ export class MatchBuilderComponent implements OnInit {
 
   ngOnInit() {
     this.utilities.check_auth(this.userService.get_token());
-    this.id_match = (this.router.url.split("/"))[2];
+    this.id_match = (this.router.url.split('/'))[2];
     this.columns = Array(10).fill(0).map((x, i) => (String.fromCharCode(97 + i)));
-    this.rows = Array(10).fill(0).map((x, i) => (i + ""));
+    this.rows = Array(10).fill(0).map((x, i) => (i + ''));
     /** TODO:
      * this.socketIoService.connect(this.id_match).subscribe((data) => {
 
@@ -68,6 +68,17 @@ export class MatchBuilderComponent implements OnInit {
         ship.setOrientation(Orientation.VERTICAL);
       } else {
         ship.setOrientation(Orientation.HORIZONTAL);
+      }
+    }
+  }
+
+  removeFromBoard(ship: Ship) {
+    ship.removeFromBoard();
+    for (let i = 0; i < this.board.length; i++) {
+      for (let j = 0; j < this.board[i].length; j++) {
+        if (this.board[i][j].getStatus() === CellStatus.OCCUPIED && this.board[i][j].getShipRef() === ship.getId()) {
+          this.board[i][j].removeShipRef();
+        }
       }
     }
   }
@@ -117,18 +128,24 @@ export class MatchBuilderComponent implements OnInit {
     if (this.draggingShip.getOrientation() === Orientation.HORIZONTAL) {
       for (let k = - Math.floor(this.draggingShip.getLength() / 2); k < Math.ceil(this.draggingShip.getLength() / 2); k++) {
         this.board[row][col + k + 1].setStatus(status);
+        if (status === CellStatus.OCCUPIED) {
+          this.board[row][col + k + 1].setShipRef(this.draggingShip.getId());
+        }
       }
     } else {
       for (let k = - Math.floor(this.draggingShip.getLength() / 2); k < Math.ceil(this.draggingShip.getLength() / 2); k++) {
         this.board[row + k + 1][col].setStatus(status);
+        if (status === CellStatus.OCCUPIED) {
+          this.board[row + k + 1][col].setShipRef(this.draggingShip.getId());
+        }
       }
     }
   }
 
   dragover(event) {
     event.preventDefault();
-    const col = parseInt(event.target.getAttribute("col"), 10);
-    const row = parseInt(event.target.getAttribute("row"), 10);
+    const col = parseInt(event.target.getAttribute('col'), 10);
+    const row = parseInt(event.target.getAttribute('row'), 10);
     this.validDragging = this.validDraggingCheck(row, col);
     if (this.validDragging) {
       this.changeStatus(row, col, CellStatus.OVER);
@@ -137,16 +154,16 @@ export class MatchBuilderComponent implements OnInit {
 
   drop(event) {
     event.preventDefault();
-    const col = parseInt(event.target.getAttribute("col"), 10);
-    const row = parseInt(event.target.getAttribute("row"), 10);
+    const col = parseInt(event.target.getAttribute('col'), 10);
+    const row = parseInt(event.target.getAttribute('row'), 10);
     if (this.validDragging) {
       this.changeStatus(row, col, CellStatus.OCCUPIED);
       this.draggingShip.setPosition(row, col + 1 - Math.floor(this.draggingShip.getLength() / 2));
     }
   }
   dragleave(event) {
-    const col = parseInt(event.target.getAttribute("col"), 10);
-    const row = parseInt(event.target.getAttribute("row"), 10);
+    const col = parseInt(event.target.getAttribute('col'), 10);
+    const row = parseInt(event.target.getAttribute('row'), 10);
     if (this.validDragging) {
       this.changeStatus(row, col, CellStatus.FREE);
     }

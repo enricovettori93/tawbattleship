@@ -69,8 +69,8 @@ export class MatchService {
   }
 
   getSingleMatch(id: string): Observable<any> {
-    return  this.http.get(this.userService.url + '/matches/' + id, this.utilities.create_options(this.userService.get_token()))
-            .pipe();
+    return this.http.get(this.userService.url + '/matches/' + id, this.utilities.create_options(this.userService.get_token()))
+      .pipe();
   }
 
   initShips(): Array<Ship> {
@@ -92,6 +92,9 @@ export class MatchService {
 }
 
 export class Ship {
+
+  private static id = 0;
+  private id: number;
   private type: ShipEnum;
   private row: number;
   private column: number;
@@ -100,9 +103,14 @@ export class Ship {
   private x;
   private y;
 
+  static getId() {
+    return Ship.id++;
+  }
+
   constructor(type: ShipEnum) {
     this.type = type;
     this.orientation = Orientation.HORIZONTAL;
+    this.id = Ship.getId();
   }
 
   setOrientation(orientation: Orientation) {
@@ -142,8 +150,18 @@ export class Ship {
     this.used = true;
   }
 
+  removeFromBoard() {
+    this.setRow(null);
+    this.setColumn(null);
+    this.used = false;
+  }
+
   isUsed() {
     return this.used;
+  }
+
+  getId() {
+    return this.id;
   }
 
 }
@@ -152,6 +170,7 @@ export class Cell {
   private status = CellStatus.FREE;
   private col;
   private row;
+  private shipRef: number;
   constructor(col, row) {
     this.col = col;
     this.row = row;
@@ -167,5 +186,18 @@ export class Cell {
   }
   getStatus() {
     return this.status;
+  }
+
+  setShipRef(shipRef) {
+    this.shipRef = shipRef;
+  }
+
+  getShipRef() {
+    return this.shipRef;
+  }
+
+  removeShipRef() {
+    this.shipRef = null;
+    this.status = CellStatus.FREE;
   }
 }
