@@ -3,7 +3,10 @@
 </div>
 <div class="container py-2">
   <div *ngIf="messages.length === 0">Nessun messaggio presente nella chat</div>
-  <div *ngFor="let message of messages">
+  <div *ngIf="-(showMessage) <= messages.length" style="text-align: center">
+    <a style="color: #083d8d" (click)="showMoreMessages()">Visualizza più messaggi</a>
+  </div>
+  <div *ngFor="let message of messagesToShow">
     <div *ngIf="message.senderID == id_user">
       <div class="alert alert-dark py-2 me">
         <span>{{message.text}}</span>

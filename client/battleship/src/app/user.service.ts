@@ -171,7 +171,7 @@ export class UserService {
   getUserSingleChat(idChat: string): Observable<any> {
     return this.http.get(this.url + "/chats/" + idChat, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        //console.log(JSON.stringify(data));
       })
     );
   }
