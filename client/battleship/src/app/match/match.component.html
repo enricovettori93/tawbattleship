@@ -10,9 +10,19 @@
     <div class="row">
       <div class="col-md-6" #battlefieldDOM>
         <h2>Posiziona le tue navi</h2>
+        <div class="board-row" *ngFor="let row of board">
+          <div (dragover)="dragover($event)"
+               (drop)="drop($event)"
+               (dragleave)="dragleave($event)"
+               class="holder" [ngStyle]="{'background-color': cell.getStatus()}" [attr.row]="cell.getRow()" [attr.col]="cell.getCol()" *ngFor="let cell of row">
+          </div>
+        </div>
       </div>
-      <div class="col-md-6" #ships>
-        <!--  Destroyer -->
+      <div class="col-md-6" #shipsDOM>
+        <div class="ship" draggable="true" *ngFor="let ship of ships" (dragstart)="dragstart(ship)">
+          <div class="shipPart box" *ngFor="let shipPart of ship.getPart()">
+          </div>
+        </div>
       </div>
     </div>
   </div>

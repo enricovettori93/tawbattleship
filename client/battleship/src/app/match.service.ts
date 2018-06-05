@@ -13,6 +13,13 @@ export const enum ShipEnum {
   BATTLESHIP = 4,
   AIRCRAFTCARRIER = 5
 }
+export const enum CellStatus {
+  FREE = "#fff",
+  OVER = "#0f0",
+  OCCUPIED = "#f00",
+  SHOOTED = "#f67",
+  SIKED = "#823"
+}
 @Injectable({
   providedIn: "root"
 })
@@ -78,7 +85,7 @@ export class MatchService {
     );**/
   }
 
-  initShips() {
+  initShips(): Array<Ship> {
     const ships = new Array();
     for (let i = 0; i < 4; i++) {
       ships.push(new Ship(ShipEnum.DESTROYER));
@@ -109,6 +116,10 @@ export class Ship {
     return this.type;
   }
 
+  getPart() {
+    return new Array(this.type);
+  }
+
   setRow(row: number) {
     if (row <= 9 && row >= 0) {
       this.row = row;
@@ -122,5 +133,27 @@ export class Ship {
     } else {
       throw Error("Invalid column number");
     }
+  }
+}
+
+export class Cell {
+  private status = CellStatus.FREE;
+  private col;
+  private row;
+  constructor(col, row) {
+    this.col = col;
+    this.row = row;
+  }
+  getCol() {
+    return this.col;
+  }
+  getRow() {
+    return this.row;
+  }
+  setStatus(status: CellStatus) {
+    this.status = status;
+  }
+  getStatus() {
+    return this.status;
   }
 }

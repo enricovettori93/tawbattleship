@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2 } from "@angular/core";
 import { UserService } from "../user.service";
 import { UtilitiesService } from "../utilities.service";
-import { MatchService, Ship, ShipEnum } from "../match.service";
+import { MatchService, Ship, ShipEnum, Cell, CellStatus} from "../match.service";
 import { SocketioService } from "../socketio.service";
 import { Router } from "@angular/router";
 
@@ -11,14 +11,13 @@ import { Router } from "@angular/router";
   styleUrls: ["./match.component.css"]
 })
 
-export class MatchComponent implements OnInit, AfterViewInit {
-  @ViewChild("battlefieldDOM") battlefield: ElementRef;
-  @ViewChild("ships") shipsDom: ElementRef;
+export class MatchComponent implements OnInit {
   private userName: string;
   private userMatches: string;
-  board: ElementRef[][];
-  shipsDOM = new Array<ElementRef>();
-  ships: Ship[];
+  private draggingShip: Ship;
+  private validDragging: boolean;
+  board: Cell[][];
+  ships: Array<Ship>;
 
   columns: Array<string>;
   rows: Array<string>;
@@ -48,110 +47,64 @@ export class MatchComponent implements OnInit, AfterViewInit {
     }, (err) => {
       console.log(JSON.stringify(err));
     });
-    this.ships = new Array();
-  }
-
-  ngAfterViewInit() {
-    // init an empty array
-    this.board = new Array(10);
-    for (let i = 0; i < 10; i++) {
-      this.board[i] = new Array(10);
-    }
-    for (let i = 0; i < 10; i++) {
-      const row = this.renderer.createElement("div");
-      this.renderer.addClass(row, "row-" + i);
-      this.renderer.addClass(row, "board-row");
-      for (let j = 0; j < 10; j++) {
-        this.board[i][j] = this.renderer.createElement("div");
-        this.renderer.addClass(this.board[i][j], "holder");
-        this.renderer.addClass(this.board[i][j], "col-" + j);
-        this.renderer.listen(this.board[i][j], "dragover", (event) => {
-          event.preventDefault(console.log(event.dataTransfer.getData()));
-          this.renderer.addClass(event.target, "blue");
-        });
-        this.renderer.listen(this.board[i][j], "drop", (event) => {
-          event.preventDefault();
-          console.log(event);
-          this.renderer.addClass(event.target, "red");
-        });
-        this.renderer.listen(this.board[i][j], "dragleave", (event) => {
-          console.log(event);
-          this.renderer.removeClass(event.target, "blue");
-        });
-        // just to pass to the anonymous function
-        const renderer = this.renderer;
-        this.renderer.appendChild(row, this.board[i][j]);
-      }
-      this.renderer.appendChild(this.battlefield.nativeElement, row);
-    }
     this.ships = this.matchService.initShips();
-    this.ships.forEach((ship) => {
-      const shipDOM = this.renderer.createElement("div");
-      this.shipsDOM.push(shipDOM);
-      this.renderer.addClass(shipDOM, "ship");
-      this.renderer.setAttribute(shipDOM, "draggable", "true");
-      this.renderer.listen(shipDOM, "dragstart", (event) => {
-        event.dataTransfer.
-        event.dataTransfer.setData("Number", ship.getLength());
-      });
-      for (let i = 0; i < ship.getLength(); i++) {
-        const shipPart = this.renderer.createElement("div");
-        this.renderer.addClass(shipPart, "box-" + i);
-        this.renderer.addClass(shipPart, "shipPart");
-        this.renderer.appendChild(this.shipsDOM[this.shipsDOM.length - 1], shipPart);
+    this.board = new Array();
+    for (let i = 0; i < 10; i++) {
+      this.board.push(new Array());
+      for (let j = 0; j < 10; j++) {
+        this.board[i].push(new Cell(j, i));
       }
-      this.renderer.appendChild(this.shipsDom.nativeElement, shipDOM);
-    });
-
-
-  }
-
-}
-/*function drop() {
-  this.className = "holder";
-  this.append(App.box);
-}
-class App {
-  static box;
-  static className;
-  static init() {
-
-    App.box = document.getElementsByClassName("box")[0];
-
-    App.box.addEventListener("dragstart", App.dragstart);
-    App.box.addEventListener("dragend", App.dragend);
-
-    const containers = [].slice.call(document.getElementsByClassName("holder"));
-
-    for (const container of containers) {
-      container.addEventListener("dragover", App.dragover);
-      container.addEventListener("dragenter", App.dragenter);
-      container.addEventListener("dragleave", App.dragleave);
-      container.addEventListener("drop", drop);
     }
   }
 
-  static dragstart() {
-    this.className += " held";
+  /*ngAfterViewInit() {
 
-    setTimeout(() => this.className = "invisible", 0);
+
+  }*/
+
+  dragstart(ship) {
+    this.draggingShip = ship;
   }
 
-  static dragend() {
-    this.className = "box";
+  dragover(event) {
+    event.preventDefault();
+    const col = parseInt(event.target.getAttribute("col"), 10);
+    const row = parseInt(event.target.getAttribute("row"), 10);
+    if (col + this.draggingShip.getLength() / 2 < 10 && col + 1 - this.draggingShip.getLength() / 2 >= 0) {
+      this.validDragging = true;
+      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
+        this.board[row][col + k].setStatus(CellStatus.OVER);
+      }
+      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
+        this.board[row][col + 1 - k].setStatus(CellStatus.OVER);
+      }
+    }
   }
 
-  static dragover(e) {
-    e.preventDefault();
+  drop(event) {
+    event.preventDefault();
+    const col = parseInt(event.target.getAttribute("col"), 10);
+    const row = parseInt(event.target.getAttribute("row"), 10);
+    if (col + this.draggingShip.getLength() / 2 < 10 && col + 1 - this.draggingShip.getLength() / 2 >= 0) {
+      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
+        this.board[row][col + k].setStatus(CellStatus.OCCUPIED);
+      }
+      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
+        this.board[row][col + 1 - k].setStatus(CellStatus.OCCUPIED);
+      }
+    }
   }
-
-  static dragenter(e) {
-    e.preventDefault();
-    this.className += " hovered";
+  dragleave(event) {
+    const col = parseInt(event.target.getAttribute("col"), 10);
+    const row = parseInt(event.target.getAttribute("row"), 10);
+    if (col + this.draggingShip.getLength() / 2 < 10 && col + 1 - this.draggingShip.getLength() / 2 >= 0) {
+      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
+        this.board[row][col + k].setStatus(CellStatus.FREE);
+      }
+      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
+        this.board[row][col + 1 - k].setStatus(CellStatus.FREE);
+      }
+    }
+    this.renderer.removeClass(event.target, "blue");
   }
-
-  static dragleave() {
-    this.className = "holder";
-  }
-
-}*/
+}
