@@ -62,10 +62,12 @@ export class MatchComponent implements OnInit {
   }
 
   rotate(ship: Ship) {
-    if (ship.getOrientation() === Orientation.HORIZONTAL) {
-      ship.setOrientation(Orientation.VERTICAL);
-    } else {
-      ship.setOrientation(Orientation.HORIZONTAL);
+    if (!ship.isUsed()) {
+      if (ship.getOrientation() === Orientation.HORIZONTAL) {
+        ship.setOrientation(Orientation.VERTICAL);
+      } else {
+        ship.setOrientation(Orientation.HORIZONTAL);
+      }
     }
   }
 
@@ -74,9 +76,15 @@ export class MatchComponent implements OnInit {
   }
 
   private validDraggingCheck(row, col) {
-    return col + Math.ceil(this.draggingShip.getLength() / 2) < 10 &&
-      col + 1 - Math.floor(this.draggingShip.getLength() / 2) >= 0 &&
-      this.checkOverlap(row, col);
+    if (this.draggingShip.getOrientation() === Orientation.HORIZONTAL) {
+      return col + Math.ceil(this.draggingShip.getLength() / 2) < 10 &&
+        col + 1 - Math.floor(this.draggingShip.getLength() / 2) >= 0 &&
+        this.checkOverlap(row, col);
+    } else {
+      return row + Math.ceil(this.draggingShip.getLength() / 2) < 10 &&
+        row + 1 - Math.floor(this.draggingShip.getLength() / 2) >= 0 &&
+        this.checkOverlap(row, col);
+    }
   }
 
   private checkOverlap(row, col) {
@@ -90,6 +98,16 @@ export class MatchComponent implements OnInit {
           }
         }
       }
+    } else {
+      for (let i = - Math.floor(this.draggingShip.getLength() / 2) - 1; i < Math.ceil(this.draggingShip.getLength() / 2) + 1; i++) {
+        for (let j = -1; j < 2; j++) {
+          const rowAux = row + i + 1;
+          const colAux = col + j;
+          if (rowAux >= 0 && rowAux < 10 && colAux >= 0 && colAux < 10 && this.board[rowAux][colAux].getStatus() === CellStatus.OCCUPIED) {
+            return false;
+          }
+        }
+      }
     }
     return true;
   }
@@ -98,6 +116,10 @@ export class MatchComponent implements OnInit {
     if (this.draggingShip.getOrientation() === Orientation.HORIZONTAL) {
       for (let k = - Math.floor(this.draggingShip.getLength() / 2); k < Math.ceil(this.draggingShip.getLength() / 2); k++) {
         this.board[row][col + k + 1].setStatus(status);
+      }
+    } else {
+      for (let k = - Math.floor(this.draggingShip.getLength() / 2); k < Math.ceil(this.draggingShip.getLength() / 2); k++) {
+        this.board[row + k + 1][col].setStatus(status);
       }
     }
   }
