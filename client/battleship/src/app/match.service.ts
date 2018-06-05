@@ -57,36 +57,20 @@ export class MatchService {
   }
 
   joinMatch(id: string, user_id: string): Observable<any> {
-    // TODO update with HTTP request to /matches/:id_match/join
-    const myObservable = of({ error: false, errorMessage: "" });
-    const jsonPayload = {
-      "user_id": user_id
-    };
-    return myObservable;
-    /*return this.http.put(
-      this.userService.url + "/matches" + id,
-      jsonPayload,
+    console.log("son qua");
+    return this.http.put(
+      this.userService.url + "/matches/" + id + "/join",
+      {},
       this.utilities.create_options(this.userService.get_token())).pipe(
         tap((data) => {
           console.log("Creating match: " + JSON.stringify(data));
         })
-      );*/
+      );
   }
 
   getSingleMatch(id: string): Observable<any> {
-    // TODO update with real HTTP request
-    const id_prova = "5b1117aad8af07796e69a41c";
-    const obs = of({
-      status: "1"
-    });
-    return obs;
-
-    /**
-     * return this.http.get(this.userService.url + "/matches/" + id, this.utilities.create_options(this.userService.get_token())).pipe(
-      tap((data) => {
-        console.log("Get single match info: " + JSON.stringify(data));
-      })
-    );**/
+    return  this.http.get(this.userService.url + "/matches/" + id, this.utilities.create_options(this.userService.get_token()))
+            .pipe();
   }
 
   initShips(): Array<Ship> {

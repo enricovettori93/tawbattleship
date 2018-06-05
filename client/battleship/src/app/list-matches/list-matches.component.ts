@@ -19,6 +19,7 @@ export class ListMatchesComponent implements OnInit {
   private errormessage = undefined;
   private userRoutingMatch = undefined;
   private userHadAlreadyWaitingMatch = false;
+  private matchOwnedId: string;
 
   constructor(
     private userService: UserService,
@@ -49,11 +50,10 @@ export class ListMatchesComponent implements OnInit {
     this.matches = [];
     this.matchService.getWaitingMatch().subscribe((data) => {
       data.forEach(element => {
-        // console.log(element);
         if (element.owner != null) {
           if (this.userService.get_userId() === element.owner._id) {
             this.userHadAlreadyWaitingMatch = true;
-            // console.log("AH-HA sgamato!!");
+            this.matchOwnedId = element._id;
           }
         }
       });
@@ -62,17 +62,23 @@ export class ListMatchesComponent implements OnInit {
   }
 
   enterMatch(idMatch: string) {
-    const request = this.matchService.joinMatch(idMatch, this.userService.get_userId());
-    request.subscribe(
-      (data) => {
-        if (!data.error) {
-          this.router.navigate(["/match/" + idMatch + "/board"]);
+
+    if (this.userHadAlreadyWaitingMatch) {
+      this.router.navigate(["/match/" + this.matchOwnedId + "/board"]);
+    } else {
+      const request = this.matchService.joinMatch(idMatch, this.userService.get_userId());
+      request.subscribe(
+        (data) => {
+          console.log(data);
+          if (!data.error) {
+            this.router.navigate(["/match/" + idMatch + "/board"]);
+          }
+        },
+        (error) => {
+          console.log("Impossibile entrare nella partita");
         }
-      },
-      (error) => {
-        console.log("Impossibile entrare nella partita");
-      }
-    );
+      );
+    }
   }
 
   getUserMatch() {
