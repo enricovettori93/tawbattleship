@@ -72,9 +72,12 @@ export class UserService {
   }
 
   register(user): Observable<any> {
+    console.log(JSON.stringify(user));
     return this.http.post(this.url + "/users", user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
         console.log(JSON.stringify(data));
+      },(error) => {
+        console.log("ERRORE REGISTRAZIONE " + error.error.errormessage);
       })
     );
   }
