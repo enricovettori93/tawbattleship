@@ -1,17 +1,19 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2 } from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2, ViewEncapsulation } from "@angular/core";
 import { UserService } from "../user.service";
 import { UtilitiesService } from "../utilities.service";
-import { MatchService, Ship, ShipEnum, Cell, CellStatus} from "../match.service";
+import { MatchService, Ship, ShipEnum, Cell, CellStatus, Orientation } from "../match.service";
 import { SocketioService } from "../socketio.service";
 import { Router } from "@angular/router";
 
 @Component({
   selector: "app-match",
   templateUrl: "./match.component.html",
-  styleUrls: ["./match.component.css"]
+  styleUrls: ["./match.component.css"],
+  encapsulation: ViewEncapsulation.None
 })
 
 export class MatchComponent implements OnInit {
+  @ViewChild("battlefieldDOM") battlefieldDom: ElementRef;
   private userName: string;
   private userMatches: string;
   private draggingShip: Ship;
@@ -52,32 +54,61 @@ export class MatchComponent implements OnInit {
     for (let i = 0; i < 10; i++) {
       this.board.push(new Array());
       for (let j = 0; j < 10; j++) {
-        this.board[i].push(new Cell(j, i));
+        const cell = new Cell(j, i);
+        cell.setStatus(CellStatus.FREE);
+        this.board[i].push(cell);
       }
     }
   }
 
-  /*ngAfterViewInit() {
+  rotate(ship: Ship) {
+    if (ship.getOrientation() === Orientation.HORIZONTAL) {
+      ship.setOrientation(Orientation.VERTICAL);
+    } else {
+      ship.setOrientation(Orientation.HORIZONTAL);
+    }
+  }
 
-
-  }*/
-
-  dragstart(ship) {
+  dragstart(ship: Ship) {
     this.draggingShip = ship;
+  }
+
+  private validDraggingCheck(row, col) {
+    return col + Math.ceil(this.draggingShip.getLength() / 2) < 10 &&
+      col + 1 - Math.floor(this.draggingShip.getLength() / 2) >= 0 &&
+      this.checkOverlap(row, col);
+  }
+
+  private checkOverlap(row, col) {
+    if (this.draggingShip.getOrientation() === Orientation.HORIZONTAL) {
+      for (let i = -1; i < 2; i++) {
+        for (let j = - Math.floor(this.draggingShip.getLength() / 2) - 1; j < Math.ceil(this.draggingShip.getLength() / 2) + 1; j++) {
+          const rowAux = row + i;
+          const colAux = col + j + 1;
+          if (rowAux >= 0 && rowAux < 10 && colAux >= 0 && colAux < 10 && this.board[rowAux][colAux].getStatus() === CellStatus.OCCUPIED) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  private changeStatus(row, col, status: CellStatus) {
+    if (this.draggingShip.getOrientation() === Orientation.HORIZONTAL) {
+      for (let k = - Math.floor(this.draggingShip.getLength() / 2); k < Math.ceil(this.draggingShip.getLength() / 2); k++) {
+        this.board[row][col + k + 1].setStatus(status);
+      }
+    }
   }
 
   dragover(event) {
     event.preventDefault();
     const col = parseInt(event.target.getAttribute("col"), 10);
     const row = parseInt(event.target.getAttribute("row"), 10);
-    if (col + this.draggingShip.getLength() / 2 < 10 && col + 1 - this.draggingShip.getLength() / 2 >= 0) {
-      this.validDragging = true;
-      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
-        this.board[row][col + k].setStatus(CellStatus.OVER);
-      }
-      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
-        this.board[row][col + 1 - k].setStatus(CellStatus.OVER);
-      }
+    this.validDragging = this.validDraggingCheck(row, col);
+    if (this.validDragging) {
+      this.changeStatus(row, col, CellStatus.OVER);
     }
   }
 
@@ -85,26 +116,21 @@ export class MatchComponent implements OnInit {
     event.preventDefault();
     const col = parseInt(event.target.getAttribute("col"), 10);
     const row = parseInt(event.target.getAttribute("row"), 10);
-    if (col + this.draggingShip.getLength() / 2 < 10 && col + 1 - this.draggingShip.getLength() / 2 >= 0) {
-      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
-        this.board[row][col + k].setStatus(CellStatus.OCCUPIED);
-      }
-      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
-        this.board[row][col + 1 - k].setStatus(CellStatus.OCCUPIED);
-      }
+    if (this.validDragging) {
+      this.changeStatus(row, col, CellStatus.OCCUPIED);
+      this.draggingShip.setPosition(row, col + 1 - Math.floor(this.draggingShip.getLength() / 2));
     }
   }
   dragleave(event) {
     const col = parseInt(event.target.getAttribute("col"), 10);
     const row = parseInt(event.target.getAttribute("row"), 10);
-    if (col + this.draggingShip.getLength() / 2 < 10 && col + 1 - this.draggingShip.getLength() / 2 >= 0) {
-      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
-        this.board[row][col + k].setStatus(CellStatus.FREE);
-      }
-      for (let k = 0; k < this.draggingShip.getLength() / 2; k++) {
-        this.board[row][col + 1 - k].setStatus(CellStatus.FREE);
-      }
+    if (this.validDragging) {
+      this.changeStatus(row, col, CellStatus.FREE);
     }
-    this.renderer.removeClass(event.target, "blue");
+  }
+
+  dragend(event) {
+    if (this.validDragging) {
+    }
   }
 }

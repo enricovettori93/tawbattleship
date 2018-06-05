@@ -14,11 +14,15 @@ export const enum ShipEnum {
   AIRCRAFTCARRIER = 5
 }
 export const enum CellStatus {
-  FREE = "#fff",
-  OVER = "#0f0",
-  OCCUPIED = "#f00",
+  FREE = "#0080FF",
+  OVER = "#0000FF",
+  OCCUPIED = "#64FE2E",
   SHOOTED = "#f67",
   SIKED = "#823"
+}
+export const enum Orientation {
+  HORIZONTAL,
+  VERTICAL
 }
 @Injectable({
   providedIn: "root"
@@ -107,9 +111,22 @@ export class Ship {
   private type: ShipEnum;
   private row: number;
   private column: number;
+  private used = false;
+  private orientation: Orientation;
+  private x;
+  private y;
 
   constructor(type: ShipEnum) {
     this.type = type;
+    this.orientation = Orientation.HORIZONTAL;
+  }
+
+  setOrientation(orientation: Orientation) {
+    this.orientation = orientation;
+  }
+
+  getOrientation() {
+    return this.orientation;
   }
 
   getLength(): number {
@@ -134,6 +151,17 @@ export class Ship {
       throw Error("Invalid column number");
     }
   }
+
+  setPosition(row, column) {
+    this.setRow(row);
+    this.setColumn(column);
+    this.used = true;
+  }
+
+  isUsed() {
+    return this.used;
+  }
+
 }
 
 export class Cell {

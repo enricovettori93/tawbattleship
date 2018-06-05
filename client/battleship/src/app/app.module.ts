@@ -17,6 +17,8 @@ import { ChatComponent } from "./chat/chat.component";
 import { NotfoundComponent } from "./notfound/notfound.component";
 import { ListMatchesComponent } from "./list-matches/list-matches.component";
 
+import { AngularFontAwesomeModule } from "angular-font-awesome";
+
 // Services
 import { UserService } from "./user.service";
 import { UtilitiesService } from "./utilities.service";
@@ -43,7 +45,8 @@ import { MatchService } from "./match.service";
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    AngularFontAwesomeModule
   ],
   providers: [
     {provide: UserService, useClass: UserService},

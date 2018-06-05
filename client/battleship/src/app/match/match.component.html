@@ -19,8 +19,13 @@
         </div>
       </div>
       <div class="col-md-6" #shipsDOM>
-        <div class="ship" draggable="true" *ngFor="let ship of ships" (dragstart)="dragstart(ship)">
-          <div class="shipPart box" *ngFor="let shipPart of ship.getPart()">
+        <div class="ship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of ships" (dragend)="dragend($event)" (dragstart)="dragstart(ship)">
+          <div [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'shipPart': true, 'box':true }"
+            *ngFor="let shipPart of ship.getPart()">
+          </div>
+          <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
+          <div *ngIf="ship.isUsed()">
+            <i class="fa fa-times" aria-hidden="true"></i>
           </div>
         </div>
       </div>

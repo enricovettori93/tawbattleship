@@ -5,9 +5,16 @@
   cursor: pointer;
   display: inline-block;
 }
+.vertical{
+  display: block;
+}
 
 .ship {
   display: block;
+}
+
+.ship[draggable="false"]{
+  opacity: 0.5;
 }
 
 .held {
