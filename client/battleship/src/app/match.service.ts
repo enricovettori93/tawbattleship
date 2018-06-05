@@ -1,10 +1,10 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { Observable, of } from "rxjs";
-import { tap } from "rxjs/operators";
-import { UserService } from "./user.service";
-import { UtilitiesService } from "./utilities.service";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { UserService } from './user.service';
+import { UtilitiesService } from './utilities.service';
 
 
 export const enum ShipEnum {
@@ -14,62 +14,62 @@ export const enum ShipEnum {
   AIRCRAFTCARRIER = 5
 }
 export const enum CellStatus {
-  FREE = "#0080FF",
-  OVER = "#0000FF",
-  OCCUPIED = "#64FE2E",
-  SHOOTED = "#f67",
-  SIKED = "#823"
+  FREE = '#0080FF',
+  OVER = '#0000FF',
+  OCCUPIED = '#64FE2E',
+  SHOOTED = '#f67',
+  SIKED = '#823'
 }
 export const enum Orientation {
   HORIZONTAL,
   VERTICAL
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class MatchService {
 
   constructor(private http: HttpClient, private router: Router, private utilities: UtilitiesService, private userService: UserService) { }
 
   getWaitingMatch(): Observable<any> {
-    return this.http.get(this.userService.url + "/matches", this.utilities.create_options(this.userService.get_token())).pipe(
+    return this.http.get(this.userService.url + '/matches', this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log("Waiting match: " + JSON.stringify(data));
+        console.log('Waiting match: ' + JSON.stringify(data));
       })
     );
   }
 
   getUserMatches(user: string): Observable<any> {
     return this.http.get(
-      this.userService.url + "/users/" + user + "/matches", this.utilities.create_options(this.userService.get_token())).pipe(
+      this.userService.url + '/users/' + user + '/matches', this.utilities.create_options(this.userService.get_token())).pipe(
         tap((data) => {
-          console.log("Logged user match: " + JSON.stringify(data));
+          console.log('Logged user match: ' + JSON.stringify(data));
         })
       );
   }
 
   createMatch(): Observable<any> {
-    return this.http.post(this.userService.url + "/matches", {}, this.utilities.create_options(this.userService.get_token())).pipe(
+    return this.http.post(this.userService.url + '/matches', {}, this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log("Creating match: " + JSON.stringify(data));
+        console.log('Creating match: ' + JSON.stringify(data));
       })
     );
   }
 
   joinMatch(id: string, user_id: string): Observable<any> {
-    console.log("son qua");
+    console.log('son qua');
     return this.http.put(
-      this.userService.url + "/matches/" + id + "/join",
+      this.userService.url + '/matches/' + id + '/join',
       {},
       this.utilities.create_options(this.userService.get_token())).pipe(
         tap((data) => {
-          console.log("Creating match: " + JSON.stringify(data));
+          console.log('Creating match: ' + JSON.stringify(data));
         })
       );
   }
 
   getSingleMatch(id: string): Observable<any> {
-    return  this.http.get(this.userService.url + "/matches/" + id, this.utilities.create_options(this.userService.get_token()))
+    return  this.http.get(this.userService.url + '/matches/' + id, this.utilities.create_options(this.userService.get_token()))
             .pipe();
   }
 
@@ -125,14 +125,14 @@ export class Ship {
     if (row <= 9 && row >= 0) {
       this.row = row;
     } else {
-      throw Error("Invalid row number");
+      throw Error('Invalid row number');
     }
   }
   setColumn(column: number) {
     if (column <= 9 && column >= 0) {
       this.column = column;
     } else {
-      throw Error("Invalid column number");
+      throw Error('Invalid column number');
     }
   }
 

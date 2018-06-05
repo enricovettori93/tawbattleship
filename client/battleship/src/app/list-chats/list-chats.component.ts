@@ -18,28 +18,28 @@ export class ListChatsComponent implements OnInit {
     this.utilities.check_auth(this.userService.get_token());
     this.getUserChats();
     this.socket.connect(this.userService.get_userId()).subscribe((m) => {
-      $("#myModal").modal('show');
-      $('.modal-backdrop').removeClass("modal-backdrop");
-      setTimeout(function(){
-        $('#myModal').modal('hide')
+      $('#myModal').modal('show');
+      $('.modal-backdrop').removeClass('modal-backdrop');
+      setTimeout(function () {
+        $('#myModal').modal('hide');
       }, 2000);
-    })
+    });
   }
 
-  getUserChats(){
-    this.userService.getUserChats().subscribe((data)=>{
-      //console.log("Chat trovate" + JSON.stringify(data));
+  getUserChats() {
+    this.userService.getUserChats().subscribe((data) => {
+      // console.log('Chat trovate' + JSON.stringify(data));
       this.chats = data[0]['chatList'];
     });
   }
 
-  deleteChat(id: string){
-    var answer = confirm('Sei sicuro di voler cancellare questa chat?');
-    if (answer){
+  deleteChat(id: string) {
+    const answer = confirm('Sei sicuro di voler cancellare questa chat?');
+    if (answer) {
       this.userService.deleteChat(id).subscribe((data) => {
         console.log(JSON.stringify(data));
         this.getUserChats();
-      })
+      });
     }
   }
 }
