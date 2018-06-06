@@ -1,19 +1,35 @@
-.shipPart {
-  height: 40px;
-  width: 40px;
-  background-color: black;
-  cursor: pointer;
-  display: inline-block;
+.vertical {
+  transform: rotate(90deg);
 }
-.vertical{
-  display: block;
+
+.horizonatal {
+  transform: none;
+}
+
+.ship-group {
+  display: inline-block;
+  margin: 10px 20px;
+}
+
+.ship-group .fa-times {
+  position: absolute;
+  right: -10px;
+  top: -10px
+}
+
+.ship-group .fa-repeat {
+  position: absolute;
+  right: -10px;
+  bottom: 10px
 }
 
 .ship {
+  position: relative;
   display: block;
+  float: left;
 }
 
-.ship[draggable="false"]{
+.ship[draggable="false"] {
   opacity: 0.5;
 }
 
@@ -49,12 +65,4 @@
   line-height: 0px;
   max-width: 100%;
   display: block;
-}
-
-.blue {
-  background-color: blue;
-}
-
-.red {
-  background-color: red;
 }
