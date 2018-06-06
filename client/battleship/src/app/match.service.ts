@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, filter, map } from 'rxjs/operators';
 import { UserService } from './user.service';
 import { UtilitiesService } from './utilities.service';
 
@@ -37,6 +37,20 @@ export class MatchService {
         console.log('Waiting match: ' + JSON.stringify(data));
       })
     );
+  }
+
+  getUserActiveMatches(user: string): Observable<any> {
+    return this.getUserMatches(user).pipe(map(
+      (matchArray) => {
+        let match = {};
+        matchArray.forEach(matchAux => {
+          if (matchAux.status === 1 || matchAux.status === 2) {
+            match = matchAux;
+          }
+        });
+        return match;
+      }
+    ));
   }
 
   getUserMatches(user: string): Observable<any> {

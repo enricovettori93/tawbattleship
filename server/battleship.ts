@@ -432,6 +432,7 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
                 try {
                     data.insertField(req.user.id, req.body.positioning).then(
                         (success) => {
+                            ios.emit('broadcast ' + data._id, data);
                             return res.status(200).json({ error: false, errormessage: "" });
                         }, (error) => {
                             console.log("something goes wrong " + error);
@@ -474,6 +475,9 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
                             "status": match.MatchStatus.Building
                         }).then(
                             (resolve) => {
+                                console.log("Socket transmission".rainbow);
+                                console.log(("data._id: " + data._id).red);
+                                ios.emit('broadcast ' + data._id, data);
                                 return res.status(200).json({ error: false, errormessage: "" });
                             },
                             (reject) => {

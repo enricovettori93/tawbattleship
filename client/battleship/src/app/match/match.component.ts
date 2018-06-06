@@ -20,6 +20,8 @@ export class MatchComponent implements OnInit {
     private matchService: MatchService, ) { }
 
   ngOnInit() {
+
+    this.utilities.check_auth(this.userService.get_token());
     this.activatedRoute.paramMap.subscribe((data) => {
       this.matchId = data.get('id');
     });

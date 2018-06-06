@@ -48,17 +48,26 @@ export class ListMatchesComponent implements OnInit {
 
   getWaitingMatch() {
     this.matches = [];
-    this.matchService.getWaitingMatch().subscribe((data) => {
-      data.forEach(element => {
-        if (element.owner != null) {
-          if (this.userService.get_userId() === element.owner._id) {
-            this.userHadAlreadyWaitingMatch = true;
-            this.matchOwnedId = element._id;
-          }
+    this.matchService.getUserActiveMatches(this.userService.get_username())
+      .subscribe((match) => {
+        if (Object.keys(match).length === 0) {
+          this.matchService.getWaitingMatch().subscribe((matches) => {
+            matches.forEach(element => {
+              if (element.owner != null) {
+                if (this.userService.get_userId() === element.owner._id) {
+                  this.userHadAlreadyWaitingMatch = true;
+                  this.matchOwnedId = element._id;
+                }
+              }
+            });
+            this.matches = matches;
+          });
+        } else {
+          this.userHadAlreadyWaitingMatch = true;
+          this.matchOwnedId = match._id;
+          this.matches = [match];
         }
       });
-      this.matches = data;
-    });
   }
 
   enterMatch(idMatch: string) {

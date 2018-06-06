@@ -25,12 +25,15 @@
     <div *ngIf="match.owner != null">
       <p>
         <b>Data di creazione</b> {{match.timestamp}}</p>
-      <p *ngIf="match.owner.username != userService.get_username()">
+      <p *ngIf="match.owner.username !== undefined && match.owner.username != userService.get_username()">
         <b>Entra nella partita di: </b>
         <a routerLink="/user/{{match.owner.username}}">{{match.owner.username}}</a>
       </p>
-      <p *ngIf="match.owner.username == userService.get_username()">
+      <p *ngIf=" match.owner.username !== undefined && match.owner.username == userService.get_username()">
         <b>Guarda lo stato della tua partita</b>
+      </p>
+      <p *ngIf=" match.opponent !== undefined && ( match.owner == userService.get_userId() || match.opponent == userService.get_userId())">
+        <b>Hai una partita in corso</b>
       </p>
       <button class="btn btn-primary" (click)="enterMatch(match._id)">Entra nella partita!</button>
       <hr>

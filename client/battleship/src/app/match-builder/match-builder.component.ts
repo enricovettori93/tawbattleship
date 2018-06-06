@@ -3,7 +3,7 @@ import { UserService } from '../user.service';
 import { UtilitiesService } from '../utilities.service';
 import { MatchService, Ship, ShipEnum, Cell, CellStatus, Orientation } from '../match.service';
 import { SocketioService } from '../socketio.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-match',
@@ -40,25 +40,12 @@ export class MatchBuilderComponent implements OnInit {
     private utilities: UtilitiesService,
     private matchService: MatchService,
     private socketIoService: SocketioService,
+    private activatedRoute: ActivatedRoute,
     private renderer: Renderer2,
     private router: Router) { }
 
   ngOnInit() {
     this.utilities.check_auth(this.userService.get_token());
-    this.id_match = (this.router.url.split('/'))[2];
-    this.columns = Array(10).fill(0).map((x, i) => (String.fromCharCode(97 + i)));
-    this.rows = Array(10).fill(0).map((x, i) => (i + ''));
-    /** TODO:
-     * this.socketIoService.connect(this.id_match).subscribe((data) => {
-
-    }
-    );*/
-    this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
-      // console.log(match);
-      this.match = match;
-    }, (err) => {
-      console.log(JSON.stringify(err));
-    });
     this.ships = this.matchService.initShips();
     this.aircraftCarriers = new Array();
     this.battleships = new Array();
@@ -89,6 +76,32 @@ export class MatchBuilderComponent implements OnInit {
         this.board[i].push(cell);
       }
     }
+
+    this.activatedRoute.paramMap.subscribe((data) => {
+      this.id_match = data.get('id');
+      this.socketIoService.connect(this.id_match).subscribe(
+        (match) => {
+          match = JSON.parse(match);
+          console.log(match);
+          if (match.status === 1) {
+            this.router.navigate(['/match/' + this.id_match + '/board']);
+          } else {
+            if (match.status === 2) {
+              this.router.navigate(['/match/' + this.id_match]);
+            }
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+      this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
+        console.log(match);
+        this.match = match;
+      }, (err) => {
+        console.log(JSON.stringify(err));
+      });
+    });
   }
 
   rotate(ship: Ship) {
