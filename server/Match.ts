@@ -109,8 +109,8 @@ MatchSchema.methods.insertField = function (owner: string, shipJSON: any): void 
                 }
             },
             (error) => {
-            });
                 throw ("Invalid field: " + error);
+            });
 
     } catch (y) {
         throw ("Invalid field: " + y);
