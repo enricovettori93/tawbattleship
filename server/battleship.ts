@@ -182,7 +182,7 @@ app.route("/users/:username").get(auth, (req, res, next) => {
 
 app.get("/users/:username/matches", auth, (req, res, next) => {
     user.getModel().findOne({ username: req.params.username }).then((data) => {
-        match.getModel().find({ owner: data._id }).then((matches) => {
+        match.getModel().find({"$or": [{ owner: data._id }, { opponent: data._id }]}).then((matches) => {
             return res.status(200).json(matches);
         }).catch((err) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err })
@@ -433,7 +433,7 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
                     data.insertField(req.user.id, req.body.positioning).then(
                         (success) => {
                             return res.status(200).json({ error: false, errormessage: "" });
-                        },(error) =>{
+                        }, (error) => {
                             console.log("something goes wrong " + error);
                         }
                     );
