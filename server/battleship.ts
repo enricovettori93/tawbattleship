@@ -477,6 +477,7 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
                             (resolve) => {
                                 console.log("Socket transmission".rainbow);
                                 console.log(("data._id: " + data._id).red);
+                                data.status = match.MatchStatus.Building;
                                 ios.emit('broadcast ' + data._id, data);
                                 return res.status(200).json({ error: false, errormessage: "" });
                             },
