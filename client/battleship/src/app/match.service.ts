@@ -89,6 +89,28 @@ export class MatchService {
     }
     return ships;
   }
+
+  sendBoard(board: Cell[][], ships: Ship[], matchId: string): Observable<any> {
+    const res = new Object();
+    const shipsArray = new Array();
+    ships.forEach(ship => {
+      const shipParts = new Array();
+      for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+          if (board[i][j].getStatus() === CellStatus.OCCUPIED && board[i][j].getShipRef() === ship.getId()) {
+            shipParts.push({ 'x': i, 'y': j });
+          }
+        }
+      }
+      shipsArray.push(shipParts);
+    });
+    res['ships'] = shipsArray;
+    console.log(JSON.stringify(res));
+    return this.http.put(
+      this.userService.url + '/matches/' + matchId + '/board',
+      res,
+      this.utilities.create_options(this.userService.get_token()));
+  }
 }
 
 export class Ship {
@@ -127,6 +149,10 @@ export class Ship {
 
   getPart() {
     return new Array(this.type);
+  }
+
+  getType(): ShipEnum {
+    return this.type;
   }
 
   setRow(row: number) {

@@ -20,6 +20,15 @@ export class MatchBuilderComponent implements OnInit {
   private validDragging: boolean;
   board: Cell[][];
   ships: Array<Ship>;
+  destroyers: Array<Ship>;
+  submarines: Array<Ship>;
+  aircraftCarriers: Array<Ship>;
+  battleships: Array<Ship>;
+
+  submitEnabled = false;
+  boardUpdated = false;
+  error = false;
+  errorMessage = '';
 
   columns: Array<string>;
   rows: Array<string>;
@@ -45,12 +54,32 @@ export class MatchBuilderComponent implements OnInit {
     }
     );*/
     this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
-      console.log(match);
+      // console.log(match);
       this.match = match;
     }, (err) => {
       console.log(JSON.stringify(err));
     });
     this.ships = this.matchService.initShips();
+    this.aircraftCarriers = new Array();
+    this.battleships = new Array();
+    this.destroyers = new Array();
+    this.submarines = new Array();
+    this.ships.forEach(ship => {
+      switch (ship.getType()) {
+        case ShipEnum.AIRCRAFTCARRIER:
+          this.aircraftCarriers.push(ship);
+          break;
+        case ShipEnum.BATTLESHIP:
+          this.battleships.push(ship);
+          break;
+        case ShipEnum.DESTROYER:
+          this.destroyers.push(ship);
+          break;
+        case ShipEnum.SUBMARINE:
+          this.submarines.push(ship);
+          break;
+      }
+    });
     this.board = new Array();
     for (let i = 0; i < 10; i++) {
       this.board.push(new Array());
@@ -81,6 +110,7 @@ export class MatchBuilderComponent implements OnInit {
         }
       }
     }
+    this.submitEnabled = false;
   }
 
   dragstart(ship: Ship) {
@@ -140,6 +170,20 @@ export class MatchBuilderComponent implements OnInit {
         }
       }
     }
+
+    if (status === CellStatus.OCCUPIED) {
+      let allShipsOnBoard = true;
+      let shipNotUsed: Ship;
+      this.ships.forEach((ship) => {
+        if (!ship.isUsed()) {
+          shipNotUsed = ship;
+          allShipsOnBoard = false;
+        }
+      });
+      // console.log(shipNotUsed);
+      this.submitEnabled = allShipsOnBoard;
+    }
+
   }
 
   dragover(event) {
@@ -157,8 +201,8 @@ export class MatchBuilderComponent implements OnInit {
     const col = parseInt(event.target.getAttribute('col'), 10);
     const row = parseInt(event.target.getAttribute('row'), 10);
     if (this.validDragging) {
-      this.changeStatus(row, col, CellStatus.OCCUPIED);
       this.draggingShip.setPosition(row, col + 1 - Math.floor(this.draggingShip.getLength() / 2));
+      this.changeStatus(row, col, CellStatus.OCCUPIED);
     }
   }
   dragleave(event) {
@@ -169,8 +213,16 @@ export class MatchBuilderComponent implements OnInit {
     }
   }
 
-  dragend(event) {
-    if (this.validDragging) {
-    }
+  // TODO: da implementare
+  sendBoard() {
+    this.matchService.sendBoard(this.board, this.ships, this.id_match).subscribe(
+      (data) => {
+        this.error = false;
+        this.boardUpdated = true;
+      }, (error) => {
+        this.error = true;
+        this.errorMessage = error.errorMessage;
+      });
   }
+
 }

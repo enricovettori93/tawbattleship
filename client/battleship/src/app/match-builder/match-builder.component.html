@@ -18,8 +18,8 @@
           </div>
         </div>
       </div>
-      <div class="col-md-6" #shipsDOM>
-        <div class="ship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of ships" (dragend)="dragend($event)" (dragstart)="dragstart(ship)">
+      <div class="col-md-4" #shipsDOM>
+        <div class="ship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of ships" (dragstart)="dragstart(ship)">
           <div [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'shipPart': true, 'box':true }"
             *ngFor="let shipPart of ship.getPart()">
           </div>
@@ -28,6 +28,19 @@
             <i class="fa fa-times" (click)="removeFromBoard(ship)"aria-hidden="true"></i>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <button type="button" [disabled]="!submitEnabled" (click)="sendBoard()" class="btn btn-primary">Inizia la partita</button>
+      </div>
+      <div class="col-md-6">
+        <div class="alert alert-success" *ngIf="boardUpdated">
+          <strong>Inviato!</strong> Non appena il tuo avversario posizionerà il campo inizierà la partita
+        </div>
+      </div>
+      <div class="alert alert-danger" *ngIf="error">
+        <strong>Errore</strong> {{errorMessage}}
       </div>
     </div>
   </div>
