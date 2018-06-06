@@ -78,7 +78,7 @@ export class MatchService {
     for (let i = 0; i < 4; i++) {
       ships.push(new Ship(ShipEnum.DESTROYER));
     }
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       ships.push(new Ship(ShipEnum.SUBMARINE));
     }
     for (let i = 0; i < 2; i++) {
@@ -104,7 +104,7 @@ export class MatchService {
       }
       shipsArray.push(shipParts);
     });
-    res['ships'] = shipsArray;
+    res['positioning'] = { 'ships': shipsArray };
     console.log(JSON.stringify(res));
     return this.http.put(
       this.userService.url + '/matches/' + matchId + '/board',
@@ -155,30 +155,11 @@ export class Ship {
     return this.type;
   }
 
-  setRow(row: number) {
-    if (row <= 9 && row >= 0) {
-      this.row = row;
-    } else {
-      throw Error('Invalid row number');
-    }
-  }
-  setColumn(column: number) {
-    if (column <= 9 && column >= 0) {
-      this.column = column;
-    } else {
-      throw Error('Invalid column number');
-    }
-  }
-
-  setPosition(row, column) {
-    this.setRow(row);
-    this.setColumn(column);
+  setUsed() {
     this.used = true;
   }
 
   removeFromBoard() {
-    this.setRow(null);
-    this.setColumn(null);
     this.used = false;
   }
 

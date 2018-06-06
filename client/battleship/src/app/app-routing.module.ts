@@ -12,6 +12,7 @@ import { MatchBuilderComponent } from './match-builder/match-builder.component';
 import { ChatComponent } from './chat/chat.component';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { ListMatchesComponent } from './list-matches/list-matches.component';
+import { MatchComponent } from './match/match.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'chats/:id', component: ChatComponent },
   { path: 'match', component: ListMatchesComponent },
   { path: 'match/:id/board', component: MatchBuilderComponent},
+  { path: 'match/:id', component: MatchComponent },
   { path: '**', component: NotfoundComponent }
 ];
 

@@ -201,7 +201,7 @@ export class MatchBuilderComponent implements OnInit {
     const col = parseInt(event.target.getAttribute('col'), 10);
     const row = parseInt(event.target.getAttribute('row'), 10);
     if (this.validDragging) {
-      this.draggingShip.setPosition(row, col + 1 - Math.floor(this.draggingShip.getLength() / 2));
+      this.draggingShip.setUsed();
       this.changeStatus(row, col, CellStatus.OCCUPIED);
     }
   }
@@ -220,8 +220,8 @@ export class MatchBuilderComponent implements OnInit {
         this.error = false;
         this.boardUpdated = true;
       }, (error) => {
+        this.errorMessage = error.error.errormessage;
         this.error = true;
-        this.errorMessage = error.errorMessage;
       });
   }
 

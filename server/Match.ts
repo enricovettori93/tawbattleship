@@ -63,7 +63,7 @@ var MatchSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User'
     },
-    lastIdAttacker:{
+    lastIdAttacker: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User'
     }
@@ -86,29 +86,35 @@ MatchSchema.methods.setStatus = function (status: MatchStatus) {
 
 MatchSchema.methods.insertField = function (owner: string, shipJSON: any): void {
     var field1 = field.newField(owner);
-    field1.save().then((data) => {
-        try {
-            data.insertShips(shipJSON)
-            
+    try {
+        field1.insertShips(shipJSON)
+        field1.save().then(
+            (success) => {
+                let toRemove: Field;
+                if (this.owner == owner) {
+                    toRemove = this.fieldOwner;
+                    this.fieldOwner = field1;
+                } else {
+                    toRemove = this.fieldOpponent;
+                    this.fieldOpponent = field1;
+                }
+                if(toRemove !== null && toRemove !== undefined){
+                    field.getModel().remove({"_id": toRemove}).then(
+                        (success)=>{
+                        }),
+                        (error) =>{
+                            console.log("Old field removed");
+                            console.log("Error: " + error);
+                        }
+                }
+            },
+            (error) => {
+            });
+                throw ("Invalid field: " + error);
 
-            console.log("ecco l'ID del campo da inserire: " + data._id)
-            //console.log("queste sono le navi quando siamo in insertField")
-            //console.log(data.ships)
-
-            if (this.owner == owner) {
-                this.fieldOwner = data._id;
-                console.log("ecco l'ID del campo OWNER: " + this.fieldOwner)
-            }
-            else {
-                this.fieldOpponent = data._id;
-                console.log("ecco l'ID del campo OPPONENT: " + this.fieldOpponent)
-            }
-            
-        } catch (y) {
-            throw ("Invalid field: " + y);
-        }
-    })
-
+    } catch (y) {
+        throw ("Invalid field: " + y);
+    }
 }
 
 export function getSchema() { return MatchSchema; }

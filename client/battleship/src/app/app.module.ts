@@ -24,6 +24,7 @@ import { UserService } from './user.service';
 import { UtilitiesService } from './utilities.service';
 import { SocketioService } from './socketio.service';
 import { MatchService } from './match.service';
+import { MatchComponent } from './match/match.component';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { MatchService } from './match.service';
     MatchBuilderComponent,
     ChatComponent,
     NotfoundComponent,
-    ListMatchesComponent
+    ListMatchesComponent,
+    MatchComponent
   ],
   imports: [
     BrowserModule,

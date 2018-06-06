@@ -27,7 +27,7 @@ var FieldSchema = new mongoose.Schema({
         required : true
     }, 
     matrix : [[{
-        type : mongoose.SchemaTypes.ObjectId,
+        type : mongoose.SchemaTypes.String,
         required : true
     }]], 
 
@@ -123,12 +123,12 @@ FieldSchema.methods.insertShips = function (jFile : any) {
     navi[3] = {'quantity' : 2, 'actualQuantity' : 0};
     navi[4] = {'quantity' : 2, 'actualQuantity' : 0};
     navi[5] = {'quantity' : 1, 'actualQuantity' : 0};
-    //console.log(typeof this.ships);
+    // console.log(typeof this.ships);
     jFile["ships"].forEach(element => {
         
         if (element.length > 5 || element.length < 2) {
             this.matrix = this.ships = [];
-            this.aliveShips;
+            // this.aliveShips;
             throw "nave di dimensione errata"
         }
 
