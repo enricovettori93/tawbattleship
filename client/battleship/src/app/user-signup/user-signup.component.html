@@ -26,14 +26,17 @@
 <div class="row col">
   <div class="form-group">
     <label for="inputPassword1">Password</label>
-    <input type="password" #password1="ngModel" class="form-control" [(ngModel)]="user.password" id="inputNewPassword1" placeholder="Inserisci la password">
+    <input type="password" #password1 class="form-control" id="inputNewPassword1" placeholder="Inserisci la password" (input)='checkPassword(password1.value, password2.value)'>
   </div>
   <div class="form-group">
     <label for="inputPassword2">Password</label>
-    <input type="password" #password2="ngModel" class="form-control" [(ngModel)]="user.password" id="inputNewPassword2" placeholder="Ripeti la password">
+    <input type="password" #password2 class="form-control" id="inputNewPassword2" placeholder="Ripeti la password" (input)='checkPassword(password1.value, password2.value)'>
   </div>
+</div>
+<div *ngIf="!equalpassword && password1.value != ''" class="alert alert-danger" role="alert">
+  Le password sono diverse.
 </div>
 <div *ngIf="errmessage" class="alert alert-danger" role="alert">
   Errore durante la registrazione: {{errmessage}}
 </div>
-<button class="btn btn-primary" id="registerNewAccount" (click)="signup();">Crea l'account</button>
+<button [disabled]="!equalpassword" class="btn btn-primary" id="registerNewAccount" (click)="signup();">Crea l'account</button>

@@ -63,7 +63,7 @@ passport.use(new passportHTTP.BasicStrategy(
                 return done({ statusCode: 500, error: true, errormessage: "Error fetching user" + err });
             }
             if (!user) {
-                return done({ statusCode: 500, error: true, errormessage: "Invalid user" });
+                return done({ statusCode: 500, error: true, errormessage: "Utente non valido" });
             }
             if (user.validatePassword(password)) {
                 return done(null, user);
@@ -195,7 +195,7 @@ app.get("/users/:username/matches", auth, (req, res, next) => {
 app.route("/users").post((req, res, next) => {
     var new_user = user.newUser(req.body);
     if (!req.body.password) {
-        return next({ statusCode: 500, error: true, errormessage: "Missing password" });
+        return next({ statusCode: 500, error: true, errormessage: "Password mancanti" });
     }
     new_user.partitePerse = 0;
     new_user.partiteVinte = 0;
@@ -206,7 +206,7 @@ app.route("/users").post((req, res, next) => {
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
     }).catch((error) => {
         if (error.code === 11000)
-            return next({ statusCode: 404, error: true, errormessage: "User already exists" })
+            return next({ statusCode: 404, error: true, errormessage: "il nome utente o la email sono già state usate" })
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
     })
 }).get(auth, (req, res, next) => {

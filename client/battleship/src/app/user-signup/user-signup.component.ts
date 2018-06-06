@@ -9,19 +9,36 @@ import { UserService } from '../user.service';
 })
 export class UserSignupComponent implements OnInit {
   private errmessage = undefined;
-  private user = {mail: '', name: '', surname: '', username: '', password: ''};
+  private user = { mail: '', name: '', surname: '', username: '', password: '' };
+  private equalpassword = false;
   constructor(private userService: UserService, private router: Router) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
-  signup(){
-    this.userService.register(this.user).subscribe((d) => {
-      console.log(this.user.username + " added");
-      this.errmessage = undefined;
-      this.router.navigate(['/login']);
-    }),(err) => {
-      console.log("Signup error: " + JSON.stringify(err.error.errormessage));
-      this.errmessage = err.error.errormessage || err.error.message;
+  checkPassword(password1: string, password2: string) {
+    if (password1 === password2) {
+      this.equalpassword = true;
+      this.user.password = password1;
+    }
+    else {
+      this.equalpassword = false;
+      this.user.password = undefined;
+    }
+  }
+
+  signup() {
+    if (this.equalpassword == true) {
+      this.userService.register(this.user).subscribe( result => {
+        console.log(this.user.username + " added");
+        this.errmessage = undefined;
+        this.router.navigate(['/login']);
+      }, err => {
+        console.log("Signup error: " + JSON.stringify(err));
+        this.errmessage = err.error.errormessage || err.error.message;
+      });
+    }
+    else {
+      this.errmessage = "password diverse"
     }
   }
 }
