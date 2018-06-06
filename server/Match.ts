@@ -21,7 +21,7 @@ export interface Match extends mongoose.Document {
     setStatus: (status: MatchStatus) => void,
     getStatus: () => MatchStatus,
     getWinnerId: () => string,
-    insertField: (ownerId: string, shipJSON: any) => void
+    insertField: (owner: string, shipJSON: any) => void
 }
 
 // We use Mongoose to perform the ODM between our application and
@@ -86,17 +86,29 @@ MatchSchema.methods.setStatus = function (status: MatchStatus) {
 
 MatchSchema.methods.insertField = function (owner: string, shipJSON: any): void {
     var field1 = field.newField(owner);
-    try {
-        field1.insertShips(shipJSON)
-        if (this.owner == owner) {
-            this.fieldOwner = field1;
+    field1.save().then((data) => {
+        try {
+            data.insertShips(shipJSON)
+            
+
+            console.log("ecco l'ID del campo da inserire: " + data._id)
+            //console.log("queste sono le navi quando siamo in insertField")
+            //console.log(data.ships)
+
+            if (this.owner == owner) {
+                this.fieldOwner = data._id;
+                console.log("ecco l'ID del campo OWNER: " + this.fieldOwner)
+            }
+            else {
+                this.fieldOpponent = data._id;
+                console.log("ecco l'ID del campo OPPONENT: " + this.fieldOpponent)
+            }
+            
+        } catch (y) {
+            throw ("Invalid field: " + y);
         }
-        else {
-            this.fieldOpponent = field;
-        }
-    } catch (y) {
-        throw ("Invalid field: " + y);
-    }
+    })
+
 }
 
 export function getSchema() { return MatchSchema; }

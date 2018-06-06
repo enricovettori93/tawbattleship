@@ -430,7 +430,10 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
             else {
                 //match.getModel().findByIdAndUpdate({ "_id": req.params.id }, { "status": match.MatchStatus.Building });
                 try {
-                    var new_field = data.insertField(req.user.id, req.body.positioning);
+                    data.insertField(req.user.id, req.body.positioning);
+                    console.log("Ecco l'ID del campo inserito dall'endpoint: " + data.fieldOpponent)
+                    //console.log(req.user.id == data.owner) il campo è quello dell'opponent
+                    
                     return res.status(200).json({ error: false, errormessage: "" });
                 }
                 catch (e) {

@@ -75,6 +75,7 @@ export function newField(UID : string) : Field {
         })
     })
     field.ships = new Array <Ship>();
+    field.aliveShips = 0;
     return field;
 }
 
@@ -122,7 +123,7 @@ FieldSchema.methods.insertShips = function (jFile : any) {
     navi[3] = {'quantity' : 2, 'actualQuantity' : 0};
     navi[4] = {'quantity' : 2, 'actualQuantity' : 0};
     navi[5] = {'quantity' : 1, 'actualQuantity' : 0};
-    console.log(typeof this.ships);
+    //console.log(typeof this.ships);
     jFile["ships"].forEach(element => {
         
         if (element.length > 5 || element.length < 2) {
