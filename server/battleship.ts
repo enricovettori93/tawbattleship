@@ -430,20 +430,16 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
             else {
                 //match.getModel().findByIdAndUpdate({ "_id": req.params.id }, { "status": match.MatchStatus.Building });
                 try {
-                    data.insertField(req.user.id, req.body.positioning);
-                    if(data.fieldOpponent !== undefined && data.fieldOpponent !== null &&
-                        data.fieldOwner !== undefined && data.fieldOwner !== null){
-                            data.status = match.MatchStatus.Active;
+                    data.insertField(req.user.id, req.body.positioning).then(
+                        (success) => {
+                            return res.status(200).json({ error: false, errormessage: "" });
+                        },(error) =>{
+                            console.log("something goes wrong " + error);
                         }
-                    data.save().then(() => {
-                        console.log("Field added successfully");
-                    }).catch((err) => {
-                        console.log("Unable to add the field: " + err);
-                    });
-                    return res.status(200).json({ error: false, errormessage: "" });
+                    );
                 }
                 catch (e) {
-                    return res.status(400).json({ error: true, errormessage: "Invalid ship positioning "+ e});
+                    return res.status(400).json({ error: true, errormessage: "Invalid ship positioning " + e });
                 }
             }
         }
@@ -503,19 +499,19 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
 // TODO : modificare in che modo viene segnalato il vincitore
 app.put("/matches/:id_match", auth, (req, res, next) => {
 
-    match.getModel().find({"_id" : req.params.id_match}).then((data) => {
+    match.getModel().find({ "_id": req.params.id_match }).then((data) => {
         var field;
-        if(data["owner"] == req.body.player){
+        if (data["owner"] == req.body.player) {
             field = data["fieldOpponent"];
         }
-        else{
+        else {
             field = data["fieldOwner"];
         }
         field.shoot(req.body.position);
-        if(field.aliveShips == 0)
-            return res.status(200).json({error : false, errormessage : "", message : "ha vinto il player " + req.body.player})
+        if (field.aliveShips == 0)
+            return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.body.player })
         else
-            return res.status(200).json({ error : false, errormessage : "", message : "Cella colpita correttamente"})
+            return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })
     })
 })
 

@@ -21,7 +21,7 @@ export interface Match extends mongoose.Document {
     setStatus: (status: MatchStatus) => void,
     getStatus: () => MatchStatus,
     getWinnerId: () => string,
-    insertField: (owner: string, shipJSON: any) => void
+    insertField: (owner: string, shipJSON: any) => Promise<any>
 }
 
 // We use Mongoose to perform the ODM between our application and
@@ -84,31 +84,42 @@ MatchSchema.methods.setStatus = function (status: MatchStatus) {
     this.status = status;
 }
 
-MatchSchema.methods.insertField = function (owner: string, shipJSON: any): void {
-    var field1 = field.newField(owner);
-    field1.save().then((data) => {
-        try {
-            data.insertShips(shipJSON)
+MatchSchema.methods.insertField = function (owner: string, shipJSON: any): Promise<any> {
+    var promise = new Promise((resolve, reject) => {
+        var field1 = field.newField(owner);
+        field1.save().then((data) => {
+            try {
+                data.insertShips(shipJSON)
 
-            console.log("ecco l'ID del campo da inserire: " + data._id)
-            //console.log("queste sono le navi quando siamo in insertField")
-            //console.log(data.ships)
+                console.log("ecco l'ID del campo da inserire: " + data._id)
+                //console.log("queste sono le navi quando siamo in insertField")
+                //console.log(data.ships)
 
-            if (this.owner == owner) {
-                //this.fieldOwner = data._id;
-                this.set("fieldOwner", data._id)
-                console.log("ecco l'ID del campo OWNER: " + this.fieldOwner)
+                if (this.owner == owner) {
+                    //this.fieldOwner = data._id;
+                    this.set("fieldOwner", data._id)
+                    console.log("ecco l'ID del campo OWNER: " + this.fieldOwner)
+                }
+                else {
+                    //this.fieldOpponent = data._id;
+                    this.set("fieldOpponent", data._id)
+                    console.log("ecco l'ID del campo OPPONENT: " + this.fieldOpponent)
+                }
+                this.save().then(
+                    (success) =>{
+                        resolve("everything ok");
+                    },
+                    (error) =>{
+                        reject("Error during match saving: " + error);
+                    }
+                );
+                
+            } catch (y) {
+                reject("Invalid field: " + y);
             }
-            else {
-                //this.fieldOpponent = data._id;
-                this.set("fieldOpponent", data._id)
-                console.log("ecco l'ID del campo OPPONENT: " + this.fieldOpponent)
-            }
-            
-        } catch (y) {
-            throw ("Invalid field: " + y);
-        }
-    })
+        });
+    });
+    return promise;
 
 }
 
