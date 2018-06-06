@@ -436,7 +436,7 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
                             data.status = match.MatchStatus.Active;
                         }
                     data.save().then(() => {
-                        console.log("Field added");
+                        console.log("Field added successfully");
                     }).catch((err) => {
                         console.log("Unable to add the field: " + err);
                     });
