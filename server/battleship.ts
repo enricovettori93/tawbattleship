@@ -434,7 +434,7 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
                     return res.status(200).json({ error: false, errormessage: "" });
                 }
                 catch (e) {
-                    return res.status(400).json({ error: true, errormessage: "Invalid ship positioning" });
+                    return res.status(400).json({ error: true, errormessage: "Invalid ship positioning "+ e});
                 }
             }
         }
@@ -496,17 +496,17 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
 
     match.getModel().find({"_id" : req.params.id_match}).then((data) => {
         var field;
-        if(data.owner == req.body.player){
-            field = data.fieldOpponent;
+        if(data["owner"] == req.body.player){
+            field = data["fieldOpponent"];
         }
         else{
-            field = data.fieldOwner;
+            field = data["fieldOwner"];
         }
         field.shoot(req.body.position);
         if(field.aliveShips == 0)
-            return "ha vinto il player " + req.body.player //da modificare
+            return res.status(200).json({error : false, errormessage : "", message : "ha vinto il player " + req.body.player})
         else
-            return res.status(200).json({ error : false, errormessage : "Cella colpita correttamente"})
+            return res.status(200).json({ error : false, errormessage : "", message : "Cella colpita correttamente"})
     })
 })
 

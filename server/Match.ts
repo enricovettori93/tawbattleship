@@ -84,6 +84,20 @@ MatchSchema.methods.setStatus = function (status: MatchStatus) {
     this.status = status;
 }
 
+MatchSchema.methods.insertField = function (owner: string, shipJSON: any): void {
+    var field1 = field.newField(owner);
+    try {
+        field1.insertShips(shipJSON)
+        if (this.owner == owner) {
+            this.fieldOwner = field1;
+        }
+        else {
+            this.fieldOpponent = field;
+        }
+    } catch (y) {
+        throw ("Invalid field: " + y);
+    }
+}
 
 export function getSchema() { return MatchSchema; }
 
@@ -108,19 +122,4 @@ export function newMatch(owner: string): Match {
     match.status = MatchStatus.Wait
 
     return match
-}
-
-export function insertField(owner: string, shipJSON: any): void {
-    var field = field.newField(owner);
-    try {
-        field.insertShips(shipJSON)
-        if (this.owner == owner) {
-            this.fieldOwner = field;
-        }
-        else {
-            this.fieldOpponent = field;
-        }
-    } catch (y) {
-        throw ("Invalid field: " + y);
-    }
 }

@@ -4,7 +4,11 @@ import { Ship } from './Ship';
 
 export interface Field extends mongoose.Document{
     playerId: string,
-    matrix: string[][]
+    matrix: string[][],
+    aliveShips : Number,
+    ships : Ship[],
+    shoot: (position : any) => void,
+    insertShips: (jFile : any) => void
 }
 
 
@@ -33,7 +37,7 @@ var FieldSchema = new mongoose.Schema({
     },
 
     ships: {
-        type : [mongoose.SchemaTypes.ObjectId],
+        type : mongoose.SchemaTypes.Array,
         required : false
     }
 })
@@ -70,6 +74,7 @@ export function newField(UID : string) : Field {
             cell = cellColor.unknown;
         })
     })
+    field.ships = new Array <Ship>();
     return field;
 }
 
@@ -97,7 +102,7 @@ FieldSchema.methods.shoot = function ( position : any) {
                         this.matrix[cell.x][cell.y] = cellColor.shipDestroyed;
                     })
                 }
-
+                //else
                 this.matrix[position.x][position.y] = cellColor.hit;
                 hit = true;
             }
@@ -117,7 +122,8 @@ FieldSchema.methods.insertShips = function (jFile : any) {
     navi[3] = {'quantity' : 2, 'actualQuantity' : 0};
     navi[4] = {'quantity' : 2, 'actualQuantity' : 0};
     navi[5] = {'quantity' : 1, 'actualQuantity' : 0};
-    jFile.ships.foreach(element => {
+    console.log(typeof this.ships);
+    jFile["ships"].forEach(element => {
         
         if (element.length > 5 || element.length < 2) {
             this.matrix = this.ships = [];
@@ -133,9 +139,10 @@ FieldSchema.methods.insertShips = function (jFile : any) {
 
         if (checkSubsequent(element)){
             navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
-            
+            //console.log("hello")
             //crea una nuova nave
             this.ships.push(new Ship(element));
+            //console.log(this.ships);
             this.aliveShips = this.aliveShips + 1;
 
         }
