@@ -4,6 +4,7 @@ import { UtilitiesService } from '../utilities.service';
 import { MatchService, Ship, ShipEnum, Cell, CellStatus, Orientation } from '../match.service';
 import { SocketioService } from '../socketio.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import * as io from 'socket.io-client';
 
 @Component({
   selector: 'app-match',
@@ -79,24 +80,18 @@ export class MatchBuilderComponent implements OnInit {
 
     this.activatedRoute.paramMap.subscribe((data) => {
       this.id_match = data.get('id');
-      this.socketIoService.connect(this.id_match).subscribe(
-        (match) => {
-          match = JSON.parse(match);
-          console.log(match);
-          if (match.status === 1) {
-            this.router.navigate(['/match/' + this.id_match + '/board']);
-          } else {
-            if (match.status === 2) {
-              this.router.navigate(['/match/' + this.id_match]);
-            }
+      const socket = io(this.userService.url);
+      socket.on('broadcast ' + this.id_match, (m) => {
+        this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
+          this.match = match;
+          if (match.status === 2) {
+            this.router.navigate(['/match/' + this.match._id]);
           }
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+        }, (err) => {
+          console.log(JSON.stringify(err));
+        });
+      });
       this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
-        console.log(match);
         this.match = match;
       }, (err) => {
         console.log(JSON.stringify(err));

@@ -567,6 +567,9 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
         ios = io(server);
         ios.on('connection', function (client) {
             console.log("Socket.io client connected".green);
+            client.on('disconnect', function () {
+                console.log('user disconnected'.magenta);
+            });
         });
         server.listen(8080, () => console.log("HTTP Server started on port 8080"));
 
