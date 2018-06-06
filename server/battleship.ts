@@ -431,9 +431,15 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
                 //match.getModel().findByIdAndUpdate({ "_id": req.params.id }, { "status": match.MatchStatus.Building });
                 try {
                     data.insertField(req.user.id, req.body.positioning);
-                    console.log("Ecco l'ID del campo inserito dall'endpoint: " + data.fieldOpponent)
-                    //console.log(req.user.id == data.owner) il campo è quello dell'opponent
-                    
+                    if(data.fieldOpponent !== undefined && data.fieldOpponent !== null &&
+                        data.fieldOwner !== undefined && data.fieldOwner !== null){
+                            data.status = match.MatchStatus.Active;
+                        }
+                    data.save().then(() => {
+                        console.log("Field added");
+                    }).catch((err) => {
+                        console.log("Unable to add the field: " + err);
+                    });
                     return res.status(200).json({ error: false, errormessage: "" });
                 }
                 catch (e) {
