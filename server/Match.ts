@@ -96,15 +96,15 @@ MatchSchema.methods.insertField = function (owner: string, shipJSON: any): Promi
                 //console.log(data.ships)
 
                 if (this.owner == owner) {
-                    //this.fieldOwner = data._id;
-                    this.set("fieldOwner", data._id)
+                    this.set("fieldOwner", data._id);
                     console.log("ecco l'ID del campo OWNER: " + this.fieldOwner)
                 }
                 else {
-                    //this.fieldOpponent = data._id;
-                    this.set("fieldOpponent", data._id)
+                    this.set("fieldOpponent", data._id);
                     console.log("ecco l'ID del campo OPPONENT: " + this.fieldOpponent)
                 }
+                if(this.fieldOpponent != undefined && this.fieldOwner != undefined)
+                    this.set("status", MatchStatus.Active);
                 this.save().then(
                     (success) =>{
                         resolve("everything ok");
