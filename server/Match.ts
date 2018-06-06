@@ -89,18 +89,19 @@ MatchSchema.methods.insertField = function (owner: string, shipJSON: any): void 
     field1.save().then((data) => {
         try {
             data.insertShips(shipJSON)
-            
 
             console.log("ecco l'ID del campo da inserire: " + data._id)
             //console.log("queste sono le navi quando siamo in insertField")
             //console.log(data.ships)
 
             if (this.owner == owner) {
-                this.fieldOwner = data._id;
+                //this.fieldOwner = data._id;
+                this.set("fieldOwner", data._id)
                 console.log("ecco l'ID del campo OWNER: " + this.fieldOwner)
             }
             else {
-                this.fieldOpponent = data._id;
+                //this.fieldOpponent = data._id;
+                this.set("fieldOpponent", data._id)
                 console.log("ecco l'ID del campo OPPONENT: " + this.fieldOpponent)
             }
             
