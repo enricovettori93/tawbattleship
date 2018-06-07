@@ -4,7 +4,7 @@ import { Ship } from './Ship';
 
 export interface Field extends mongoose.Document{
     playerId: string,
-    matrix: string[][],
+    matrix: Number[][],
     aliveShips : Number,
     ships : Ship[],
     shoot: (position : any) => void,
@@ -27,7 +27,7 @@ var FieldSchema = new mongoose.Schema({
         required : true
     }, 
     matrix : [[{
-        type : mongoose.SchemaTypes.String,
+        type : mongoose.SchemaTypes.Number,
         required : true
     }]], 
 
@@ -46,11 +46,12 @@ export function getSchema() { return FieldSchema; }
 
 //colori delle celle, temporanei (da modificare a seconda dell'estetica)
 
-enum cellColor {
-    unknown = "#00ffff", //azzurro chiaro
-    water = "#000080", //blu scuro
-    hit = "#ff0000", //rosso
-    shipDestroyed = "#00ff00" //verde lime
+export enum cellColor {
+    unknown, //= "#00ffff", //azzurro chiaro
+    water, //= "#000080", //blu scuro
+    hit, //= "#ff0000", //rosso
+    shipDestroyed, //= "#00ff00", //verde lime
+    ship //= "#000000"
 }
 
 
@@ -67,9 +68,9 @@ export function newField(UID : string) : Field {
     var _fieldModel = getModel();
     var field = new _fieldModel();
     field.playerId = UID;
-    field.matrix = new Array<Array<string>>(10);
+    field.matrix = new Array<Array<Number>>(10);
     field.matrix.forEach(array => {
-        array = new Array <string>(10);
+        array = new Array <Number>(10);
         array.forEach(cell => {
             cell = cellColor.unknown;
         })
@@ -128,7 +129,7 @@ FieldSchema.methods.insertShips = function (jFile : any) {
         
         if (element.length > 5 || element.length < 2) {
             this.matrix = this.ships = [];
-            this.aliveShips;
+            this.aliveShips = 0;
             throw "nave di dimensione errata"
         }
 

@@ -466,10 +466,33 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
 
     }
     else{
+        var lista_parametri1, lista_parametri2, myCampo, enemyCampo;
+        match.getModel().findOne({"_id": req.params.id_match }).then(data => {
+            if(data.owner == req.user.id){
+                lista_parametri1 = " matrix ships _id";
+                lista_parametri2 = "matrix _id";
+                myCampo = "fieldOwner";
+            }
+            else{
+                lista_parametri2 = " matrix ships _id";
+                lista_parametri1 = "matrix _id";
+                myCampo = "fieldOpponent";
+            }
+        })
+        match.getModel().findOne({"_id": req.params.id_match }).populate({path: "opponent", model: user.getModel(), select: 'username _id'}).populate({path: "owner", model: user.getModel(), select: 'username _id'}).populate({path: "fieldOwner", model: user.getModel(), select: lista_parametri1}).populate({path: "fieldOpponent", model: user.getModel(), select: lista_parametri2}).then((partita) =>{
 
-        match.getModel().findOne({"_id": req.params.id_match }).populate({path: "opponent", model: user.getModel(), select: 'username _id'}).populate({path: "owner", model: user.getModel(), select: 'username _id'}).populate({path: "fieldOpponent", model: field.getModel()/*, select: ' _id'*/}).populate({path: "fieldOwner", model: field.getModel()/*, select: ' _id'*/}).then((match) =>{
+            var userMatrix;
+            var userShips;
+            userMatrix = partita[myCampo].matrix.slice(0);
+            userShips = partita[myCampo].ships.slice(0);
 
-            return res.status(200).json(match);
+            userShips.forEach(nave => {
+                userMatrix[nave.x][nave.y] = field.cellColor.ship;
+            })
+
+            partita[myCampo].matrix = userMatrix;
+
+            return res.status(200).json(partita);
         }).catch((err) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err});
         })
