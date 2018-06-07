@@ -78,27 +78,21 @@ app.get("/renew", auth, (req, res, next) => {
     console.log(req.user);
     if (req.user.remindMe) {
         console.log((req.user.username + " renew JWT").rainbow);
-
-        /*var tokenrenew = req.user;
-        delete tokenrenew.iat;
-        delete tokenrenew.exp;
-        var token_renew = jsonwebtoken.sign(tokenrenew, process.env.JWT_SECRET, { expiresIn: "2h" });
-        return res.status(200).json({ error: false, errormessage: "", token: tokenrenew });*/
-
-        user.getModel().findOne({ '_id': req.user.id }).then((user) => {
-            var tokendata = {
-                username: user.username,
-                isAdmin: user.isAdmin,
-                mail: user.mail,
-                id: user.id,
-                name: user.name,
-                surname: user.surname
-            };
-            var token_renew = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
-            return res.status(200).json({ error: false, errormessage: "", token: token_renew });
-        });
+        var tokendata = {
+            username: req.user.username,
+            isAdmin: req.user.isAdmin,
+            mail: req.user.mail,
+            id: req.user.id,
+            name: req.user.name,
+            surname: req.user.surname,
+            remindMe: true
+        };
+        var token_renew = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "7d" });
+        return res.status(200).json({ error: false, errormessage: "", token: token_renew });
     }
-    return res.status(400).json({ error: true, errormessage: "Renew impossible, please insert username and password again" });
+    else {
+        return res.status(400).json({ error: true, errormessage: "Renew impossible, please insert username and password again" });
+    }
 });
 
 
@@ -120,7 +114,13 @@ app.get("/login", passport.authenticate("basic", { session: false }), (req, res,
         surname: req.user.surname,
         remindMe: remindMe
     };
-    var tokensigned = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: "2h" });
+    let expTime: string;
+    if (remindMe) {
+        expTime = "7d";
+    } else {
+        expTime = "4h";
+    }
+    var tokensigned = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: expTime });
     return res.status(200).json({ error: false, errormessage: "", token: tokensigned });
 })
 
@@ -182,7 +182,7 @@ app.route("/users/:username").get(auth, (req, res, next) => {
 
 app.get("/users/:username/matches", auth, (req, res, next) => {
     user.getModel().findOne({ username: req.params.username }).then((data) => {
-        match.getModel().find({"$or": [{ owner: data._id }, { opponent: data._id }]}).then((matches) => {
+        match.getModel().find({ "$or": [{ owner: data._id }, { opponent: data._id }] }).then((matches) => {
             return res.status(200).json(matches);
         }).catch((err) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err })

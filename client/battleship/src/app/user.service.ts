@@ -57,13 +57,12 @@ export class UserService {
     return this.http.get(this.url + '/renew', this.utilities.create_options(this.token)).pipe(
       tap(
         (data) => {
-          console.log('sono qui');
           this.token = data.token;
           localStorage.setItem(token_name, this.token);
           this.is_logged.emit(true);
         },
         (error) => {
-          console.log('error');
+          console.log('error: ' + error);
         },
         () => {
           console.log('complete');
@@ -171,7 +170,7 @@ export class UserService {
   getUserSingleChat(idChat: string): Observable<any> {
     return this.http.get(this.url + '/chats/' + idChat, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        //console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }
@@ -215,7 +214,10 @@ export class UserService {
   get_token() {
     if (this.token === '' && localStorage.getItem(token_name) !== null) {
       this.token = localStorage.getItem(token_name);
-      this.renew().subscribe();
+      this.renew().subscribe(
+        (data) => {
+          console.log('Token renewed successfully');
+      });
     }
     return this.token;
   }
