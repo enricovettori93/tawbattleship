@@ -471,17 +471,21 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
         var lista_parametri1, lista_parametri2, myCampo, enemyCampo;
         match.getModel().findOne({"_id": req.params.id_match }).then(data => {
             if(data.owner == req.user.id){
-                lista_parametri1 = " matrix ships _id";
+                lista_parametri1 = "matrix, ships, _id";
                 lista_parametri2 = "matrix _id";
                 myCampo = "fieldOwner";
             }
             else{
-                lista_parametri2 = " matrix ships _id";
+                lista_parametri2 = "matrix, ships, _id";
                 lista_parametri1 = "matrix _id";
                 myCampo = "fieldOpponent";
             }
         })
-        match.getModel().findOne({"_id": req.params.id_match }).populate({path: "opponent", model: user.getModel(), select: 'username _id'}).populate({path: "owner", model: user.getModel(), select: 'username _id'}).populate({path: "fieldOwner", model: user.getModel(), select: lista_parametri1}).populate({path: "fieldOpponent", model: user.getModel(), select: lista_parametri2}).then((partita) =>{
+        match.getModel().findOne({"_id": req.params.id_match })
+            .populate({path: "opponent", select: "username"})
+            .populate({ path: "owner", select: "username" })
+            .populate({path: "fieldOwner", select: lista_parametri1})
+            .populate({ path: "fieldOpponent", select: lista_parametri2}).exec().then((partita) =>{
             console.log(partita);
             var userMatrix;
             var userShips;
@@ -489,7 +493,9 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
             userShips = partita[myCampo].ships.slice(0);
 
             userShips.forEach(nave => {
-                userMatrix[nave.x][nave.y] = field.cellColor.ship;
+                nave[0].cells.forEach((cell)=>{
+                    userMatrix[cell.x][cell.y] = field.cellColor.ship;
+                })
             })
 
             partita[myCampo].matrix = userMatrix;
@@ -622,6 +628,12 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
                 console.log('user disconnected'.magenta);
             });
         });
+        // Intialize model
+        user.getModel();
+        match.getModel();
+        field.getModel();
+        chat.getModel();
+        message.getModel();
         server.listen(8080, () => console.log("HTTP Server started on port 8080"));
 
     },

@@ -1,9 +1,10 @@
 import mongoose = require('mongoose');
-import { StringifyOptions } from 'querystring';
+
 import { Ship } from './Ship';
+import { ObjectId } from 'bson';
 
 export interface Field extends mongoose.Document{
-    playerId: string,
+    playerId: ObjectId,
     matrix: string[][],
     aliveShips : Number,
     ships : Ship[],
@@ -23,7 +24,8 @@ export interface Field extends mongoose.Document{
 // Mongoose Schema
 var FieldSchema = new mongoose.Schema({
     playerId : {
-        type : mongoose.SchemaTypes.String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required : true
     }, 
     matrix : [[{
@@ -42,8 +44,17 @@ var FieldSchema = new mongoose.Schema({
     }
 })
 
-export function getSchema() { return FieldSchema; }
+export function getSchema(){ return FieldSchema; }
 
+
+// Mongoose Model
+var fieldModel;
+export function getModel(): mongoose.Model<Field> { // Return Model as singleton
+    if (!fieldModel) {
+        fieldModel = mongoose.model('Field', getSchema())
+    }
+    return fieldModel;
+}
 //colori delle celle, temporanei (da modificare a seconda dell'estetica)
 
 export enum cellColor {
@@ -55,19 +66,11 @@ export enum cellColor {
 }
 
 
-// Mongoose Model
-var fieldModel;
-export function getModel(): mongoose.Model<Field> { // Return Model as singleton
-    if (!fieldModel) {
-        fieldModel = mongoose.model('Field', getSchema())
-    }
-    return fieldModel;
-}
 
 export function newField(UID : string, jFile : any) : Field {
     var _fieldModel = getModel();
     var field = new _fieldModel();
-    field.playerId = UID;
+    field.playerId = mongoose.Types.ObjectId(UID);
     field.matrix = new Array<Array<string>>(10);
     /*field.matrix.forEach(array => {
         array = new Array <string>(10);

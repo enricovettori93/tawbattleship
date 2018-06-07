@@ -1,6 +1,7 @@
 import mongoose = require('mongoose');
 import { Field } from './Field';
 import * as field from './Field';
+import { ObjectId } from 'bson';
 
 export enum MatchStatus {
     Wait,
@@ -11,13 +12,13 @@ export enum MatchStatus {
 
 export interface Match extends mongoose.Document {
     timestamp: Date,
-    owner: string,
-    opponent: string,
-    fieldOwner: Field,
-    fieldOpponent: Field,
+    owner: ObjectId,
+    opponent: ObjectId,
+    fieldOwner: ObjectId,
+    fieldOpponent: ObjectId,
     status: MatchStatus,
-    winnerId: string,
-    lastIdAttacker: string,
+    winnerId: ObjectId,
+    lastIdAttacker: ObjectId,
     setStatus: (status: MatchStatus) => void,
     getStatus: () => MatchStatus,
     getWinnerId: () => string,
@@ -34,37 +35,37 @@ export interface Match extends mongoose.Document {
 // Mongoose Schema
 var MatchSchema = new mongoose.Schema({
     timestamp: {
-        type: mongoose.SchemaTypes.Date,
+        type: mongoose.Schema.Types.Date,
         required: true
     },
-    owner: { //per ora diamo per scontato che sia l'owner
-        type: mongoose.SchemaTypes.ObjectId,
+    owner: { 
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     opponent: {
-        type: mongoose.SchemaTypes.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
 
     fieldOwner: {
-        type: mongoose.SchemaTypes.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Field"
     },
     fieldOpponent: {
-        type: mongoose.SchemaTypes.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Field"
     },
     status: {
-        type: mongoose.SchemaTypes.Number,
+        type: mongoose.Schema.Types.Number,
         required: true,
     },
     winnerId: {
-        type: mongoose.SchemaTypes.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
     lastIdAttacker:{
-        type: mongoose.SchemaTypes.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }
 })
@@ -134,7 +135,7 @@ export function newMatch(owner: string): Match {
     // inizializzo la data della partita
     match.timestamp = new Date()
     // inizializzo i due ID proprietari della partita
-    match.owner = owner
+    match.owner = mongoose.Types.ObjectId(owner);
     // setto lo status del match come Wait, in attesa del secondo player
     match.status = MatchStatus.Wait
 
