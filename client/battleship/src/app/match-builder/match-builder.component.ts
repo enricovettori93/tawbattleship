@@ -93,6 +93,9 @@ export class MatchBuilderComponent implements OnInit {
       });
       this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
         this.match = match;
+        if (match.status === 2) {
+          this.router.navigate(['/match/' + this.match._id]);
+        }
       }, (err) => {
         console.log(JSON.stringify(err));
       });

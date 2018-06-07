@@ -88,37 +88,29 @@ MatchSchema.methods.insertField = function (owner: string, shipJSON: any): Promi
     var promise = new Promise((resolve, reject) => {
         var field1 = field.newField(owner, shipJSON);
         
-        field1.save()/*.then((data) => {
-            try {
-                data.insertShips(shipJSON)
-                console.log(data.ships); //fin qui arriva tutto correttamente
-                console.log("ecco l'ID del campo da inserire: " + data._id)
-                //console.log("queste sono le navi quando siamo in insertField")
-                //console.log(data.ships)
-
-                if (this.owner == owner) {
-                    this.set("fieldOwner", data._id);
-                    console.log("ecco l'ID del campo OWNER: " + this.fieldOwner)
+        field1.save().then(
+            (field)=>{
+                if(owner === this.owner){
+                    this.set("fieldOwner", field._id);
+                } else {
+                    this.set("fieldOpponent", field._id);
                 }
-                else {
-                    this.set("fieldOpponent", data._id);
-                    console.log("ecco l'ID del campo OPPONENT: " + this.fieldOpponent)
+                if (this.fieldOwner !== undefined  && this.fieldOwner !== undefined){
+                    this.set("status", 2);
                 }
-                if(this.fieldOpponent != undefined && this.fieldOwner != undefined)
-                    this.set("status", MatchStatus.Active);
-                this.save().then(
-                    (success) =>{
-                        resolve("everything ok");
+                this.save(
+                    (match) =>{
+                        resolve(match);
                     },
                     (error) =>{
                         reject("Error during match saving: " + error);
                     }
-                );
-                
-            } catch (y) {
-                reject("Invalid field: " + y);
+                )
+            },
+            (error)=>{
+                reject("Error during field saving: " + error);
             }
-        });*/
+        );
     });
     return promise;
 

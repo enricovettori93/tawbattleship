@@ -12,6 +12,7 @@ import { MatchService } from '../match.service';
 })
 export class MatchComponent implements OnInit {
   matchId: string;
+  match;
 
   constructor(private userService: UserService,
     private router: Router,
@@ -24,6 +25,11 @@ export class MatchComponent implements OnInit {
     this.utilities.check_auth(this.userService.get_token());
     this.activatedRoute.paramMap.subscribe((data) => {
       this.matchId = data.get('id');
+      this.matchService.getSingleMatch(this.matchId).subscribe(
+        (match) => {
+          console.log(match);
+        }
+      );
     });
   }
 

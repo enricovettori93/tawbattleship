@@ -91,7 +91,7 @@ app.get("/renew", auth, (req, res, next) => {
         return res.status(200).json({ error: false, errormessage: "", token: token_renew });
     }
     else {
-        return res.status(400).json({ error: true, errormessage: "Renew impossible, please insert username and password again" });
+        return res.status(400).json({ error: true, errormessage: "Remindme not setted, please do the login again" });
     }
 });
 
@@ -409,6 +409,7 @@ app.route("/matches").get(auth, (req, res, next) => {
         if (JSON.stringify(data) === "0") {
             new_match.save().then((data) => {
                 console.log(("Match created succesfully. Owner UID: " + data.owner).green);
+                ios.emit("new match added", {});
                 return res.status(200).json({ error: false, errormessage: "", id: data._id });
             }).catch((error) => {
                 return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
