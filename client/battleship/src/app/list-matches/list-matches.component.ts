@@ -5,6 +5,7 @@ import { MatchService } from '../match.service';
 import { SocketioService } from '../socketio.service';
 import { Router, RouterLink } from '@angular/router';
 import { forEach } from '@angular/router/src/utils/collection';
+import * as io from 'socket.io-client';
 
 declare var $: any;
 
@@ -36,6 +37,11 @@ export class ListMatchesComponent implements OnInit {
       setTimeout(function () {
         $('#myModal').modal('hide');
       }, 2000);
+    });
+    const socket = io(this.userService.url);
+    socket.on('new match added', (m) => {
+      console.log(m);
+      this.getWaitingMatch();
     });
     if (this.router.url === '/match') {
       this.getWaitingMatch();
