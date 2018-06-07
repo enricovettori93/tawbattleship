@@ -90,7 +90,7 @@ MatchSchema.methods.insertField = function (owner: string, shipJSON: any): Promi
         
         field1.save().then(
             (field)=>{
-                if(owner === this.owner){
+                if(owner == this.owner.toString()){
                     this.set("fieldOwner", field._id);
                 } else {
                     this.set("fieldOpponent", field._id);
