@@ -95,7 +95,7 @@ MatchSchema.methods.insertField = function (owner: string, shipJSON: any): Promi
                 } else {
                     this.set("fieldOpponent", field._id);
                 }
-                if (this.fieldOwner !== undefined  && this.fieldOwner !== undefined){
+                if (this.fieldOwner !== undefined  && this.fieldOpponent !== undefined){
                     this.set("status", 2);
                 }
                 this.save(
