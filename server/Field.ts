@@ -4,7 +4,7 @@ import { Ship } from './Ship';
 
 export interface Field extends mongoose.Document{
     playerId: string,
-    matrix: Number[][],
+    matrix: string[][],
     aliveShips : Number,
     ships : Ship[],
     shoot: (position : any) => void,
@@ -27,7 +27,7 @@ var FieldSchema = new mongoose.Schema({
         required : true
     }, 
     matrix : [[{
-        type : mongoose.SchemaTypes.Number,
+        type : mongoose.SchemaTypes.String,
         required : true
     }]], 
 
@@ -47,11 +47,11 @@ export function getSchema() { return FieldSchema; }
 //colori delle celle, temporanei (da modificare a seconda dell'estetica)
 
 export enum cellColor {
-    unknown, //= "#00ffff", //azzurro chiaro
-    water, //= "#000080", //blu scuro
-    hit, //= "#ff0000", //rosso
-    shipDestroyed, //= "#00ff00", //verde lime
-    ship //= "#000000"
+    unknown = "#00ffff", //azzurro chiaro
+    water = "#000080", //blu scuro
+    hit = "#ff0000", //rosso
+    shipDestroyed = "#00ff00", //verde lime
+    ship = "#000000"
 }
 
 
@@ -64,19 +64,25 @@ export function getModel(): mongoose.Model<Field> { // Return Model as singleton
     return fieldModel;
 }
 
-export function newField(UID : string) : Field {
+export function newField(UID : string, jFile : any) : Field {
     var _fieldModel = getModel();
     var field = new _fieldModel();
     field.playerId = UID;
-    field.matrix = new Array<Array<Number>>(10);
-    field.matrix.forEach(array => {
-        array = new Array <Number>(10);
+    field.matrix = new Array<Array<string>>(10);
+    /*field.matrix.forEach(array => {
+        array = new Array <string>(10);
         array.forEach(cell => {
             cell = cellColor.unknown;
         })
-    })
+    })*/
+    for(var i = 0; i<=9; i++){
+        for(var j = 0; j<=9; j++){
+            field.matrix[i][j] = cellColor.unknown;
+        }
+    }
     field.ships = new Array <Ship>();
     field.aliveShips = 0;
+    field.insertShips(jFile);
     return field;
 }
 

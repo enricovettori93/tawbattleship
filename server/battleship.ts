@@ -99,6 +99,7 @@ app.get("/renew", auth, (req, res, next) => {
 // Login Endpoint
 // TODO sanitize the user request 
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
+    
     var remindMe;
     if (req.query.remindMe) {
         remindMe = true;
@@ -480,7 +481,7 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
             }
         })
         match.getModel().findOne({"_id": req.params.id_match }).populate({path: "opponent", model: user.getModel(), select: 'username _id'}).populate({path: "owner", model: user.getModel(), select: 'username _id'}).populate({path: "fieldOwner", model: user.getModel(), select: lista_parametri1}).populate({path: "fieldOpponent", model: user.getModel(), select: lista_parametri2}).then((partita) =>{
-
+            console.log(partita);
             var userMatrix;
             var userShips;
             userMatrix = partita[myCampo].matrix.slice(0);
@@ -502,6 +503,13 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
     
 })
 
+//endpoint temporaneo per il controllo della costruzione dei campi
+app.get("/fields/:id", auth, (req, res, next) =>{
+
+    field.getModel().find().then((data) => {
+        return res.status(200).json(data);
+    })
+})
 
 app.put("/matches/:id_match/join", auth, (req, res, next) => {
     match.getModel().find({ "$or": [{ "owner._id": req.user.id }, { "opponent._id": req.user.id }] }).count().then((data) => {

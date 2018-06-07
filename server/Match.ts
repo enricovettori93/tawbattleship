@@ -86,11 +86,12 @@ MatchSchema.methods.setStatus = function (status: MatchStatus) {
 
 MatchSchema.methods.insertField = function (owner: string, shipJSON: any): Promise<any> {
     var promise = new Promise((resolve, reject) => {
-        var field1 = field.newField(owner);
-        field1.save().then((data) => {
+        var field1 = field.newField(owner, shipJSON);
+        
+        field1.save()/*.then((data) => {
             try {
                 data.insertShips(shipJSON)
-
+                console.log(data.ships); //fin qui arriva tutto correttamente
                 console.log("ecco l'ID del campo da inserire: " + data._id)
                 //console.log("queste sono le navi quando siamo in insertField")
                 //console.log(data.ships)
@@ -117,7 +118,7 @@ MatchSchema.methods.insertField = function (owner: string, shipJSON: any): Promi
             } catch (y) {
                 reject("Invalid field: " + y);
             }
-        });
+        });*/
     });
     return promise;
 
