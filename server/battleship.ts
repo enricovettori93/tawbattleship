@@ -496,10 +496,14 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
                 delete match[opponentBoard].ships;
                 userMatrix = match[myBoard].matrix;
                 userShips = match[myBoard].ships
-
+                for(var i = 0; i<=9; i++){
+                    for(var j = 0; j<=9; j++){
+                        userMatrix[i][j] = field.cellColor.water;
+                    }
+                }
                 userShips.forEach(nave => {
                     nave.pop().cells.forEach((cell) => {
-                        userMatrix[cell.x][cell.y] = field.cellColor.ship;
+                        userMatrix[cell.x][cell.y] = myBoard[cell.x][cell.y];
                     })
                 });
 
@@ -584,26 +588,36 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
 app.put("/matches/:id_match", auth, (req, res, next) => {
 
     match.getModel().findOne({ "_id": req.params.id_match }).then((data) => {
-        var fieldLabel, campo;
-        if (data["owner"] == req.user.id) {
-            fieldLabel = "fieldOpponent";
+
+        if(data.lastIdAttacker == req.user.id){
+            return res.status(400).json({error: true, errormessage: "This user already attacked!"})
         }
-        else {
-            fieldLabel = "fieldOwner";
-        }
-        campo = data[fieldLabel];
-        console.log(fieldLabel)
-        console.log(data);
-        console.log(data[fieldLabel])
-        console.log(campo);
-        field.getModel().findOne({"_id" : campo}).then((data) => {
-            data.shoot(req.body.position);
-            //campo.shoot(req.body.position);
-            if (campo.aliveShips == 0)
-                    return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id })
-                else
-                    return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })
-        })   
+        else{
+            match.getModel().findOneAndUpdate({"_id": req.params.id_match}, {"lastIdAttacker": mongoose.Types.ObjectId(req.user.id)}).then((data) => {
+                console.log(data);
+            })
+        
+            var fieldLabel, campo;
+            if (data["owner"] == req.user.id) {
+                fieldLabel = "fieldOpponent";
+            }
+            else {
+                fieldLabel = "fieldOwner";
+            }
+            campo = data[fieldLabel];
+            /*console.log(fieldLabel)
+            console.log(data);
+            console.log(data[fieldLabel])
+            console.log(campo);*/
+            field.getModel().findOne({"_id" : campo}).then((data) => {
+                data.shoot(req.body.position);
+                //campo.shoot(req.body.position);
+                if (campo.aliveShips == 0)
+                        return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id })
+                    else
+                        return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })
+            })  
+        } 
     })
 })
 
