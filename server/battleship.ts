@@ -582,29 +582,36 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
  */
 // TODO : modificare in che modo viene segnalato il vincitore
 app.put("/matches/:id_match", auth, (req, res, next) => {
-
-    match.getModel().findOne({ "_id": req.params.id_match }).then((data) => {
-        var fieldLabel, campo;
-        if (data["owner"] == req.user.id) {
-            fieldLabel = "fieldOpponent";
-        }
-        else {
-            fieldLabel = "fieldOwner";
-        }
-        campo = data[fieldLabel];
-        console.log(fieldLabel)
-        console.log(data);
-        console.log(data[fieldLabel])
-        console.log(campo);
-        field.getModel().findOne({"_id" : campo}).then((data) => {
-            data.shoot(req.body.position);
-            //campo.shoot(req.body.position);
-            if (campo.aliveShips == 0)
+    try {
+        match.getModel().findOne({ "_id": req.params.id_match }).then((data) => {
+            var fieldLabel, campo;
+            if (data["owner"] == req.user.id) {
+                fieldLabel = "fieldOpponent";
+            }
+            else {
+                fieldLabel = "fieldOwner";
+            }
+            campo = data[fieldLabel];
+            field.getModel().findOne({ "_id": campo }).then((data) => {
+                data.shoot(req.body.position);
+                console.log('match update ' + req.params.id_match);
+                ios.emit('match update ' + req.params.id_match, {});
+                if (campo.aliveShips == 0)
                     return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id })
                 else
                     return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })
-        })   
-    })
+            },
+            (error) => {throw error}
+        );
+
+        },
+        (error) =>{
+            throw error;
+        }
+    );
+    } catch (error) {
+        return res.status(500).json({ error: true, errormessage: error });
+    }
 })
 
 //Error handling middleware

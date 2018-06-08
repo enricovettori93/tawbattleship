@@ -11,9 +11,7 @@
       <div class="col-lg-6" #battlefieldDOM>
         <h2>Posiziona le tue navi</h2>
         <div class="board-row" *ngFor="let row of board">
-          <div
-               (drop)="drop($event)"
-               class="holder" [ngStyle]="{'background-color': cell.getStatus()}" [attr.row]="cell.getRow()" [attr.col]="cell.getCol()" *ngFor="let cell of row">
+          <div class="holder" [ngStyle]="{'background-color': cell.getStatus()}" [attr.row]="cell.getRow()" [attr.col]="cell.getCol()" *ngFor="let cell of row">
           </div>
         </div>
       </div>
