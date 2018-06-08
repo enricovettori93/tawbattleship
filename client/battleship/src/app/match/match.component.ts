@@ -45,7 +45,7 @@ export class MatchComponent implements OnInit {
       this.matchId = data.get('id');
       const socket = io(this.userService.url);
       socket.on('match update ' + this.matchId, (m) => {
-        console.log("SHOT" + JSON.stringify(m));
+        //console.log("SHOT" + JSON.stringify(m));
         this.error = undefined;
         this.matchUpdate();
       });

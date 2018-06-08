@@ -586,20 +586,20 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
  */
 // TODO : modificare in che modo viene segnalato il vincitore
 app.put("/matches/:id_match", auth, (req, res, next) => {
-        match.getModel().findOne({ "_id": req.params.id_match }).then((data) => {
-            if(data.lastIdAttacker == req.user.id){
+        match.getModel().findOne({ "_id": req.params.id_match }).then((returnmatch) => {
+            if(returnmatch.lastIdAttacker == req.user.id){
                 return res.status(400).json({error: true, errormessage: "This user already attacked!"})
             }
             else{
                 match.getModel().findOneAndUpdate({"_id": req.params.id_match}, {"lastIdAttacker": { "_id": mongoose.Types.ObjectId(req.user.id)}}).exec()
                 var fieldLabel, campo;
-                if (data["owner"] == req.user.id) {
+                if (returnmatch["owner"] == req.user.id) {
                     fieldLabel = "fieldOpponent";
                 }
                 else {
                     fieldLabel = "fieldOwner";
                 }
-                campo = data[fieldLabel];
+                campo = returnmatch[fieldLabel];
                 field.getModel().findOne({ "_id": campo }).then((data) => {
                     try{
                         data.shoot(req.body.position);
@@ -609,10 +609,25 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                     //console.log('match update ' + req.params.id_match);
                     ios.emit('match update ' + req.params.id_match, {});
                     
-                    if (campo.aliveShips == 0)
+                    if (campo.aliveShips == 0){
+                        let partiteVincitore;
+                        user.getModel().findOne({"_id":req.user.id}).then((data) => {
+                            partiteVincitore = data.partiteVinte;
+                            partiteVincitore += 1;
+                            user.getModel().findOneAndUpdate({"_id": req.user.id},{"partiteVinte":partiteVincitore}).exec();
+                        })
+                        if(returnmatch.owner == req.user.id){
+                            let partitePerse;
+                            user.getModel().findOne({"_id":returnmatch.opponent}).then((data) => {
+                                partitePerse = data.partitePerse;
+                                partitePerse += 1;
+                                user.getModel().findOneAndUpdate({"_id": returnmatch.opponent},{"partitePerse":partitePerse}).exec();
+                            })
+                        }
                         return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id })
+                    }
                     else
-                        return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })},
+                        return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente", attacker: req.user.id })},
                 (error) => { throw error});
                 
             }
