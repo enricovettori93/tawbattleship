@@ -1,11 +1,14 @@
 <h1>Match vs: {{opponentUsr}}</h1>
+<div *ngIf="error" class="col-12" class="alert alert-danger">
+  {{error}}
+</div>
 <div class="row">
   <div class="col-md-3 col-sm-6 my-board">
     <h2>
       Il tuo campo
     </h2>
     <div class="board-row" *ngFor="let row of userBoard; let rowIndex = index">
-      <div  class="cell" [ngStyle]="{'background-color': cell}" [attr.row]="rowIndex" [attr.col]="colIndex" *ngFor="let cell of row; let rowIndex = index">
+      <div class="cell" [ngStyle]="{'background-color': cell}" [attr.row]="rowIndex" [attr.col]="colIndex" *ngFor="let cell of row; let rowIndex = index">
       </div>
     </div>
   </div>

@@ -640,7 +640,7 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
         console.log("Connected to MongoDB");
         user.getModel().findOne({ "username": "admin" }).count().then(
             (data) => {
-                console.log(data);
+                //console.log(data);
                 if (data == 0) {
                     //Creating Admin
                     var admin = user.newUser({
