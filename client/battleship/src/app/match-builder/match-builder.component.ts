@@ -127,7 +127,8 @@ export class MatchBuilderComponent implements OnInit, AfterViewChecked {
       },
       stop: function(event) {
         component.drop(component.getElemAt(event.pageX, event.pageY, 'holder'));
-      }
+      },
+      snap: '.holder', snapTolerance: 10
     });
   }
 
