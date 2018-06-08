@@ -5,7 +5,7 @@
       Il tuo campo
     </h2>
     <div class="board-row" *ngFor="let row of userBoard; let rowIndex = index">
-      <div class="cell" [ngStyle]="{'background-color': cell}" [attr.row]="rowIndex" [attr.col]="colIndex" *ngFor="let cell of row; let colIndex = index">
+      <div  class="cell" [ngStyle]="{'background-color': cell}" [attr.row]="rowIndex" [attr.col]="colIndex" *ngFor="let cell of row; let rowIndex = index">
       </div>
     </div>
   </div>
@@ -17,8 +17,8 @@
     <h2>
       Campo avversario
     </h2>
-    <div class="board-row" *ngFor="let row of opponentBoard">
-      <div class="cell" [ngStyle]="{'background-color': cell}" *ngFor="let cell of row">
+    <div class="board-row" *ngFor="let row of opponentBoard; let rowIndex = index">
+      <div (click)="shoot(rowIndex, colIndex)" class="cell opponent" [ngStyle]="{'background-color': cell}" *ngFor="let cell of row; let colIndex = index">
       </div>
     </div>
   </div>

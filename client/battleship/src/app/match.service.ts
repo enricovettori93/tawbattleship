@@ -128,6 +128,15 @@ export class MatchService {
       res,
       this.utilities.create_options(this.userService.get_token()));
   }
+
+  shoot(x, y, matchId): Observable<any> {
+    console.log({ position: { x: x, y: y } });
+    return this.http.put(
+      this.userService.url + '/matches/' + matchId,
+      { position: { x: x, y: y } },
+      this.utilities.create_options(this.userService.get_token()));
+  }
+
 }
 
 export class Ship {

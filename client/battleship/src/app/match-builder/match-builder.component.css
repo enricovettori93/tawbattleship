@@ -100,16 +100,28 @@
   text-align: center;
 }
 
-@media (min-width: 992px) {
+@media (max-width: 1025px) {
   .holder {
     width: 45px;
     height: 45px;
+  }
+  .destroyer {
+    height: 50px;
+  }
+  .submarine {
+    height: 60px;
+  }
+  .battleship {
+    height: 70px;
+  }
+  .aircraft-carrier{
+    height: 80px;
   }
 }
 
 @media screen and (max-width: 600px) {
   .holder {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
   }
 }

@@ -255,7 +255,6 @@ export class MatchBuilderComponent implements OnInit, AfterViewChecked {
   }
 
   drop(elem) {
-    console.log(elem);
     const row = parseInt($(elem).attr('row'), 10);
     const col = parseInt($(elem).attr('col'), 10);
     if (this.validDragging) {

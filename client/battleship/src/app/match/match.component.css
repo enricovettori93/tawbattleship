@@ -11,6 +11,10 @@
   display: inline-block;
 }
 
+.cell.opponent{
+  cursor: pointer;
+}
+
 .board-row {
   line-height: 80%;
 }

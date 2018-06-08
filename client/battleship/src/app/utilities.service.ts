@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 export class UtilitiesService {
 
   public static getPublicUrl() {
-    return 'http://192.168.1.2:8080';
+    return 'http://localhost:8080';
   }
   constructor(private router: Router) { }
 
