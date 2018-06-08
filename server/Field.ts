@@ -72,12 +72,6 @@ export function newField(UID : string, jFile : any) : Field {
     var field = new _fieldModel();
     field.playerId = mongoose.Types.ObjectId(UID);
     field.matrix = new Array<Array<string>>(10);
-    /*field.matrix.forEach(array => {
-        array = new Array <string>(10);
-        array.forEach(cell => {
-            cell = cellColor.unknown;
-        })
-    })*/
     for(var i = 0; i<=9; i++){
         for(var j = 0; j<=9; j++){
             field.matrix[i][j] = cellColor.unknown;
@@ -113,9 +107,10 @@ FieldSchema.methods.shoot = function ( position : any) {
                         this.matrix[cell.x][cell.y] = cellColor.shipDestroyed;
                     })
                 }
-                //else
-                this.matrix[position.x][position.y] = cellColor.hit;
-                hit = true;
+                else{
+                    this.matrix[position.x][position.y] = cellColor.hit;
+                    hit = true;
+                }
             }
         })
         
@@ -150,10 +145,8 @@ FieldSchema.methods.insertShips = function (jFile : any) {
 
         if (checkSubsequent(element)){
             navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
-            //console.log("hello")
             //crea una nuova nave
             this.ships.push(new Ship(element));
-            //console.log(this.ships);
             this.aliveShips = this.aliveShips + 1;
 
         }

@@ -486,14 +486,14 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
             .populate({ path: "owner", select: "username" })
             .populate({path: "fieldOwner", select: lista_parametri1})
             .populate({ path: "fieldOpponent", select: lista_parametri2}).exec().then((partita) =>{
-            console.log(partita);
+            //console.log(partita);
             var userMatrix;
             var userShips;
             userMatrix = partita[myCampo].matrix.slice(0);
             userShips = partita[myCampo].ships.slice(0);
 
             userShips.forEach(nave => {
-                nave[0].cells.forEach((cell)=>{
+                nave.pop().cells.forEach((cell)=>{
                     userMatrix[cell.x][cell.y] = field.cellColor.ship;
                 })
             })
@@ -562,14 +562,18 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
 app.put("/matches/:id_match", auth, (req, res, next) => {
 
     match.getModel().find({ "_id": req.params.id_match }).then((data) => {
-        var field;
+        var fieldLabel, field;
         if (data["owner"] == req.body.player) {
-            field = data["fieldOpponent"];
+            fieldLabel = "fieldOpponent";
         }
         else {
-            field = data["fieldOwner"];
+            fieldLabel = "fieldOwner";
         }
+        field = data[fieldLabel];
         field.shoot(req.body.position);
+        match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match), {fieldLabel : field}).then((data) => {
+            console.log(data);
+        })
         if (field.aliveShips == 0)
             return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.body.player })
         else
