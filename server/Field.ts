@@ -124,8 +124,10 @@ FieldSchema.methods.shoot = function ( position : any) {
             console.log("Unable to save the field : " + error);
             })
     }
-    
+    else{
         throw "cella già controllata!"
+    }
+    
 }
 
 FieldSchema.methods.insertShips = function (jFile : any) {
