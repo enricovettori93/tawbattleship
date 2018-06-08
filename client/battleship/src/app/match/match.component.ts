@@ -15,7 +15,7 @@ export class MatchComponent implements OnInit {
   private match;
   opponentUsr: string;
   userBoard;
-  userShip;
+  userShips;
   opponentBoard;
 
   constructor(private userService: UserService,
@@ -34,8 +34,9 @@ export class MatchComponent implements OnInit {
           console.log(match);
           this.match = match;
           this.opponentUsr = match.opponentInfo.username;
-          this.userBoard = match.myBoard.matrix;
+          this.userBoard = match.userBoard.matrix;
           this.opponentBoard = match.opponentBoard.matrix;
+          this.userShips = match.userBoard.ships;
         }
       );
   });

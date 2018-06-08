@@ -99,7 +99,7 @@ app.get("/renew", auth, (req, res, next) => {
 // Login Endpoint
 // TODO sanitize the user request 
 app.get("/login", passport.authenticate("basic", { session: false }), (req, res, next) => {
-    
+
     var remindMe;
     if (req.query.remindMe) {
         remindMe = true;
@@ -458,7 +458,7 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
     req.query.type = (req.query.type || "undefined");
     var type = req.query.type;
     //return res.status(200).json({error : false, errormessage: "", message : type})
-    if (type == "undefined"){
+    if (type == "undefined") {
 
         match.getModel().findOne({ "_id": req.params.id_match })/*.populate({path: 'owner', model: user.getModel(), select: 'username _id' },{path: 'opponent', model: user.getModel(), select: 'username _id'})*/.then((match) => {
             return res.status(200).json(match);
@@ -467,76 +467,73 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
         })
 
     }
-    else{
+    else {
         let lista_parametri1, lista_parametri2, myBoard, opponentBoard, me, opponent;
-        match.getModel().findOne({"_id": req.params.id_match }).then(data => {
-            if(data.owner == req.user.id){
-                lista_parametri1 = "matrix, ships, _id";
-                lista_parametri2 = "matrix _id";
-                myBoard = "fieldOwner";
-                me = "owner";
-                opponent = "opponent";
-                opponentBoard = "fieldOpponent";
-            }
-            else{
-                lista_parametri2 = "matrix, ships, _id";
-                lista_parametri1 = "matrix _id";
-                me = "opponent";
-                opponent = "owner";
-                myBoard = "fieldOpponent";
-                opponentBoard = "fieldOwner"
-            }
-        })
-        match.getModel().findOne({"_id": req.params.id_match })
-            .populate({path: "opponent", select: "username"})
+        match.getModel().findOne({ "_id": req.params.id_match })
+            .populate({ path: "opponent", select: "username" })
             .populate({ path: "owner", select: "username" })
-            .populate({path: "fieldOwner", select: lista_parametri1})
-            .populate({ path: "fieldOpponent", select: lista_parametri2}).lean().exec().then((match) =>{
-            var userMatrix;
-            var userShips;
-            
-            delete match[opponentBoard].ships;
-            userMatrix = match[myBoard].matrix;
-            userShips = match[myBoard].ships;
+            .populate({ path: "fieldOwner", select: lista_parametri1 })
+            .populate({ path: "fieldOpponent", select: lista_parametri2 }).lean().exec().then((match) => {
+                if (match.owner._id.toString() === req.user.id) {
+                    lista_parametri1 = "matrix, ships, _id";
+                    lista_parametri2 = "matrix _id";
+                    myBoard = "fieldOwner";
+                    me = "owner";
+                    opponent = "opponent";
+                    opponentBoard = "fieldOpponent";
+                }
+                else {
+                    lista_parametri2 = "matrix, ships, _id";
+                    lista_parametri1 = "matrix _id";
+                    me = "opponent";
+                    opponent = "owner";
+                    myBoard = "fieldOpponent";
+                    opponentBoard = "fieldOwner"
+                }
+                var userMatrix;
+                var userShips;
 
+                delete match[opponentBoard].ships;
+                userMatrix = match[myBoard].matrix;
+                userShips = match[myBoard].ships
 
-            userShips.forEach(nave => {
-                nave.pop().cells.forEach((cell)=>{
-                    userMatrix[cell.x][cell.y] = field.cellColor.ship;
-                })
+                userShips.forEach(nave => {
+                    nave.pop().cells.forEach((cell) => {
+                        userMatrix[cell.x][cell.y] = field.cellColor.ship;
+                    })
+                });
+
+                userMatrix.forEach((row) => {
+                    row.forEach((cell) => {
+                        if (cell != field.cellColor.ship) {
+                            cell = field.cellColor.water;
+                        }
+                    })
+                });
+
+                match["userBoard"] = match[myBoard];
+                match["userBoard"].matrix = userMatrix;
+                match["opponentBoard"] = match[opponentBoard];
+                match["userInfo"] = match[me];
+                match["opponentInfo"] = match[opponent];
+
+                delete match[myBoard];
+                delete match[opponentBoard];
+                delete match[me];
+                delete match[opponent];
+
+                return res.status(200).json(match);
+            }).catch((err) => {
+                return next({ statusCode: 500, error: true, errormessage: "MongoDB error: " + err });
             })
 
-            userMatrix.forEach((row)=>{
-                row.forEach((cell)=>{
-                    if (cell != field.cellColor.ship){
-                        cell = field.cellColor.water;
-                    }
-                })
-            })
-
-            match["userBoard"] = match[myBoard];
-            match["userBoard"].matrix = userMatrix;
-            match["opponentBoard"] = match[opponentBoard];
-            match["userInfo"] = match[me];
-            match["opponentInfo"] = match[opponent];
-
-            delete match[myBoard];
-            delete match[opponentBoard];
-            delete match[me];
-            delete match[opponent];
-
-            return res.status(200).json(match);
-        }).catch((err) => {
-            return next({ statusCode: 500, error: true, errormessage: "MongoDB error: " + err});
-        })
-        
     }
 
-    
+
 })
 
 //endpoint temporaneo per il controllo della costruzione dei campi
-app.get("/fields/:id", auth, (req, res, next) =>{
+app.get("/fields/:id", auth, (req, res, next) => {
 
     field.getModel().find().then((data) => {
         return res.status(200).json(data);
@@ -596,7 +593,7 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
         }
         field = data[fieldLabel];
         field.shoot(req.body.position);
-        match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match), {fieldLabel : field}).then((data) => {
+        match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match), { fieldLabel: field }).then((data) => {
             console.log(data);
         })
         if (field.aliveShips == 0)
