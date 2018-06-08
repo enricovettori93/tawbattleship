@@ -598,15 +598,12 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
         console.log(campo);
         field.getModel().findOne({"_id" : campo}).then((data) => {
             data.shoot(req.body.position);
-        })
-        //campo.shoot(req.body.position);
-        match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match), {fieldLabel : campo}).then((data) => {
-            //console.log(data);
-        })
-        if (campo.aliveShips == 0)
-            return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id })
-        else
-            return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })
+            //campo.shoot(req.body.position);
+            if (campo.aliveShips == 0)
+                    return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id })
+                else
+                    return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })
+        })   
     })
 })
 
