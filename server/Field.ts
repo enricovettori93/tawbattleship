@@ -96,34 +96,33 @@ function checkSubsequent( nave : any) : boolean{
 
 FieldSchema.methods.shoot = function ( position : any) {
     if (this.matrix[position.x][position.y] == cellColor.unknown){
-        //var hit;
-        this.ships.forEach( ship => {
-            console.log(ship);
-            if (ship.hit(position)){
-
-                if (ship.isSunk()){ 
+        var hit = false;
+        this.ships.forEach( (ship, index) => {
+            var ship1 = new Ship(ship[0].cells);
+            if (ship1.hit(position)){
+                hit = true;
+                if (ship1.isSunk()){ 
                     this.aliveShips = this.aliveShips -1;
-                    ship.cells.forEach(cell => {
-                        this.matrix[cell.x][cell.y] = cellColor.shipDestroyed;
+                    ship1.cells.forEach(cell => {
+                        this.matrix[cell["x"]][cell["y"]] = cellColor.shipDestroyed;
                     })
                 }
                 else{
                     this.matrix[position.x][position.y] = cellColor.hit;
-                    //hit = true;
                 }
             }
-            else{
-                this.matrix[position.x][position.y] = cellColor.water;
-            }
+            this.ships[index] = ship1;
+        })
+        if(!hit){
+            this.matrix[position.x][position.y] = cellColor.water;
+        }
+        //console.log(this.ships);
+        //console.log(this.matrix);
         this.save().then((field) => {
             console.log("Field saved successfully : " + field._id);
         }).catch((error) => {
             console.log("Unable to save the field : " + error);
-        })
-        })
-        
-        /*if (!hit)
-            this.matrix[position.x][position.y] = cellColor.water;*/
+            })
     }
     else
         throw "cella già controllata!"

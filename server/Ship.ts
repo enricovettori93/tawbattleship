@@ -17,14 +17,18 @@ export class Ship {
 
     // in input una posizione nel formato {x: Number, y: Number}
     hit (position : any) : boolean {
+        var hit = false;
         this.cells.forEach( cell => {
             //var tmp = String(position["x"])+","+String(position["y"])
+            //console.log("Posizione della cella: " + cell["x"] + ", " + cell["y"])
+            //console.log("Posizione dello sparo: " + position["x"] + ", " + position["y"])
             if (cell["x"] == position["x"] && cell["y"] == position["y"]){
+                //console.log("buongiorno")
                 cell["hit"] = true;
-                return true;
+                hit = true;
             } 
         })
-        return false;
+        return hit;
     }
 
     isSunk() : boolean{
