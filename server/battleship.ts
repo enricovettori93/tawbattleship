@@ -586,20 +586,27 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
 // TODO : modificare in che modo viene segnalato il vincitore
 app.put("/matches/:id_match", auth, (req, res, next) => {
 
-    match.getModel().find({ "_id": req.params.id_match }).then((data) => {
-        var fieldLabel, field;
+    match.getModel().findOne({ "_id": req.params.id_match }).then((data) => {
+        var fieldLabel, campo;
         if (data["owner"] == req.user.id) {
             fieldLabel = "fieldOpponent";
         }
         else {
             fieldLabel = "fieldOwner";
         }
-        field = data[fieldLabel];
-        field.shoot(req.body.position);
-        match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match), {fieldLabel : field}).then((data) => {
-            console.log(data);
+        campo = data[fieldLabel];
+        console.log(fieldLabel)
+        console.log(data);
+        console.log(data[fieldLabel])
+        console.log(campo);
+        field.getModel().findOne({"_id" : campo}).then((data) => {
+            data.shoot(req.body.position);
         })
-        if (field.aliveShips == 0)
+        //campo.shoot(req.body.position);
+        match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match), {fieldLabel : campo}).then((data) => {
+            //console.log(data);
+        })
+        if (campo.aliveShips == 0)
             return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id })
         else
             return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })
