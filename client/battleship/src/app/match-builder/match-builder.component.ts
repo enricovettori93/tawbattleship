@@ -82,7 +82,7 @@ export class MatchBuilderComponent implements OnInit {
       this.id_match = data.get('id');
       const socket = io(this.userService.url);
       socket.on('broadcast ' + this.id_match, (m) => {
-        this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
+        this.matchService.getMatchInfo(this.id_match).subscribe((match) => {
           this.match = match;
           if (match.status === 2) {
             this.router.navigate(['/match/' + this.match._id]);
@@ -91,7 +91,7 @@ export class MatchBuilderComponent implements OnInit {
           console.log(JSON.stringify(err));
         });
       });
-      this.matchService.getSingleMatch(this.id_match).subscribe((match) => {
+      this.matchService.getMatchInfo(this.id_match).subscribe((match) => {
         this.match = match;
         if (match.status === 2) {
           this.router.navigate(['/match/' + this.match._id]);

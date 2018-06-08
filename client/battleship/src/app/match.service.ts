@@ -39,6 +39,14 @@ export class MatchService {
     );
   }
 
+  getMatchInfo(match_id: string, fullInfo?: boolean): Observable<any> {
+    let request = this.userService.url + '/matches/' + match_id;
+    if (fullInfo) {
+      request += '?type=fullInfo';
+    }
+    return this.http.get(request, this.utilities.create_options(this.userService.get_token()));
+  }
+
   getUserActiveMatches(user: string): Observable<any> {
     return this.getUserMatches(user).pipe(map(
       (matchArray) => {
@@ -80,11 +88,6 @@ export class MatchService {
           console.log('Creating match: ' + JSON.stringify(data));
         })
       );
-  }
-
-  getSingleMatch(id: string): Observable<any> {
-    return this.http.get(this.userService.url + '/matches/' + id, this.utilities.create_options(this.userService.get_token()))
-      .pipe();
   }
 
   initShips(): Array<Ship> {
