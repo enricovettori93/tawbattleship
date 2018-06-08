@@ -468,29 +468,37 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
 
     }
     else{
-        var lista_parametri1, lista_parametri2, myCampo, enemyCampo;
+        let lista_parametri1, lista_parametri2, myBoard, opponentBoard, me, opponent;
         match.getModel().findOne({"_id": req.params.id_match }).then(data => {
             if(data.owner == req.user.id){
                 lista_parametri1 = "matrix, ships, _id";
                 lista_parametri2 = "matrix _id";
-                myCampo = "fieldOwner";
+                myBoard = "fieldOwner";
+                me = "owner";
+                opponent = "opponent";
+                opponentBoard = "fieldOpponent";
             }
             else{
                 lista_parametri2 = "matrix, ships, _id";
                 lista_parametri1 = "matrix _id";
-                myCampo = "fieldOpponent";
+                me = "opponent";
+                opponent = "owner";
+                myBoard = "fieldOpponent";
+                opponentBoard = "fieldOwner"
             }
         })
         match.getModel().findOne({"_id": req.params.id_match })
             .populate({path: "opponent", select: "username"})
             .populate({ path: "owner", select: "username" })
             .populate({path: "fieldOwner", select: lista_parametri1})
-            .populate({ path: "fieldOpponent", select: lista_parametri2}).exec().then((partita) =>{
-            console.log(partita);
+            .populate({ path: "fieldOpponent", select: lista_parametri2}).lean().exec().then((match) =>{
             var userMatrix;
             var userShips;
-            userMatrix = partita[myCampo].matrix.slice(0);
-            userShips = partita[myCampo].ships.slice(0);
+            
+            delete match[opponentBoard].ships;
+            userMatrix = match[myBoard].matrix;
+            userShips = match[myBoard].ships;
+
 
             userShips.forEach(nave => {
                 nave[0].cells.forEach((cell)=>{
@@ -498,11 +506,28 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
                 })
             })
 
-            partita[myCampo].matrix = userMatrix;
+            userMatrix.forEach((row)=>{
+                row.forEach((cell)=>{
+                    if (cell != field.cellColor.ship){
+                        cell = field.cellColor.water;
+                    }
+                })
+            })
 
-            return res.status(200).json(partita);
+            match["userBoard"] = match[myBoard];
+            match["userBoard"].matrix = userMatrix;
+            match["opponentBoard"] = match[opponentBoard];
+            match["userInfo"] = match[me];
+            match["opponentInfo"] = match[opponent];
+
+            delete match[myBoard];
+            delete match[opponentBoard];
+            delete match[me];
+            delete match[opponent];
+
+            return res.status(200).json(match);
         }).catch((err) => {
-            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err});
+            return next({ statusCode: 500, error: true, errormessage: "MongoDB error: " + err});
         })
         
     }
