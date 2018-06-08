@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewChecked, ViewEncapsulation } from '@angular/core';
 import { UserService } from '../user.service';
 import { UtilitiesService } from '../utilities.service';
 import { MatchService, Ship, ShipEnum, Cell, CellStatus, Orientation } from '../match.service';
-import { SocketioService } from '../socketio.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import * as io from 'socket.io-client';
-
+declare var $: any;
 @Component({
   selector: 'app-match',
   templateUrl: './match-builder.component.html',
@@ -13,12 +12,13 @@ import * as io from 'socket.io-client';
   encapsulation: ViewEncapsulation.None
 })
 
-export class MatchBuilderComponent implements OnInit {
+export class MatchBuilderComponent implements OnInit, AfterViewChecked {
   @ViewChild('battlefieldDOM') battlefieldDom: ElementRef;
   private userName: string;
   private userMatches: string;
   private draggingShip: Ship;
   private validDragging: boolean;
+  private shipsDict: any;
   board: Cell[][];
   ships: Array<Ship>;
   destroyers: Array<Ship>;
@@ -40,9 +40,7 @@ export class MatchBuilderComponent implements OnInit {
     private userService: UserService,
     private utilities: UtilitiesService,
     private matchService: MatchService,
-    private socketIoService: SocketioService,
     private activatedRoute: ActivatedRoute,
-    private renderer: Renderer2,
     private router: Router) { }
 
   ngOnInit() {
@@ -68,6 +66,11 @@ export class MatchBuilderComponent implements OnInit {
           break;
       }
     });
+    this.shipsDict = new Object();
+    this.ships.forEach((ship) => {
+      this.shipsDict[ship.getId()] = ship;
+    }
+    );
     this.board = new Array();
     for (let i = 0; i < 10; i++) {
       this.board.push(new Array());
@@ -99,6 +102,32 @@ export class MatchBuilderComponent implements OnInit {
       }, (err) => {
         console.log(JSON.stringify(err));
       });
+    });
+  }
+  private getElemAt(x, y, classID) {
+    return $('body')
+      .find('.' + classID)
+      .filter(function () {
+       if ($(this).offset().top < y && y < parseInt($(this).offset().top, 10) + $(this).height()
+          && $(this).offset().left < x && x < parseInt($(this).offset().left, 10) + $(this).width()) {
+          return true;
+        }
+        return false;
+      });
+  }
+
+  ngAfterViewChecked() {
+    const component = this;
+    $('.ship').draggable({
+      start: function () {
+        component.dragstart(component.shipsDict[$(this).attr('id')]);
+      },
+      drag: function (event) {
+        component.dragover(component.getElemAt(event.pageX, event.pageY, 'holder'));
+      },
+      stop: function(event) {
+        component.drop(component.getElemAt(event.pageX, event.pageY, 'holder'));
+      }
     });
   }
 
@@ -167,17 +196,35 @@ export class MatchBuilderComponent implements OnInit {
 
   private changeStatus(row, col, status: CellStatus) {
     if (this.draggingShip.getOrientation() === Orientation.HORIZONTAL) {
-      for (let k = - Math.floor(this.draggingShip.getLength() / 2); k < Math.ceil(this.draggingShip.getLength() / 2); k++) {
-        this.board[row][col + k + 1].setStatus(status);
-        if (status === CellStatus.OCCUPIED) {
-          this.board[row][col + k + 1].setShipRef(this.draggingShip.getId());
+      for (let i = 0; i < this.board.length; i++) {
+        for (let j = 0; j < this.board[i].length; j++) {
+          if (this.board[i][j].getStatus() === CellStatus.OVER) {
+            this.board[i][j].setStatus(CellStatus.FREE);
+          }
+          if (row === i && (j === col ||
+            ((col >= j) && (col - j) < Math.floor(this.draggingShip.getLength() / 2)) ||
+            ((col < j) && (j - col) <= Math.ceil(this.draggingShip.getLength() / 2)))) {
+            this.board[i][j].setStatus(status);
+            if (status === CellStatus.OCCUPIED) {
+              this.board[i][j].setShipRef(this.draggingShip.getId());
+            }
+          }
         }
       }
     } else {
-      for (let k = - Math.floor(this.draggingShip.getLength() / 2); k < Math.ceil(this.draggingShip.getLength() / 2); k++) {
-        this.board[row + k + 1][col].setStatus(status);
-        if (status === CellStatus.OCCUPIED) {
-          this.board[row + k + 1][col].setShipRef(this.draggingShip.getId());
+      for (let i = 0; i < this.board.length; i++) {
+        for (let j = 0; j < this.board[i].length; j++) {
+          if (this.board[i][j].getStatus() === CellStatus.OVER) {
+            this.board[i][j].setStatus(CellStatus.FREE);
+          }
+          if (col === j && (row === i ||
+            ((row > i) && (row - i) < Math.floor(this.draggingShip.getLength() / 2)) ||
+            ((row <= i) && (i - row) <= Math.ceil(this.draggingShip.getLength() / 2)))) {
+            this.board[i][j].setStatus(status);
+            if (status === CellStatus.OCCUPIED) {
+              this.board[i][j].setShipRef(this.draggingShip.getId());
+            }
+          }
         }
       }
     }
@@ -197,30 +244,22 @@ export class MatchBuilderComponent implements OnInit {
 
   }
 
-  dragover(event) {
-    event.preventDefault();
-    const col = parseInt(event.target.getAttribute('col'), 10);
-    const row = parseInt(event.target.getAttribute('row'), 10);
+  dragover(elem) {
+    const row = parseInt($(elem).attr('row'), 10);
+    const col = parseInt($(elem).attr('col'), 10);
     this.validDragging = this.validDraggingCheck(row, col);
     if (this.validDragging) {
       this.changeStatus(row, col, CellStatus.OVER);
     }
   }
 
-  drop(event) {
-    event.preventDefault();
-    const col = parseInt(event.target.getAttribute('col'), 10);
-    const row = parseInt(event.target.getAttribute('row'), 10);
+  drop(elem) {
+    console.log(elem);
+    const row = parseInt($(elem).attr('row'), 10);
+    const col = parseInt($(elem).attr('col'), 10);
     if (this.validDragging) {
       this.draggingShip.setUsed();
       this.changeStatus(row, col, CellStatus.OCCUPIED);
-    }
-  }
-  dragleave(event) {
-    const col = parseInt(event.target.getAttribute('col'), 10);
-    const row = parseInt(event.target.getAttribute('row'), 10);
-    if (this.validDragging) {
-      this.changeStatus(row, col, CellStatus.FREE);
     }
   }
 

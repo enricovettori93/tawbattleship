@@ -11,9 +11,8 @@
       <div class="col-lg-6" #battlefieldDOM>
         <h2>Posiziona le tue navi</h2>
         <div class="board-row" *ngFor="let row of board">
-          <div (dragover)="dragover($event)"
+          <div
                (drop)="drop($event)"
-               (dragleave)="dragleave($event)"
                class="holder" [ngStyle]="{'background-color': cell.getStatus()}" [attr.row]="cell.getRow()" [attr.col]="cell.getCol()" *ngFor="let cell of row">
           </div>
         </div>
@@ -21,7 +20,7 @@
       <div class="col-lg-6" #shipsDOM>
         <div class="ship-group">
           <h6>Cacciatorpediniere - grandezza: 2</h6>
-          <div class="ship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of destroyers" (dragstart)="dragstart(ship)">
+          <div class="ship destroyer" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of destroyers"  [attr.id]="ship.getId()">
             <img src="../../assets/images/destroyer.svg" [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'destroyers':true }"/>
             <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
             <div *ngIf="ship.isUsed()">
@@ -31,7 +30,7 @@
         </div>
         <div class="ship-group">
           <h6>Sottomarino - grandezza: 3</h6>
-          <div class="ship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of submarines" (dragstart)="dragstart(ship)">
+          <div class="ship submarine" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of submarines" [attr.id]="ship.getId()">
             <img src="../../assets/images/submarine.svg" [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'submarines':true }"/>
             <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
             <div *ngIf="ship.isUsed()">
@@ -41,7 +40,7 @@
         </div>
         <div class="ship-group">
         <h6>Corazzata - grandezza: 4</h6>
-          <div class="ship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of battleships" (dragstart)="dragstart(ship)">
+          <div class="ship battleship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of battleships" [attr.id]="ship.getId()">
             <img src="../../assets/images/battleship.svg" [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'battleships':true }"/>
             <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
             <div *ngIf="ship.isUsed()">
@@ -51,7 +50,7 @@
         </div>
         <div class="ship-group">
           <h6>Portaerei - grandezza: 5</h6>
-          <div class="ship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of aircraftCarriers" (dragstart)="dragstart(ship)">
+          <div class="ship aircraft-carrier" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of aircraftCarriers" [attr.id]="ship.getId()">
             <img src="../../assets/images/aircraft-carrier.svg" [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'aircraftCarriers':true }"/>
             <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
             <i class="fa fa-times" (click)="removeFromBoard(ship)" aria-hidden="true" *ngIf="ship.isUsed()"></i>

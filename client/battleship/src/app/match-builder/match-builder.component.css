@@ -11,16 +11,48 @@
   margin: 10px 20px;
 }
 
-.ship-group .fa-times {
+.fa-times, .fa-repeat {
   position: absolute;
-  right: -10px;
-  top: -10px
 }
 
-.ship-group .fa-repeat {
-  position: absolute;
-  right: -10px;
-  bottom: 10px
+.destroyer .fa-repeat {
+  right: 15px;
+  top: 20px
+}
+
+.destroyer .fa-times {
+  right: 15px;
+  bottom: 30px
+}
+
+.submarine .fa-repeat {
+  right: 15px;
+  top: 30px
+}
+
+.submarine .fa-times {
+  right: 15px;
+  bottom: 45px
+}
+
+.battleship .fa-repeat {
+  right: 15px;
+  top: 50px
+}
+
+.battleship .fa-times {
+  right: 15px;
+  bottom: 45px
+}
+
+.aircraft-carrier .fa-repeat {
+  right: 15px;
+  top: 50px
+}
+
+.aircraft-carrier .fa-times {
+  right: 15px;
+  bottom: 75px
 }
 
 .ship {
