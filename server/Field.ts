@@ -118,7 +118,7 @@ FieldSchema.methods.shoot = function ( position : any) {
         }
         //console.log(this.ships);
         //console.log(this.matrix);
-        this.save().then((field) => {
+        getModel().findOneAndUpdate({"_id" : this._id}, {"matrix" : this.matrix, "ships" : this.ships}).then((field) =>{
             console.log("Field saved successfully : " + field._id);
         }).catch((error) => {
             console.log("Unable to save the field : " + error);
