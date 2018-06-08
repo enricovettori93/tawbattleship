@@ -579,7 +579,7 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
 // nel body si aspetta di trovare un file json del tipo
 /**
  * {
- *  "player" : ObjectId,
+ *  "player" : ObjectId, //è inutile da inserire, ce l'abbiamo già nell'autenticazione l'id di chi spara
  *  "position" : { "x" : Number, "y" : Number}
  * }
  */
@@ -588,7 +588,7 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
 
     match.getModel().find({ "_id": req.params.id_match }).then((data) => {
         var fieldLabel, field;
-        if (data["owner"] == req.body.player) {
+        if (data["owner"] == req.user.id) {
             fieldLabel = "fieldOpponent";
         }
         else {
@@ -600,7 +600,7 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
             console.log(data);
         })
         if (field.aliveShips == 0)
-            return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.body.player })
+            return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id })
         else
             return res.status(200).json({ error: false, errormessage: "", message: "Cella colpita correttamente" })
     })
