@@ -106,14 +106,13 @@ function checkSubsequent(nave: any): boolean {
 FieldSchema.methods.shoot = function (position: any) {
     if (!this.matrix[position.x][position.y].hit) {
         var hit = false;
-        var newAliveShips = this.aliveShips;
         this.ships.forEach((ship, index) => {
             var shipAux = new Ship(ship[0].cells);
             if (shipAux.hit(position)) {
                 hit = true;
                 this.ships[index] = shipAux;
                 if (shipAux.isSunk()) {
-                    this.newAliveShips = this.aliveShips - 1;
+                    this.aliveShips -= 1;
                     shipAux.cells.forEach(cell => {
                         this.matrix[cell["x"]][cell["y"]].color = cellColor.shipDestroyed;
                     })
@@ -125,7 +124,7 @@ FieldSchema.methods.shoot = function (position: any) {
             this.matrix[position.x][position.y].hit = true;
             this.ships[index] = shipAux;
         })
-        getModel().findOneAndUpdate({ "_id": this._id }, { "matrix": this.matrix, "ships": this.ships, "aliveShips": this.newAliveShips }).then((field) => {
+        getModel().findOneAndUpdate({ "_id": this._id }, { "matrix": this.matrix, "ships": this.ships, "aliveShips": this.aliveShips }).then((field) => {
             console.log("Field saved successfully : " + field._id);
         }).catch((error) => {
             console.log("Unable to save the field : " + error);
