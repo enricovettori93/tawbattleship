@@ -603,7 +603,7 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                     ios.emit('match update ' + req.params.id_match, {lastIdAttacker:req.user.id});
                     
                     if (campo.aliveShips == 0){
-                        match.getModel().findOneAndUpdate({"_id":req.params.id_match},{"winnerId":req.user.id}).then((ritorno) => {
+                        match.getModel().findOneAndUpdate({"_id":req.params.id_match},{"winnerId":req.user.id, "status": match.MatchStatus.Ended}).then((ritorno) => {
                             let partiteVincitore;
                             user.getModel().findOne({"_id":req.user.id}).then((userret) => {
                                 partiteVincitore = userret.partiteVinte;

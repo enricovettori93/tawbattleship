@@ -144,6 +144,9 @@ FieldSchema.methods.insertShips = function (jFile: any) {
     navi[4] = { 'quantity': 2, 'actualQuantity': 0 };
     navi[5] = { 'quantity': 1, 'actualQuantity': 0 };
     //console.log(typeof this.ships);
+    if(jFile["ships"].length != 9){
+        throw "Troppe o troppo poche navi inserte."
+    }
     jFile["ships"].forEach(element => {
 
         if (element.length > 5 || element.length < 2) {
