@@ -552,16 +552,25 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
                     return res.status(400).json({ error: true, errormessage: "Match already setted up" });
                 }
                 else {
+                    let random = Math.floor((Math.random()*2) + 1);
+                    let beginner;
+                    if(random == 1){
+                        beginner = data.owner;
+                    }
+                    else{
+                        beginner = data.opponent;
+                    }
                     match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match),
                         {
                             "opponent": { "_id": mongoose.Types.ObjectId(req.user.id) },
-                            "status": match.MatchStatus.Building
+                            "status": match.MatchStatus.Building,
+                            "lastIdAttacker": beginner
                         }).then(
                             (resolve) => {
-                                console.log("Socket transmission".rainbow);
-                                console.log(("data._id: " + data._id).red);
-                                data.status = match.MatchStatus.Building;
-                                ios.emit('broadcast ' + data._id, data);
+                                //console.log("Socket transmission".rainbow);
+                                //console.log(("data._id: " + data._id).red);
+                                //data.status = match.MatchStatus.Building;
+                                ios.emit('broadcast ' + data._id, resolve);
                                 return res.status(200).json({ error: false, errormessage: "" });
                             },
                             (reject) => {
@@ -607,7 +616,7 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                         return res.status(500).json({error: true, errormessage: error});
                     }
                     //console.log('match update ' + req.params.id_match);
-                    ios.emit('match update ' + req.params.id_match, {});
+                    ios.emit('match update ' + req.params.id_match, {lastIdAttacker:req.user.id});
                     
                     if (campo.aliveShips == 0){
                         let partiteVincitore;
