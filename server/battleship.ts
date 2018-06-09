@@ -584,7 +584,6 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                 return res.status(400).json({error: true, errormessage: "This user already attacked!"})
             }
             else{
-                match.getModel().findOneAndUpdate({"_id": req.params.id_match}, {"lastIdAttacker": { "_id": mongoose.Types.ObjectId(req.user.id)}}).exec()
                 var fieldLabel, campo;
                 if (returnmatch["owner"] == req.user.id) {
                     fieldLabel = "fieldOpponent";
@@ -599,6 +598,7 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                     }catch (error){
                         return res.status(500).json({error: true, errormessage: error});
                     }
+                    match.getModel().findOneAndUpdate({"_id": req.params.id_match}, {"lastIdAttacker": { "_id": mongoose.Types.ObjectId(req.user.id)}}).exec()
                     //console.log('match update ' + req.params.id_match);
                     ios.emit('match update ' + req.params.id_match, {lastIdAttacker:req.user.id});
                     
