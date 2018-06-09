@@ -13,6 +13,7 @@ import * as io from 'socket.io-client';
 })
 export class MatchComponent implements OnInit {
   matchId: string;
+  private error = undefined;
   private last_attacker;
   private match;
   private winner = undefined;
@@ -49,6 +50,7 @@ export class MatchComponent implements OnInit {
       this.matchId = data.get('id');
       const socket = io(this.userService.url);
       socket.on('match update ' + this.matchId, (m) => {
+        this.error = undefined;
         this.last_attacker = m.lastIdAttacker;
         //console.log("MESSAGE RECEIVED " + JSON.stringify(m));
         this.matchUpdate();
@@ -57,17 +59,22 @@ export class MatchComponent implements OnInit {
     });
   }
 
-  shoot(x, y) {
-    console.log(x);
-    this.matchService.shoot(x, y, this.matchId).subscribe(
-      (success) => {
-        this.winner = success.winner;
-        console.log(success);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  shoot(x, y, color) {
+    console.log("aasdasdasdad "+color);
+    if(color == "#00ffff"){
+      this.error = undefined;
+      this.matchService.shoot(x, y, this.matchId).subscribe(
+        (success) => {
+          this.winner = success.winner;
+          console.log(success);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
+    else{
+      this.error = "Hai già sparato in quella cella";
+    }
   }
-
 }

@@ -12,6 +12,10 @@
   <div class="alert alert-primary" *ngIf="last_attacker !== userService.get_userId()">Tocca a te!</div>
 </ng-template>
 
+<div *ngIf="error" class="alert alert-danger">
+  {{error}}
+</div>
+
 <div class="row">
   <div class="col-md-3 col-sm-6 my-board">
     <h2>
@@ -31,7 +35,7 @@
       Campo avversario
     </h2>
     <div class="board-row" *ngFor="let row of opponentBoard; let rowIndex = index">
-      <div (click)="shoot(rowIndex, colIndex)" class="cell opponent" [ngStyle]="{'background-color': cell.color}" *ngFor="let cell of row; let colIndex = index">
+      <div (click)="shoot(rowIndex, colIndex, cell.color)" class="cell opponent" [ngStyle]="{'background-color': cell.color}" *ngFor="let cell of row; let colIndex = index">
       </div>
     </div>
   </div>
