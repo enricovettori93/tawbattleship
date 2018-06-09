@@ -15,6 +15,7 @@ export class MatchComponent implements OnInit {
   matchId: string;
   private last_attacker;
   private match;
+  private winner = undefined;
   opponentUsr: string;
   userBoard;
   userShips;
@@ -29,7 +30,9 @@ export class MatchComponent implements OnInit {
   private matchUpdate(): void {
     this.matchService.getMatchInfo(this.matchId, true).subscribe(
       (match) => {
+        console.log(match);
         this.match = match;
+        this.winner = match.winnerId;
         this.last_attacker = match.lastIdAttacker;
         this.opponentUsr = match.opponentInfo.username;
         this.userBoard = match.userBoard.matrix;
@@ -58,6 +61,7 @@ export class MatchComponent implements OnInit {
     console.log(x);
     this.matchService.shoot(x, y, this.matchId).subscribe(
       (success) => {
+        this.winner = success.winner;
         console.log(success);
       },
       (error) => {
