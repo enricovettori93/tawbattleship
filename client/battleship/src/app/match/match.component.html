@@ -1,7 +1,6 @@
 <h1>Match vs: {{opponentUsr}}</h1>
-<div *ngIf="error" class="col-12" class="alert alert-danger">
-  {{error}}
-</div>
+<div class="alert alert-warning" *ngIf="last_attacker === userService.get_userId()">Attendi, è il turno dell'avversario</div>
+<div class="alert alert-primary" *ngIf="last_attacker !== userService.get_userId()">Tocca a te!</div>
 <div class="row">
   <div class="col-md-3 col-sm-6 my-board">
     <h2>

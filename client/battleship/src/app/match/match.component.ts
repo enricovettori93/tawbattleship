@@ -13,8 +13,8 @@ import * as io from 'socket.io-client';
 })
 export class MatchComponent implements OnInit {
   matchId: string;
+  private last_attacker;
   private match;
-  private error = undefined;
   opponentUsr: string;
   userBoard;
   userShips;
@@ -30,6 +30,7 @@ export class MatchComponent implements OnInit {
     this.matchService.getMatchInfo(this.matchId, true).subscribe(
       (match) => {
         this.match = match;
+        this.last_attacker = match.lastIdAttacker;
         this.opponentUsr = match.opponentInfo.username;
         this.userBoard = match.userBoard.matrix;
         this.opponentBoard = match.opponentBoard.matrix;
@@ -45,8 +46,8 @@ export class MatchComponent implements OnInit {
       this.matchId = data.get('id');
       const socket = io(this.userService.url);
       socket.on('match update ' + this.matchId, (m) => {
-        //console.log("SHOT" + JSON.stringify(m));
-        this.error = undefined;
+        this.last_attacker = m.lastIdAttacker;
+        //console.log("MESSAGE RECEIVED " + JSON.stringify(m));
         this.matchUpdate();
       });
       this.matchUpdate();
@@ -55,13 +56,11 @@ export class MatchComponent implements OnInit {
 
   shoot(x, y) {
     console.log(x);
-    this.error = undefined;
     this.matchService.shoot(x, y, this.matchId).subscribe(
       (success) => {
         console.log(success);
       },
       (error) => {
-        this.error = "Attendi, non è il tuo turno!";
         console.log(error);
       }
     );
