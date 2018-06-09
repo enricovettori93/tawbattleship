@@ -608,23 +608,29 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                     ios.emit('match update ' + req.params.id_match, {lastIdAttacker:req.user.id});
                     //console.log(data.aliveShips)
                     if (data.aliveShips == 0){
-                        match.getModel().findOneAndUpdate({"_id":req.params.id_match},{"winnerId": returnmatch.lastIdAttacker, "status": match.MatchStatus.Ended}).then((ritorno) => {
+                        match.getModel().findOneAndUpdate({"_id":req.params.id_match},{"winnerId": req.user.id, "status": match.MatchStatus.Ended}).then((ritorno) => {
                             let partiteVincitore;
-                            user.getModel().findOne({"_id":returnmatch.lastIdAttacker}).then((userret) => {
+                            user.getModel().findOne({"_id":req.user.id}).then((userret) => {
                                 partiteVincitore = userret.partiteVinte;
                                 partiteVincitore += 1;
-                                user.getModel().findOneAndUpdate({"_id": returnmatch.lastIdAttacker},{"partiteVinte":partiteVincitore}).exec();
-                                if(returnmatch.owner == returnmatch.lastIdAttacker){
-                                    let partitePerse;
-                                    user.getModel().findOne({"_id":returnmatch.opponent}).then((userret) => {
-                                        partitePerse = userret.partitePerse;
-                                        partitePerse += 1;
-                                        user.getModel().findOneAndUpdate({"_id": returnmatch.opponent},{"partitePerse":partitePerse}).exec();
-                                    })
+                                user.getModel().findOneAndUpdate({"_id": req.user.id},{"partiteVinte":partiteVincitore}).exec();
+                                let loser;
+                                if(returnmatch.owner == req.user.id){
+                                    loser = returnmatch.opponent;
                                 }
+                                else{
+                                    loser = returnmatch.owner;
+                                }
+                                let partitePerse;
+                                    user.getModel().findOne({"_id": loser}).then((defeated) => {
+                                        console.log("ha perso : " + defeated.username)
+                                        partitePerse = defeated.partitePerse;
+                                        partitePerse += 1;
+                                        user.getModel().findOneAndUpdate({"_id": defeated._id},{"partitePerse": partitePerse}).exec();
+                                    })
                                 //console.log("ha vinto il player " + req.user.id)
                                 //console.log(userret.username)
-                                return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + returnmatch.lastIdAttacker, winner: userret.username })
+                                return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + userret.username/*returnmatch.lastIdAttacker*/, winner: userret.username })
                             })
                         })
                     }
