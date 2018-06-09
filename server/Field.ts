@@ -5,14 +5,23 @@ import { ObjectId } from 'bson';
 
 export interface Field extends mongoose.Document{
     playerId: ObjectId,
-    matrix: string[][],
+    matrix: Cell[][],
     aliveShips : Number,
     ships : Ship[],
     shoot: (position : any) => void,
     insertShips: (jFile : any) => void
 }
 
+export class Cell {
+    color : string;
+    hit : boolean;
 
+    constructor (color : string) {
+        this.hit = false;
+        this.color = color;
+    }
+
+}
 // We use Mongoose to perform the ODM between our application and
 // mongodb. To do that we need to create a Schema and an associated
 // data model that will be mapped into a mongodb collection
@@ -29,7 +38,7 @@ var FieldSchema = new mongoose.Schema({
         required : true
     }, 
     matrix : [[{
-        type : mongoose.SchemaTypes.String,
+        type : mongoose.SchemaTypes.Mixed,
         required : true
     }]], 
 
@@ -71,10 +80,10 @@ export function newField(UID : string, jFile : any) : Field {
     var _fieldModel = getModel();
     var field = new _fieldModel();
     field.playerId = mongoose.Types.ObjectId(UID);
-    field.matrix = new Array<Array<string>>(10);
+    field.matrix = new Array<Array<Cell>>(10);
     for(var i = 0; i<=9; i++){
         for(var j = 0; j<=9; j++){
-            field.matrix[i][j] = cellColor.unknown;
+            field.matrix[i][j] = new Cell(cellColor.water);//cellColor.unknown; //{"color" : ...., "hit" : ...}
         }
     }
     field.ships = new Array <Ship>();
@@ -98,26 +107,23 @@ FieldSchema.methods.shoot = function ( position : any) {
     if (this.matrix[position.x][position.y] == cellColor.unknown){
         var hit = false;
         this.ships.forEach( (ship, index) => {
-            var ship1 = new Ship(ship[0].cells);
+            var ship1 = new Ship(ship.cells);
             if (ship1.hit(position)){
                 hit = true;
                 if (ship1.isSunk()){ 
                     this.aliveShips = this.aliveShips -1;
                     ship1.cells.forEach(cell => {
-                        this.matrix[cell["x"]][cell["y"]] = cellColor.shipDestroyed;
+                        this.matrix[cell["x"]][cell["y"]].color = cellColor.shipDestroyed;
+                        this.matrix[cell["x"]][cell["y"]].hit = true;
                     })
                 }
                 else{
-                    this.matrix[position.x][position.y] = cellColor.hit;
+                    this.matrix[position.x][position.y].color =  cellColor.hit;
+                    this.matrix[position.x][position.y].hit = true;
                 }
             }
             this.ships[index] = ship1;
         })
-        if(!hit){
-            this.matrix[position.x][position.y] = cellColor.water;
-        }
-        //console.log(this.ships);
-        //console.log(this.matrix);
         getModel().findOneAndUpdate({"_id" : this._id}, {"matrix" : this.matrix, "ships" : this.ships}).then((field) =>{
             console.log("Field saved successfully : " + field._id);
         }).catch((error) => {
@@ -155,7 +161,11 @@ FieldSchema.methods.insertShips = function (jFile : any) {
         if (checkSubsequent(element)){
             navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
             //crea una nuova nave
-            this.ships.push(new Ship(element));
+            var ship = new Ship(element)
+            this.ships.push(ship.cells);
+            ship.cells.forEach(position => {
+                this.matrix[position["x"]][position["y"]] = new Cell(cellColor.ship);
+            })
             this.aliveShips = this.aliveShips + 1;
 
         }

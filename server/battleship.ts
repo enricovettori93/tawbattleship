@@ -472,51 +472,35 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
         match.getModel().findOne({ "_id": req.params.id_match })
             .populate({ path: "opponent", select: "username" })
             .populate({ path: "owner", select: "username" })
-            .populate({ path: "fieldOwner", select: lista_parametri1 })
-            .populate({ path: "fieldOpponent", select: lista_parametri2 }).lean().exec().then((match) => {
+            .populate({ path: "fieldOwner"})
+            .populate({ path: "fieldOpponent"}).lean().exec().then((match) => {
                 if (match.owner._id.toString() === req.user.id) {
-                    lista_parametri1 = "matrix, ships, _id";
-                    lista_parametri2 = "matrix _id";
                     myBoard = "fieldOwner";
                     me = "owner";
                     opponent = "opponent";
                     opponentBoard = "fieldOpponent";
                 }
                 else {
-                    lista_parametri2 = "matrix, ships, _id";
-                    lista_parametri1 = "matrix _id";
                     me = "opponent";
                     opponent = "owner";
                     myBoard = "fieldOpponent";
                     opponentBoard = "fieldOwner"
                 }
-                var userMatrix;
-                var userShips;
+                var opponentMatrix;
+                var opponentShips;
 
                 delete match[opponentBoard].ships;
-                userMatrix = match[myBoard].matrix;
-                userShips = match[myBoard].ships
+                opponentMatrix = match[opponentBoard].matrix.slice(0);
+
                 for(var i = 0; i<=9; i++){
                     for(var j = 0; j<=9; j++){
-                        userMatrix[i][j] = field.cellColor.water;
+                        if(!opponentMatrix[i][j].hit)
+                            opponentMatrix[i][j] = new field.Cell(field.cellColor.unknown);
                     }
                 }
-                userShips.forEach(nave => {
-                    nave.pop().cells.forEach((cell) => {
-                        userMatrix[cell.x][cell.y] = myBoard[cell.x][cell.y];
-                    })
-                });
-
-                userMatrix.forEach((row) => {
-                    row.forEach((cell) => {
-                        if (cell != field.cellColor.ship) {
-                            cell = field.cellColor.water;
-                        }
-                    })
-                });
 
                 match["userBoard"] = match[myBoard];
-                match["userBoard"].matrix = userMatrix;
+                match["userBoard"].matrix = opponentMatrix;
                 match["opponentBoard"] = match[opponentBoard];
                 match["userInfo"] = match[me];
                 match["opponentInfo"] = match[opponent];
