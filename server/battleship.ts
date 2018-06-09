@@ -405,21 +405,26 @@ app.route("/matches").get(auth, (req, res, next) => {
     })
 }).post(auth, (req, res, next) => {
     let new_match = match.newMatch(req.user.id)
-    match.getModel().find({ "owner": req.user.id }).count().then((data) => {
-        if (JSON.stringify(data) === "0") {
-            new_match.save().then((data) => {
-                console.log(("Match created succesfully. Owner UID: " + data.owner).green);
-                ios.emit("new match added", {});
-                return res.status(200).json({ error: false, errormessage: "", id: data._id });
-            }).catch((error) => {
-                return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
-            })
-        }
-        else {
-            return res.status(400).json({ error: true, errormessage: "User already got waiting match" });
-        }
-    }).catch((err) => {
-        return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err });
+    match.getModel().find({"owner": req.user.id, "status": match.MatchStatus.Ended}).count().then((waitingMatches) => {
+
+        match.getModel().find({ "owner": req.user.id}).count().then((data) => {
+            console.log(waitingMatches);
+            console.log(data);
+            if (JSON.stringify(data-waitingMatches) === "0") {
+                new_match.save().then((data) => {
+                    console.log(("Match created succesfully. Owner UID: " + data.owner).green);
+                    ios.emit("new match added", {});
+                    return res.status(200).json({ error: false, errormessage: "", id: data._id });
+                }).catch((error) => {
+                    return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
+                })
+            }
+            else {
+                return res.status(400).json({ error: true, errormessage: "User already got waiting match" });
+            }
+        }).catch((err) => {
+            return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err });
+        })
     })
 })
 
