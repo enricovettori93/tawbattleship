@@ -601,8 +601,8 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                     match.getModel().findOneAndUpdate({"_id": req.params.id_match}, {"lastIdAttacker": { "_id": mongoose.Types.ObjectId(req.user.id)}}).exec()
                     //console.log('match update ' + req.params.id_match);
                     ios.emit('match update ' + req.params.id_match, {lastIdAttacker:req.user.id});
-                    
-                    if (campo.aliveShips == 0){
+                    console.log(data.aliveShips)
+                    if (data.aliveShips == 0){
                         match.getModel().findOneAndUpdate({"_id":req.params.id_match},{"winnerId":req.user.id, "status": match.MatchStatus.Ended}).then((ritorno) => {
                             let partiteVincitore;
                             user.getModel().findOne({"_id":req.user.id}).then((userret) => {
@@ -617,6 +617,8 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                                         user.getModel().findOneAndUpdate({"_id": returnmatch.opponent},{"partitePerse":partitePerse}).exec();
                                     })
                                 }
+                                console.log("ha vinto il player " + req.user.id)
+                                console.log(userret.username)
                                 return res.status(200).json({ error: false, errormessage: "", message: "ha vinto il player " + req.user.id, winner: userret.username })
                             })
                         })
