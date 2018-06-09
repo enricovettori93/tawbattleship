@@ -10,8 +10,13 @@ export class Ship {
     constructor(positions : Array<Object>) {
         this.cells = new Array<Object> ();
         positions.forEach(position => {
-            //var tmp = String(position["x"])+","+String(position["y"])
-            this.cells.push({ x : position["x"], y : position["y"], hit : false});
+            let hit
+            if( !(position['hit'] === undefined)){
+                hit = position['hit'];
+            } else{
+                hit = false;
+            }
+            this.cells.push({ x : position["x"], y : position["y"], hit : hit});
         })
     }
 

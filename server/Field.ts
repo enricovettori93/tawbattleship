@@ -108,12 +108,13 @@ FieldSchema.methods.shoot = function (position: any) {
         var hit = false;
         var newAliveShips = this.aliveShips;
         this.ships.forEach((ship, index) => {
-            var ship1 = new Ship(ship);
-            if (ship1.hit(position)) {
+            var shipAux = new Ship(ship[0].cells);
+            if (shipAux.hit(position)) {
                 hit = true;
-                if (ship1.isSunk()) {
+                this.ships[index] = shipAux;
+                if (shipAux.isSunk()) {
                     this.newAliveShips = this.aliveShips - 1;
-                    ship1.cells.forEach(cell => {
+                    shipAux.cells.forEach(cell => {
                         this.matrix[cell["x"]][cell["y"]].color = cellColor.shipDestroyed;
                     })
                 }
@@ -122,7 +123,7 @@ FieldSchema.methods.shoot = function (position: any) {
                 }
             }
             this.matrix[position.x][position.y].hit = true;
-            this.ships[index] = ship1;
+            this.ships[index] = shipAux;
         })
         getModel().findOneAndUpdate({ "_id": this._id }, { "matrix": this.matrix, "ships": this.ships, "aliveShips": this.newAliveShips }).then((field) => {
             console.log("Field saved successfully : " + field._id);
@@ -170,7 +171,7 @@ FieldSchema.methods.insertShips = function (jFile: any) {
                     throw "una nave è adiacente ad un'altra, oppure è posizionata fuori dai bordi del campo"
                 }
             })
-            this.ships.push(ship.cells);
+            this.ships.push(ship);
             ship.cells.forEach(position => {
                 this.matrix[position["x"]][position["y"]] = new Cell(cellColor.ship);
             })
