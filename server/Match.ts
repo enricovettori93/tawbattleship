@@ -25,14 +25,7 @@ export interface Match extends mongoose.Document {
     insertField: (owner: string, shipJSON: any) => Promise<any>
 }
 
-// We use Mongoose to perform the ODM between our application and
-// mongodb. To do that we need to create a Schema and an associated
-// data model that will be mapped into a mongodb collection
-//
-// Type checking cannot be enforced at runtime so we must take care
-// of correctly matching the Message interface with the messageSchema 
-//
-// Mongoose Schema
+
 var MatchSchema = new mongoose.Schema({
     timestamp: {
         type: mongoose.Schema.Types.Date,

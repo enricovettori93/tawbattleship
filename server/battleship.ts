@@ -457,10 +457,10 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
 app.get("/matches/:id_match", auth, (req, res, next) => {
     req.query.type = (req.query.type || "undefined");
     var type = req.query.type;
-    //return res.status(200).json({error : false, errormessage: "", message : type})
+    // return res.status(200).json({error : false, errormessage: "", message : type})
     if (type == "undefined") {
 
-        match.getModel().findOne({ "_id": req.params.id_match })/*.populate({path: 'owner', model: user.getModel(), select: 'username _id' },{path: 'opponent', model: user.getModel(), select: 'username _id'})*/.then((match) => {
+        match.getModel().findOne({ "_id": req.params.id_match }).then((match) => {
             return res.status(200).json(match);
         }).catch((err) => {
             return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + err });
@@ -468,7 +468,7 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
 
     }
     else {
-        let lista_parametri1, lista_parametri2, myBoard, opponentBoard, me, opponent;
+        let myBoard, opponentBoard, me, opponent;
         match.getModel().findOne({ "_id": req.params.id_match })
             .populate({ path: "opponent", select: "username" })
             .populate({ path: "owner", select: "username" })
