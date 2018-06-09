@@ -161,6 +161,14 @@ FieldSchema.methods.insertShips = function (jFile : any) {
             navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
             //crea una nuova nave
             var ship = new Ship(element)
+
+            ship.cells.forEach(position => {
+                if(!checkNext(position, this.ships) && (position["x"]>=1 || position["x"]<=10) && (position["y"]>=1 || position["y"]<=10)){
+                    this.matrix = this.ships = [];
+                    this.aliveShips = 0;
+                    throw "una nave è adiacente ad un'altra, oppure è posizionata fuori dai bordi del campo"
+                }
+            })
             this.ships.push(ship.cells);
             ship.cells.forEach(position => {
                 this.matrix[position["x"]][position["y"]] = new Cell(cellColor.ship);
@@ -177,5 +185,23 @@ FieldSchema.methods.insertShips = function (jFile : any) {
     });
 
     return true;
+}
+
+function checkNext(cella : any, naviInserite : Array<Ship>) : boolean{
+    let isOK = true;
+    naviInserite.forEach(nave =>{
+        nave.cells.forEach(position => {
+            isOK = isOK && ((cella["x"] != position["x"]) || (cella["y"] != position["y"]))
+                    && ((cella["x"] != position["x"]+1) || (cella["y"] != position["y"])) 
+                    && ((cella["x"] != position["x"]-1) || (cella["y"] != position["y"]))
+                    && ((cella["x"] != position["x"]) || (cella["y"] != position["y"]+1)) 
+                    && ((cella["x"] != position["x"]) || (cella["y"] != position["y"]-1))
+                    && ((cella["x"] != position["x"]+1) || (cella["y"] != position["y"]+1)) 
+                    && ((cella["x"] != position["x"]-1) || (cella["y"] != position["y"]-1))
+                    && ((cella["x"] != position["x"]+1) || (cella["y"] != position["y"]-1)) 
+                    && ((cella["x"] != position["x"]-1) || (cella["y"] != position["y"]+1))
+        })
+    })
+    return isOK;
 }
 
