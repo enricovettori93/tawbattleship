@@ -34,7 +34,7 @@
         "compile": "tsc *.ts",
         "dump": "mongodump  --db battleship",
         "start-mongo": "mongod --dbpath ./data",
-        "start": "concurrently \"tsc *.ts & mongod --dbpath ./data\"  \"sleep 2 && node battleship\""
+        "start": "concurrently \"tsc *.ts &; mongod --dbpath ./data\"  \"sleep 2 &; node battleship\""
     },
     "private": true
 }

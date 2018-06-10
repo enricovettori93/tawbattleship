@@ -563,7 +563,7 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
                         beginner = data.owner;
                     }
                     else{
-                        beginner = data.opponent;
+                        beginner = mongoose.Types.ObjectId(req.user.id);
                     }
                     match.getModel().findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id_match),
                         {

@@ -178,7 +178,7 @@ FieldSchema.methods.insertShips = function (jFile: any) {
 
     // Controlla che il numero di navi non sia inferiore a 9.
     if(jFile["ships"].length != 9){
-        throw "Troppe o troppo poche navi inserte."
+        throw "Troppe o troppo poche navi inserte.";
     }
     jFile["ships"].forEach(element => {
 
@@ -186,21 +186,21 @@ FieldSchema.methods.insertShips = function (jFile: any) {
         if (element.length > 5 || element.length < 2) {
             this.matrix = this.ships = [];
             this.aliveShips = 0;
-            throw "nave di dimensione errata"
+            throw "nave di dimensione errata";
         }
 
         // Controlla se il numero di navi dello stesso tipo di quella in questione abbia già raggiunto il massimo
         if (navi[element.length].quantity == navi[element.length].actualQuantity) {
             this.matrix = this.ships = [];
             this.aliveShips = 0;
-            throw "troppe navi dello stesso tipo"
+            throw "troppe navi dello stesso tipo";
         }
 
         // Controlla che le celle della nave siano consecutive, attraverso la funzione checkSubsequent
         if (checkSubsequent(element)) {
             navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
-
-            var ship = new Ship(element)
+            //crea una nuova nave
+            var ship = new Ship(element);
 
             // Controlla che ogni cella della nave non sia fuori dal campo, o che non sia adiacente a nessuna altra nave
             ship.cells.forEach(position => {
