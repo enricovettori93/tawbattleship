@@ -514,7 +514,7 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
                 delete match[opponentBoard];
                 delete match[me];
                 delete match[opponent];
-
+                console.log(match);
                 return res.status(200).json(match);
             }).catch((err) => {
                 return next({ statusCode: 500, error: true, errormessage: "MongoDB error: " + err });
