@@ -398,18 +398,22 @@ app.get("/scoreboard", auth, (req, res, next) => {
 //---------------------- Match Endpoints ---------------------------
 
 app.route("/matches").get(auth, (req, res, next) => {
+    // Gets all waiting matches 
     match.getModel().find({ "status": match.MatchStatus.Wait }).populate({ path: 'owner', model: user.getModel(), select: 'username _id' }).then((documents) => {
         return res.status(200).json(documents);
     }).catch((error) => {
         return next({ statusCode: 404, error: true, errormessage: "MongoDB error: " + error });
     })
 }).post(auth, (req, res, next) => {
+    // Creates a new match with the auth user as owner
     let new_match = match.newMatch(req.user.id)
     match.getModel().find({"owner": req.user.id, "status": match.MatchStatus.Ended}).count().then((waitingMatches) => {
 
         match.getModel().find({ "owner": req.user.id}).count().then((data) => {
             console.log(waitingMatches);
             console.log(data);
+
+            // L'utente non deve avere altri match in corso per poterne creare uno nuovo.
             if (JSON.stringify(data-waitingMatches) === "0") {
                 new_match.save().then((data) => {
                     console.log(("Match created succesfully. Owner UID: " + data.owner).green);
@@ -429,13 +433,16 @@ app.route("/matches").get(auth, (req, res, next) => {
 })
 
 app.put("/matches/:id/board", auth, (req, res, next) => {
+
+    // Inserts ships for the auth user fighting in the :id match
     match.getModel().findOne({ "_id": req.params.id }).then((data) => {
         if (req.user.id == data.owner || req.user.id == data.opponent) {
+
+            // Non si possono inserire le navi se il match non è nello stato Building.
             if (data.getStatus() != match.MatchStatus.Building) {
                 return res.status(404).json({ error: true, errormessage: "Cannot add ships now!" });
             }
             else {
-                //match.getModel().findByIdAndUpdate({ "_id": req.params.id }, { "status": match.MatchStatus.Building });
                 try {
                     data.insertField(req.user.id, req.body.positioning).then(
                         (success) => {
@@ -460,9 +467,14 @@ app.put("/matches/:id/board", auth, (req, res, next) => {
 })
 
 app.get("/matches/:id_match", auth, (req, res, next) => {
+
+    // Gets ":id_match" match information. 
+    // If type=fullInfo, returns information also about users and fields:
+    //      the field of the user fighting against auth user is anonymized, 
+    //      so that auth user can't see what is contained inside cells not checked yet.
+
     req.query.type = (req.query.type || "undefined");
     var type = req.query.type;
-    // return res.status(200).json({error : false, errormessage: "", message : type})
     if (type == "undefined") {
 
         match.getModel().findOne({ "_id": req.params.id_match }).then((match) => {
@@ -497,6 +509,7 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
                 delete match[opponentBoard].ships;
                 opponentMatrix = match[opponentBoard].matrix.slice(0);
 
+                // Le informazioni riguardo al campo dell'avversario dell'utente auth sono oscurate
                 for(var i = 0; i<=9; i++){
                     for(var j = 0; j<=9; j++){
                         if(!opponentMatrix[i][j].hit)
@@ -526,15 +539,18 @@ app.get("/matches/:id_match", auth, (req, res, next) => {
 })
 
 //endpoint temporaneo per il controllo della costruzione dei campi
-app.get("/fields/:id", auth, (req, res, next) => {
+/*app.get("/fields", auth, (req, res, next) => {
 
     field.getModel().find().then((data) => {
         return res.status(200).json(data);
     })
-})
+})*/
 
 app.put("/matches/:id_match/join", auth, (req, res, next) => {
+    // Updates ":id_match" match informations, adding auth user as the opponent user in this match.
     match.getModel().find({ "$or": [{ "owner._id": req.user.id }, { "opponent._id": req.user.id }] }).count().then((data) => {
+
+        // L'utente non può joinare un match se è già coinvolto in un altro.
         if (data === 0) {
             match.getModel().findOne({ "_id": req.params.id_match }).then((data) => {
                 if (data.status != match.MatchStatus.Wait) {
@@ -575,15 +591,13 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
     })
 })
 
-// nel body si aspetta di trovare un file json del tipo
-/**
- * {
- *  "player" : ObjectId, //è inutile da inserire, ce l'abbiamo già nell'autenticazione l'id di chi spara
- *  "position" : { "x" : Number, "y" : Number}
- * }
- */
+
 app.put("/matches/:id_match", auth, (req, res, next) => {
+        // Updates ":id_match" match information, shooting at the position specified inside the body.
+        // Shoot position format: { "position" : {"x" : Number, "y" : Number}}
         match.getModel().findOne({ "_id": req.params.id_match }).then((returnmatch) => {
+
+            // If auth user shot last, cannot shoot again
             if(returnmatch.lastIdAttacker == req.user.id){
                 return res.status(400).json({error: true, errormessage: "This user already attacked!"})
             }
@@ -606,10 +620,15 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                     //console.log('match update ' + req.params.id_match);
                     ios.emit('match update ' + req.params.id_match, {lastIdAttacker:req.user.id});
                     //console.log(data.aliveShips)
+
+                    // If there are no Ships alive, the match ends and auth user won this game.
                     if (data.aliveShips == 0){
+
                         match.getModel().findOneAndUpdate({"_id":req.params.id_match},{"winnerId": req.user.id, "status": match.MatchStatus.Ended}).then((ritorno) => {
                             let partiteVincitore;
                             user.getModel().findOne({"_id":req.user.id}).then((userret) => {
+
+                                // Aggiorno le informazioni del vincitore.
                                 partiteVincitore = userret.partiteVinte;
                                 partiteVincitore += 1;
                                 user.getModel().findOneAndUpdate({"_id": req.user.id},{"partiteVinte":partiteVincitore}).exec();
@@ -622,7 +641,9 @@ app.put("/matches/:id_match", auth, (req, res, next) => {
                                 }
                                 let partitePerse;
                                     user.getModel().findOne({"_id": loser}).then((defeated) => {
-                                        console.log("ha perso : " + defeated.username)
+                                        // Aggiorno le informazioni dello sconfitto
+                                        
+                                        //console.log("ha perso : " + defeated.username)
                                         partitePerse = defeated.partitePerse;
                                         partitePerse += 1;
                                         user.getModel().findOneAndUpdate({"_id": defeated._id},{"partitePerse": partitePerse}).exec();
