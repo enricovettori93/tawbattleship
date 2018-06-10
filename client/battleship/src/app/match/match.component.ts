@@ -60,7 +60,6 @@ export class MatchComponent implements OnInit {
   }
 
   shoot(x, y, color) {
-    console.log("aasdasdasdad "+color);
     if(color == "#00ffff"){
       this.error = undefined;
       this.matchService.shoot(x, y, this.matchId).subscribe(
@@ -74,7 +73,9 @@ export class MatchComponent implements OnInit {
       );
     }
     else{
-      this.error = "Hai già sparato in quella cella";
+      if(!this.winner){
+        this.error = "Hai già sparato in quella cella";
+      }
     }
   }
 }
