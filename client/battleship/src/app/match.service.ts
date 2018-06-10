@@ -34,7 +34,7 @@ export class MatchService {
   getWaitingMatch(): Observable<any> {
     return this.http.get(this.userService.url + '/matches', this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log('Waiting match: ' + JSON.stringify(data));
+        //console.log('Waiting match: ' + JSON.stringify(data));
       })
     );
   }
@@ -65,7 +65,7 @@ export class MatchService {
     return this.http.get(
       this.userService.url + '/users/' + user + '/matches', this.utilities.create_options(this.userService.get_token())).pipe(
         tap((data) => {
-          console.log('Logged user match: ' + JSON.stringify(data));
+          //console.log('Logged user match: ' + JSON.stringify(data));
         })
       );
   }
@@ -73,7 +73,7 @@ export class MatchService {
   createMatch(): Observable<any> {
     return this.http.post(this.userService.url + '/matches', {}, this.utilities.create_options(this.userService.get_token())).pipe(
       tap((data) => {
-        console.log('Creating match: ' + JSON.stringify(data));
+        //console.log('Creating match: ' + JSON.stringify(data));
       })
     );
   }
@@ -85,7 +85,7 @@ export class MatchService {
       {},
       this.utilities.create_options(this.userService.get_token())).pipe(
         tap((data) => {
-          console.log('Creating match: ' + JSON.stringify(data));
+          //console.log('Creating match: ' + JSON.stringify(data));
         })
       );
   }
@@ -122,7 +122,7 @@ export class MatchService {
       shipsArray.push(shipParts);
     });
     res['positioning'] = { 'ships': shipsArray };
-    console.log(JSON.stringify(res));
+    //console.log(JSON.stringify(res));
     return this.http.put(
       this.userService.url + '/matches/' + matchId + '/board',
       res,
@@ -130,7 +130,7 @@ export class MatchService {
   }
 
   shoot(x, y, matchId): Observable<any> {
-    console.log({ position: { x: x, y: y } });
+    //console.log({ position: { x: x, y: y } });
     return this.http.put(
       this.userService.url + '/matches/' + matchId,
       { position: { x: x, y: y } },

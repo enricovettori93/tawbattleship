@@ -29,7 +29,7 @@ export class UserSignupComponent implements OnInit {
   signup() {
     if (this.equalpassword == true) {
       this.userService.register(this.user).subscribe( result => {
-        console.log(this.user.username + " added");
+        //console.log(this.user.username + " added");
         this.errmessage = undefined;
         this.router.navigate(['/login']);
       }, err => {

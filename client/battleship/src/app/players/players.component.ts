@@ -29,7 +29,7 @@ export class PlayersComponent implements OnInit {
   }
 
   searchPlayer(keyword: string) {
-    console.log('Search player with: ' + keyword);
+    //console.log('Search player with: ' + keyword);
     this.userService.searchUser(keyword).subscribe((value) => {
       // console.log(JSON.stringify(d));
       this.players = value;
