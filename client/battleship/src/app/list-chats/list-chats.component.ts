@@ -37,7 +37,7 @@ export class ListChatsComponent implements OnInit {
     const answer = confirm('Sei sicuro di voler cancellare questa chat?');
     if (answer) {
       this.userService.deleteChat(id).subscribe((data) => {
-        console.log(JSON.stringify(data));
+        //console.log(JSON.stringify(data));
         this.getUserChats();
       });
     }

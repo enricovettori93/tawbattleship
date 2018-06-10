@@ -27,7 +27,7 @@ export class UserLoginComponent implements OnInit {
     if (this.username === "" || this.username === "") {
       this.errmessage = "dati mancanti.";
     } else {
-      console.log(this.username + " try to login");
+      //console.log(this.username + " try to login");
       this.userService.login(this.username, this.password, Boolean(this.rememberAccess)).subscribe((d) => {
         this.errmessage = undefined;
         this.router.navigate(["/user"]);

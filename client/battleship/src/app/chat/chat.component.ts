@@ -58,7 +58,7 @@ export class ChatComponent implements OnInit {
     if (this.textMessage === '' || this.textMessage === undefined) {
       this.error = 'Impossibile inviare un messaggio vuoto';
     } else {
-      console.log(this.textMessage);
+      //console.log(this.textMessage);
       this.userService.sendMessage(this.id_chat, this.textMessage).subscribe((data) => {
         this.textMessage = '';
         console.log(JSON.stringify(data));

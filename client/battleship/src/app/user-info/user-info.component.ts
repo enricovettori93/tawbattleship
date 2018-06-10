@@ -35,10 +35,10 @@ export class UserInfoComponent implements OnInit {
   ngOnInit() {
     // console.log(this.userService.get_token());
     this.utilities.check_auth(this.userService.get_token());
-    console.log("Routing in user component: " + this.router.url);
+    //console.log("Routing in user component: " + this.router.url);
     if (this.router.url !== "/user") {
       this.routingNotCurrentUser = this.router.url.split("/").pop();
-      console.log("User: " + this.routingNotCurrentUser);
+      //console.log("User: " + this.routingNotCurrentUser);
       this.getUser();
     } else {
       this.username = this.userService.get_username();
@@ -64,8 +64,8 @@ export class UserInfoComponent implements OnInit {
       } else {
         this.userService.updateInfo(username, name, surname, mail, password1, this.isAdmin).subscribe((d) => {
           this.userService.renew().subscribe((returnData) => {
-            console.log(JSON.stringify(returnData));
-            console.log("User info " + username + " update");
+            //console.log(JSON.stringify(returnData));
+            //console.log("User info " + username + " update");
             this.username = username;
             this.errmessage = undefined;
             this.okmessage = "Account aggiornato con successo.";
@@ -74,7 +74,7 @@ export class UserInfoComponent implements OnInit {
             this.errmessage = err.error.errormessage || err.error.message;
             this.okmessage = undefined;
           }, () => {
-          console.log("Completed");
+          //console.log("Completed");
         });
       });
     }
@@ -83,23 +83,23 @@ export class UserInfoComponent implements OnInit {
 
   updateInfoAdminOtherUser(username: string, isAdmin: boolean) {
     this.userService.updateInfoAdmin(username, isAdmin).subscribe((d) => {
-      console.log("User info " + username + " update in status admin: " + isAdmin);
+      //console.log("User info " + username + " update in status admin: " + isAdmin);
       this.errmessage = undefined;
       this.okmessage = "Account aggiornato con successo.";
     }, (err) => {
-      console.log("User info " + username + " update in status admin " + isAdmin + "error: " + err);
+      //console.log("User info " + username + " update in status admin " + isAdmin + "error: " + err);
       this.errmessage = err.error.errormessage || err.error.message;
       this.okmessage = undefined;
     });
   }
 
   changeStatusAdminOtherAccount() {
-    console.log("Stato vecchio: " + this.otherUser.isAdmin + " stato nuovo " + !this.otherUser.isAdmin);
+    //console.log("Stato vecchio: " + this.otherUser.isAdmin + " stato nuovo " + !this.otherUser.isAdmin);
     this.otherUser.isAdmin = !this.otherUser.isAdmin;
   }
 
   changeStatusAdminThisAccount() {
-    console.log("Stato vecchio: " + this.isAdmin + " stato nuovo " + !this.isAdmin);
+    //console.log("Stato vecchio: " + this.isAdmin + " stato nuovo " + !this.isAdmin);
     this.isAdmin = !this.isAdmin;
   }
 
@@ -108,7 +108,7 @@ export class UserInfoComponent implements OnInit {
     const userToDelete = this.username;
     if (answer) {
       this.userService.deleteUser(userToDelete).subscribe((d) => {
-        console.log("User " + userToDelete + " deleted");
+        //console.log("User " + userToDelete + " deleted");
         if (userToDelete === this.userService.get_username()) {
           this.userService.logout();
           this.router.navigate(["/"]);
@@ -123,7 +123,7 @@ export class UserInfoComponent implements OnInit {
 
   getUser() {
     this.userService.getInfoUser(this.routingNotCurrentUser).subscribe((d) => {
-      console.log("Getting user " + JSON.stringify(d) + " OK");
+      //console.log("Getting user " + JSON.stringify(d) + " OK");
       this.otherUser = d;
       if (this.otherUser != null) {
         this.username = this.otherUser.username;
@@ -168,7 +168,7 @@ export class UserInfoComponent implements OnInit {
    */
   createChat() {
     this.userService.createChat(this.username).subscribe((newChat) => {
-      console.log("CHAT CREATA " + JSON.stringify(newChat));
+      //console.log("CHAT CREATA " + JSON.stringify(newChat));
       this.router.navigate(["/chats/" + newChat["id"]]);
     }, (err) => {
       console.log("Error creating user chat " + err);

@@ -32,7 +32,7 @@ export class MatchComponent implements OnInit {
   private matchUpdate(): void {
     this.matchService.getMatchInfo(this.matchId, true).subscribe(
       (match) => {
-        console.log(match);
+        //console.log(match);
         this.match = match;
         this.winner = match.winnerId;
         this.last_attacker = match.lastIdAttacker;
@@ -74,7 +74,7 @@ export class MatchComponent implements OnInit {
       this.matchService.shoot(x, y, this.matchId).subscribe(
         (success) => {
           this.winner = success.winner;
-          console.log(success);
+          //console.log(success);
         },
         (error) => {
           console.log(error);
