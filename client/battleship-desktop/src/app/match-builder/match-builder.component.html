@@ -1,0 +1,74 @@
+<h1>Schermata del match</h1>
+<div *ngIf="match">
+  <div [ngSwitch]="match.status">
+    <h2 *ngSwitchCase="0">Match in attesa del secondo partecipante</h2>
+    <h2 *ngSwitchCase="1">Match in fase di costruzione</h2>
+    <h2 *ngSwitchCase="2">Match in fase di gioco</h2>
+    <h2 *ngSwitchCase="3">Match finito</h2>
+  </div>
+  <div *ngIf="match.status == 1" >
+    <div class="row">
+      <div class="col-lg-6" #battlefieldDOM>
+        <h2>Posiziona le tue navi</h2>
+        <div class="board-row" *ngFor="let row of board">
+          <div class="holder" [ngStyle]="{'background-color': cell.getStatus()}" [attr.row]="cell.getRow()" [attr.col]="cell.getCol()" *ngFor="let cell of row">
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6" #shipsDOM>
+        <div class="ship-group">
+          <h6>Cacciatorpediniere - grandezza: 2</h6>
+          <div class="ship destroyer" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of destroyers"  [attr.id]="ship.getId()">
+            <img src="assets/images/destroyer.svg" [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'destroyers':true }"/>
+            <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
+            <div *ngIf="ship.isUsed()">
+              <i class="fa fa-times" (click)="removeFromBoard(ship)"aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+        <div class="ship-group">
+          <h6>Sottomarino - grandezza: 3</h6>
+          <div class="ship submarine" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of submarines" [attr.id]="ship.getId()">
+            <img src="assets/images/submarine.svg" [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'submarines':true }"/>
+            <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
+            <div *ngIf="ship.isUsed()">
+              <i class="fa fa-times" (click)="removeFromBoard(ship)" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+        <div class="ship-group">
+        <h6>Corazzata - grandezza: 4</h6>
+          <div class="ship battleship" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of battleships" [attr.id]="ship.getId()">
+            <img src="assets/images/battleship.svg" [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'battleships':true }"/>
+            <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
+            <div *ngIf="ship.isUsed()">
+              <i class="fa fa-times" (click)="removeFromBoard(ship)" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+        <div class="ship-group">
+          <h6>Portaerei - grandezza: 5</h6>
+          <div class="ship aircraft-carrier" [attr.draggable]="!ship.isUsed()" *ngFor="let ship of aircraftCarriers" [attr.id]="ship.getId()">
+            <img src="assets/images/aircraft-carrier.svg" [ngClass]="{'horizontal': ship.getOrientation() == 0, 'vertical': ship.getOrientation() == 1, 'aircraftCarriers':true }"/>
+            <i class="fa fa-repeat" (click)="rotate(ship)" aria-hidden="true"></i>
+            <i class="fa fa-times" (click)="removeFromBoard(ship)" aria-hidden="true" *ngIf="ship.isUsed()"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <button type="button" [disabled]="!submitEnabled" (click)="sendBoard()" class="btn btn-primary">Inizia la partita</button>
+      </div>
+      <div class="col-md-6">
+        <div class="alert alert-success" *ngIf="boardUpdated">
+          <strong>Inviato!</strong> Non appena il tuo avversario posizionerà il campo inizierà la partita
+        </div>
+        <div class="alert alert-danger" *ngIf="error">
+          <strong>Errore</strong> {{errorMessage}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

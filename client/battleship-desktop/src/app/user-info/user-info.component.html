@@ -1,0 +1,175 @@
+<div *ngIf="routingNotCurrentUser; then notThisUser; else thisUser">
+
+</div>
+
+<ng-template #notThisUser>
+  <div class="row col">
+    <h1 *ngIf="otherUser != null">Stai visualizzando il profilo di {{otherUser.username}}</h1>
+  </div>
+  <div class="row col">
+    <h1 *ngIf="otherUser == null">Giocatore non trovato</h1>
+  </div>
+  <!-- Profile image
+  <div class="row">
+    <div class="col text-center">
+      <img src="https://pbs.twimg.com/profile_images/1532886460/He-man_400x400.jpg" style="width:13em;border-radius:50%" class="center-block">
+    </div>
+  </div>-->
+  <!-- Info account-->
+  <div *ngIf="otherUser != null" class="container py-5">
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Username</b>
+      </div>
+      <div class="col-6">
+        <p>{{otherUser.username}}</p>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Nome</b>
+      </div>
+      <div class="col-6">
+        <p>{{otherUser.name}}</p>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Cognome</b>
+      </div>
+      <div class="col-6">
+        <p>{{otherUser.surname}}</p>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Email</b>
+      </div>
+      <div class="col-6">
+        <p>{{otherUser.mail}}</p>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Partite vinte</b>
+      </div>
+      <div class="col-6">
+        <p>{{otherUser.partiteVinte}}</p>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Partite perse</b>
+      </div>
+      <div class="col-6">
+        <p>{{otherUser.partitePerse}}</p>
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Partite giocate</b>
+      </div>
+      <div class="col-6">
+        <p>{{totalePartite}}</p>
+      </div>
+    </div>
+    <div *ngIf="isAdmin" style="padding-left:0" class="col-12 py-2">
+      <input type="checkbox" [checked]="otherUserIsAdmin" (click)="changeStatusAdminOtherAccount()" #changeOtherAdmin> Amministratore
+    </div>
+    <div class="row py-2">
+      <div class="col-12">
+        <a routerLink="/user/{{otherUser.username}}/matches">Partite giocate</a>
+      </div>
+    </div>
+    <div *ngIf="errmessage" class="alert alert-danger" role="alert">
+      Errore: {{errmessage}}
+    </div>
+    <div *ngIf="okmessage" class="alert alert-success" role="alert">
+      {{okmessage}}
+    </div>
+    <div class="row col py-2">
+      <button *ngIf="isAdmin" class="btn btn-primary" (click)="updateInfoAdminOtherUser(otherUser.username, otherUser.isAdmin)">Aggiorna le informazioni</button>
+    </div>
+    <div class="row col py-2">
+      <button *ngIf="isAdmin" type="button" class="btn btn-danger" (click)="deleteThisUser()">Elimina l'utente</button>
+    </div>
+    <div class="row col py-2">
+      <button class="btn btn-primary" (click)="clickButtonSendMessageUserInfo()">Invia un messaggio</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #thisUser>
+  <div class="row col">
+    <h1>Il tuo profilo</h1>
+  </div>
+  <!-- Profile image
+  <div class="row">
+    <div class="col text-center">
+      <img src="https://pbs.twimg.com/profile_images/1532886460/He-man_400x400.jpg" style="width:13em;border-radius:50%" class="center-block">
+    </div>
+  </div>-->
+  <!-- Info account-->
+  <div class="container py-5">
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Username</b>
+      </div>
+      <div class="col-6">
+        <input type="text" #usertxt required="true" value="{{this.userService.get_name()}}" class="form-control">
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Nome</b>
+      </div>
+      <div class="col-6">
+        <input type="text" #nametxt required="true" value="{{this.userService.get_name()}}" class="form-control">
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Cognome</b>
+      </div>
+      <div class="col-6">
+        <input type="text" #surnametxt required="true" value="{{this.userService.get_surname()}}" class="form-control">
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <b>Email</b>
+      </div>
+      <div class="col-6">
+        <input type="email" #mailtxt required="true" value="{{this.userService.get_mail()}}" class="form-control">
+      </div>
+    </div>
+    <div class="row py-2">
+      <div class="col-6">
+        <input type="password" #newpassword1 required="true" placeholder="Nuova password" class="form-control">
+      </div>
+      <div class="col-6">
+        <input type="password" #newpassword2 required="true" placeholder="Ripeti nuova password" class="form-control">
+      </div>
+    </div>
+    <div *ngIf="userService.is_admin()" style="padding-left:0" class="col-12 py-2">
+      <input type="checkbox" [checked]="isAdmin" #changeThisAdmin (click)="changeStatusAdminThisAccount()"> Amministratore
+    </div>
+    <div class="row py-2">
+      <div class="col-12">
+        <a routerLink="/user/{{this.userService.get_username()}}/matches">Partite giocate</a>
+      </div>
+    </div>
+    <div *ngIf="errmessage" class="alert alert-danger" role="alert">
+      Errore: {{errmessage}}
+    </div>
+    <div *ngIf="okmessage" class="alert alert-success" role="alert">
+      {{okmessage}}
+    </div>
+    <div class="row col py-2">
+      <button type="button" class="btn btn-primary" (click)="updateInfo(usertxt.value, nametxt.value, surnametxt.value, mailtxt.value, newpassword1.value, newpassword2.value, admin)">Aggiorna le informazioni</button>
+    </div>
+    <div class="row col py-2">
+      <button type="button" class="btn btn-danger" (click)="deleteThisUser()">Elimina l'utente</button>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,50 @@
+<div class="row col">
+  <h1>Giocatori presenti</h1>
+</div>
+<div class="row col py-3">
+  <div class="col-4">
+    Ricerca un giocatore
+  </div>
+  <div class="col-8">
+    <input type="text" #keyword class="form-control" (input)='searchPlayer(keyword.value)'>
+  </div>
+</div>
+<div class="row col">
+  <div class="col-4">
+    <p>
+      <b>
+        Username
+      </b>
+    </p>
+  </div>
+  <div class="col-4">
+    <p>
+      <b>
+        Nome
+      </b>
+    </p>
+  </div>
+  <div class="col-4">
+    <p>
+      <b>
+        Cognome
+      </b>
+    </p>
+  </div>
+</div>
+<div *ngFor="let player of players">
+  <div class="row col py-2">
+    <div class="col-4">
+      <a *ngIf="player.username != userLogged" routerLink='/user/{{player.username}}'>{{player.username}}</a>
+      <a *ngIf="player.username == userLogged" routerLink='/user'>{{player.username}}</a>
+    </div>
+    <div class="col-4">
+      <a *ngIf="player.username != userLogged" routerLink='/user/{{player.username}}'>{{player.name}}</a>
+      <a *ngIf="player.username == userLogged" routerLink='/user'>{{player.name}}</a>
+    </div>
+    <div class="col-4">
+      <a *ngIf="player.username != userLogged" routerLink='/user/{{player.username}}'>{{player.surname}}</a>
+      <a *ngIf="player.username == userLogged" routerLink='/user'>{{player.surname}}</a>
+    </div>
+  </div>
+</div>

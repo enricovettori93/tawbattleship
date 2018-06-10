@@ -1,0 +1,38 @@
+<div class="row col">
+  <h1>Messaggi</h1>
+</div>
+<div class="container py-2">
+  <div *ngIf="messages.length === 0">Nessun messaggio presente nella chat</div>
+  <div *ngIf="-(showMessage) <= messages.length" style="text-align: center">
+    <a style="color: #083d8d" (click)="showMoreMessages()">Visualizza più messaggi</a>
+  </div>
+  <div *ngFor="let message of messagesToShow">
+    <div *ngIf="message.senderID == id_user">
+      <div class="alert alert-dark py-2 me">
+        <span>{{message.text}}</span>
+        <br>
+        <span style="font-size: .8em">{{message.sentAt}}</span>
+      </div>
+    </div>
+    <div *ngIf="message.senderID != id_user">
+      <div class="alert alert-info py-2 other">
+        <span>{{message.text}}</span>
+        <br>
+        <span style="font-size: .8em">{{message.sentAt}}</span>
+      </div>
+    </div>
+  </div>
+  {{scrollDown()}}
+  <form>
+    <div class="form-group">
+      <label for="messageTextArea"></label>
+      <textarea class="form-control" id="messageTextArea" rows="3" [(ngModel)] = "textMessage" maxlength="1000" name="message"></textarea>
+    </div>
+    <div *ngIf="error"class="alert alert-danger" role="alert">
+        {{error}}
+    </div>
+    <div class="row col-sm-12">
+      <button type="button" class="btn btn-primary" (click)="sendMessage()">Invia il messaggio</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,60 @@
+<div class="row col">
+  <h1>Scoreboard</h1>
+</div>
+<div *ngIf="scoreboard.length === 0">
+  <h2>Nessun giocatore in classifica!</h2>
+</div>
+<!-- Header-->
+<div *ngIf="scoreboard.length !== 0" class="row">
+  <div class="col-8">
+    <p>
+      <b>Username</b>
+    </p>
+  </div>
+  <div class="col-4">
+    <p>
+      <b> {{tipologiaScoreboard}} </b>
+    </p>
+  </div>
+</div>
+<!-- Content-->
+<div *ngFor="let score of scoreboard">
+  <div class="row">
+    <div class="col-8">
+      <p>
+        <a *ngIf="score.username != userService.get_username()" routerLink='/user/{{score.username}}'>{{score.username}}</a>
+        <a *ngIf="score.username == userService.get_username()" routerLink='/user'>{{score.username}}</a>
+      </p>
+    </div>
+    <div class="col-4">
+      <div ng-switch="tipologiaScoreboard">
+        <div ng-switch-when="Partite vinte">
+          {{score.partiteVinte}}
+        </div>
+        <div ng-switch-when="Partite perse">
+          {{score.partitePerse}}
+        </div>
+        <div ng-switch-when="Totali">
+          {{score.total}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <p>Mostra le prime posizioni nella classifica:</p>
+  <select class="form-control" (click)="changeScoreboard(limitScoreboard.value, typeScoreboard.value)" #limitScoreboard>
+    <option value="5">5</option>
+    <option value="10" selected>10</option>
+    <option value="20">20</option>
+    <option value="100">100</option>
+  </select>
+</div>
+<div class="row">
+  <p>Ordina la classifica in base a:</p>
+  <select class="form-control" (click)="changeScoreboard(limitScoreboard.value, typeScoreboard.value)" #typeScoreboard>
+    <option value="partiteVinte">Partite vinte</option>
+    <option value="partitePerse">Partite perse</option>
+    <option value="total">Totale delle partite</option>
+  </select>
+</div>
