@@ -65,6 +65,10 @@ var userSchema = new mongoose.Schema( {
     }
 })
 
+/**
+ * Metodo setter: setta la password dell'utente con le opportune misure di sicurezza.
+ * @param pwd stringa contenente la password dell'utente.
+ */
 userSchema.methods.setPassword = function( pwd:string ) {
     this.salt = crypto.randomBytes(16).toString('hex');
     var hmac = crypto.createHmac('sha512', this.salt );
@@ -72,6 +76,10 @@ userSchema.methods.setPassword = function( pwd:string ) {
     this.digest = hmac.digest('hex');
 }
 
+/**
+ * Metodo per controllare la correttezza della password inserita per l'autenticazione.
+ * @param pwd password inserita per autenticarsi
+ */
 userSchema.methods.validatePassword = function( pwd:string ):boolean {
     var hmac = crypto.createHmac('sha512', this.salt );
     hmac.update(pwd);
@@ -79,10 +87,16 @@ userSchema.methods.validatePassword = function( pwd:string ):boolean {
     return (this.digest === digest);
 }
 
+/**
+ * Metodo per controllare se l'utente sia un admin o meno.
+ */
 userSchema.methods.hasAdminRole = function(): boolean {
     return this.isAdmin;
 }
 
+/**
+ * Metodo setter: promuove un utente ad admin
+ */
 userSchema.methods.setAdmin = function() {
     this.isAdmin = true;
 }
@@ -97,6 +111,10 @@ export function getModel(): mongoose.Model<User> {
     return userModel;
 }
 
+/**
+ * Funzione per la creazione di un nuovo utente.
+ * @param data contiene le informazioni ottenute nella registrazione dell'utente.
+ */
 export function newUser(data): User {
     var _userModel = getModel();
     var user = new _userModel(data);

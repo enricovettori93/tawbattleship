@@ -12,6 +12,9 @@ export interface Field extends mongoose.Document {
     insertShips: (jFile: any) => void
 }
 
+/**
+ * Classe per rappresentare le celle del campo
+ */
 export class Cell {
     color: string;
     hit: boolean;
@@ -64,18 +67,23 @@ export function getModel(): mongoose.Model<Field> { // Return Model as singleton
     }
     return fieldModel;
 }
-//colori delle celle, temporanei (da modificare a seconda dell'estetica)
+//colori delle celle
 
 export enum cellColor {
     unknown = "#00ffff", //azzurro chiaro
     water = "#000080", //blu scuro
     hit = "#ff0000", //rosso
     shipDestroyed = "#00ff00", //verde lime
-    ship = "#000000"
+    ship = "#000000" //nero
 }
 
 
-
+/**
+ * Funzione di creazione del campo.
+ * @param UID stringa contenente l'ID dell'utente creatore del campo.
+ * @param jFile un documento in formato JSON contenente le navi e le posizioni delle loro celle.
+ *                Il file deve avere questa struttura: { "positioning" : { "ships" : [ [{"x" : 1, "y" : 1}, {"x" : 2, "y" : 1}], ...]}}
+ */
 export function newField(UID: string, jFile: any): Field {
     var _fieldModel = getModel();
     var field = new _fieldModel();
@@ -92,6 +100,15 @@ export function newField(UID: string, jFile: any): Field {
     return field;
 }
 
+
+/**
+ * Funzione per verificare se le posizioni di una nave siano consecutive orizzontalmente o verticalmente.
+ * Suppone che le posizioni siano ordinate correttamente dalla prima all'ultima.
+ * 
+ * @param nave contiene la nave nel formato [{"x" : coordinataX, "y" : coordinataY}, {"x" : coordinata, "y" : 1}, ...]
+ * 
+ * Ritorna true se sono posizionate correttamente, false altrimenti.
+ */
 function checkSubsequent(nave: any): boolean {
 
     var isSub = true;
@@ -102,10 +119,18 @@ function checkSubsequent(nave: any): boolean {
     return isSub;
 }
 
-
+/**
+ * Metodo per effettuare lo "sparo" da parte di un giocatore al campo di un altro.
+ * @param position contiene le coordinate dello sparo nel formato {"x" : coordinataX, "y" : coordinataY}
+ */
 FieldSchema.methods.shoot = function (position: any) {
+
+    // Controlla se l'utente abbia già sparato in quella posizione
     if (!this.matrix[position.x][position.y].hit) {
         var hit = false;
+
+        // Controlla se il colpo sia andato a segno su una nave
+        // Se sì, controlla anche se la nave in questione sia affondata dopo il colpo. 
         this.ships.forEach((ship, index) => {
             var shipAux = new Ship(ship[0].cells);
             if (shipAux.hit(position)) {
@@ -136,6 +161,12 @@ FieldSchema.methods.shoot = function (position: any) {
 
 }
 
+/**
+ * Metodo per inserire le navi nel campo secondo la disposizione voluta dall'utente.
+ * 
+ * @param jFile un documento in formato JSON contenente le navi e le posizioni delle loro celle.
+ *              Il file deve avere questa struttura: { "positioning" : { "ships" : [ [{"x" : 1, "y" : 1}, {"x" : 2, "y" : 1}], ...]}}
+ */
 FieldSchema.methods.insertShips = function (jFile: any) {
 
     var navi = {}
@@ -144,28 +175,34 @@ FieldSchema.methods.insertShips = function (jFile: any) {
     navi[4] = { 'quantity': 2, 'actualQuantity': 0 };
     navi[5] = { 'quantity': 1, 'actualQuantity': 0 };
     //console.log(typeof this.ships);
+
+    // Controlla che il numero di navi non sia inferiore a 9.
     if(jFile["ships"].length != 9){
         throw "Troppe o troppo poche navi inserte."
     }
     jFile["ships"].forEach(element => {
 
+        // Controlla la correttezza della dimensione della nave
         if (element.length > 5 || element.length < 2) {
             this.matrix = this.ships = [];
             this.aliveShips = 0;
             throw "nave di dimensione errata"
         }
 
+        // Controlla se il numero di navi dello stesso tipo di quella in questione abbia già raggiunto il massimo
         if (navi[element.length].quantity == navi[element.length].actualQuantity) {
             this.matrix = this.ships = [];
             this.aliveShips = 0;
             throw "troppe navi dello stesso tipo"
         }
 
+        // Controlla che le celle della nave siano consecutive, attraverso la funzione checkSubsequent
         if (checkSubsequent(element)) {
             navi[element.length].actualQuantity = navi[element.length].actualQuantity + 1;
-            //crea una nuova nave
+
             var ship = new Ship(element)
 
+            // Controlla che ogni cella della nave non sia fuori dal campo, o che non sia adiacente a nessuna altra nave
             ship.cells.forEach(position => {
                 if (!checkNext(position, this.ships) && (position["x"] >= 1 || position["x"] <= 10) && (position["y"] >= 1 || position["y"] <= 10)) {
                     this.matrix = this.ships = [];
@@ -173,6 +210,8 @@ FieldSchema.methods.insertShips = function (jFile: any) {
                     throw "una nave è adiacente ad un'altra, oppure è posizionata fuori dai bordi del campo"
                 }
             })
+
+            // La nave ha superato tutti i controlli.
             this.ships.push(ship);
             ship.cells.forEach(position => {
                 this.matrix[position["x"]][position["y"]] = new Cell(cellColor.ship);
@@ -191,6 +230,12 @@ FieldSchema.methods.insertShips = function (jFile: any) {
     return true;
 }
 
+/**
+ * Funzione per controllare se una cella di una nave sia adiacente ad una di qualsiasi altra nave.
+ * 
+ * @param cella documento contenente la cella da controllare, nel formato { "x" : coordinataX, "y" : coordinataY}
+ * @param naviInserite l'array delle navi inserite fino ad ora, ogni nave nel formato [{"x" : 1, "y" : 1}, {"x" : 2, "y" : 1}], ...]
+ */
 function checkNext(cella: any, naviInserite: Array<any>): boolean {
     let isOK = true;
     if (naviInserite.length > 0) {

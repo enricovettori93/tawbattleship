@@ -3,6 +3,13 @@ import { Field } from './Field';
 import * as field from './Field';
 import { ObjectId } from 'bson';
 
+/**
+ * I possibili status di un match:
+ *  - Wait: il match è in attesa che l'opponent joini la partita
+ *  - Building: il match è in fase di costruzione, entrambi i giocatori devono inserire le proprie navi
+ *  - Active: il match è in corso
+ *  - Ended: il match si è concluso con un vincitore ed uno sconfitto
+ */
 export enum MatchStatus {
     Wait,
     Building,
@@ -63,10 +70,16 @@ var MatchSchema = new mongoose.Schema({
     }
 })
 
+/**
+ * Metodo getter: ritorna lo status del Match.
+ */
 MatchSchema.methods.getStatus = function (): MatchStatus {
     return this.status;
 }
 
+/**
+ * Metodo getter: ritorna l'Id del giocatore vincitore.
+ */
 MatchSchema.methods.getWinnerId = function (): string {
     if (this.status == MatchStatus.Wait || this.status == MatchStatus.Active)
         return null;
@@ -74,10 +87,20 @@ MatchSchema.methods.getWinnerId = function (): string {
         return this.winnderId;
 }
 
+/**
+ * Metodo setter: setta lo status di un match.
+ * @param status lo status a cui deve essere settato il match
+ */
 MatchSchema.methods.setStatus = function (status: MatchStatus) {
     this.status = status;
 }
 
+/**
+ * Metodo per l'inserimento nel campo delle navi posizionate da un giocatore.
+ * @param owner il proprietario del campo
+ * @param shipJSON un documento in formato JSON contenente le navi e le posizioni delle loro celle.
+ *                 Il file deve avere questa struttura: { "positioning" : { "ships" : [ [{"x" : 1, "y" : 1}, {"x" : 2, "y" : 1}], ...]}}
+ */
 MatchSchema.methods.insertField = function (owner: string, shipJSON: any): Promise<any> {
     var promise = new Promise((resolve, reject) => {
         var field1 = field.newField(owner, shipJSON);
@@ -121,14 +144,20 @@ export function getModel(): mongoose.Model<Match> { // Return Model as singleton
     return matchModel;
 }
 
+/**
+ * Funzione per la creazione di un match.
+ * @param owner contiene l'ID del creatore del match
+ */
 export function newMatch(owner: string): Match {
     var _matchModel = getModel();
     var match = new _matchModel();
 
     // inizializzo la data della partita
     match.timestamp = new Date()
-    // inizializzo i due ID proprietari della partita
+
+    // inizializzo l'ID proprietario della partita
     match.owner = mongoose.Types.ObjectId(owner);
+
     // setto lo status del match come Wait, in attesa del secondo player
     match.status = MatchStatus.Wait
 

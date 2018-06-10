@@ -582,7 +582,6 @@ app.put("/matches/:id_match/join", auth, (req, res, next) => {
  *  "position" : { "x" : Number, "y" : Number}
  * }
  */
-// TODO : modificare in che modo viene segnalato il vincitore
 app.put("/matches/:id_match", auth, (req, res, next) => {
         match.getModel().findOne({ "_id": req.params.id_match }).then((returnmatch) => {
             if(returnmatch.lastIdAttacker == req.user.id){
