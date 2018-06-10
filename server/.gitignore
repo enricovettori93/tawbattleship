@@ -1,5 +1,6 @@
 node_modules
 *.map
 *.js
-data
+data/*
+!data/.gitkeep 
 
