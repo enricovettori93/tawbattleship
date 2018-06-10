@@ -1,0 +1,43 @@
+<h1 *ngIf="opponentUsr != null">Match vs: <a routerLink="/user/{{opponentUsr}}">{{opponentUsr}}</a></h1>
+<h1 *ngIf="opponentUsr == null">Match vs: giocatore eliminato</h1>
+<div *ngIf="winner; then finish; else inGame">
+
+</div>
+
+<ng-template #finish>
+  <div class="alert alert-primary" *ngIf="last_attacker !== userService.get_userId()">{{winner}} ha vinto la partita</div>
+</ng-template>
+
+<ng-template #inGame>
+  <div class="alert alert-warning" *ngIf="last_attacker === userService.get_userId()">Attendi, è il turno dell'avversario</div>
+  <div class="alert alert-primary" *ngIf="last_attacker !== userService.get_userId()">Tocca a te!</div>
+</ng-template>
+
+<div *ngIf="error" class="alert alert-danger">
+  {{error}}
+</div>
+
+<div class="row">
+  <div class="col-md-4 my-board">
+    <h2>
+      Il tuo campo
+    </h2>
+    <div class="board-row" *ngFor="let row of userBoard; let rowIndex = index">
+      <div class="cell" [ngStyle]="{'background-color': cell.color}" [attr.row]="rowIndex" [attr.col]="colIndex" *ngFor="let cell of row; let rowIndex = index">
+      </div>
+    </div>
+  </div>
+  <!--<div class="col-md-2 col-sm-6">
+    <h2>Le tue navi</h2>
+
+  </div>-->
+  <div class="col-md-8">
+    <h2>
+      Campo avversario
+    </h2>
+    <div class="board-row" *ngFor="let row of opponentBoard; let rowIndex = index">
+      <div (click)="shoot(rowIndex, colIndex, cell.color)" class="cell opponent" [ngStyle]="{'background-color': cell.color}" *ngFor="let cell of row; let colIndex = index">
+      </div>
+    </div>
+  </div>
+</div>

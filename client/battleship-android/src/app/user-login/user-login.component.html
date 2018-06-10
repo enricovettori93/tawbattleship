@@ -1,0 +1,40 @@
+<div class="row col">
+  <h1>Log-in</h1>
+</div>
+<div class="row">
+  <div class="col-12">
+    <p>Inserisci le tue credenziali per accedere</p>
+  </div>
+</div>
+<form #loginForm="ngForm">
+  <div class="row py-2">
+    <div class="col-sm-6">
+      <p>Username</p>
+    </div>
+    <div class="col-sm-6">
+      <input type="text" [(ngModel)]="username" required placeholder="username" id="inputuser" class="form-control" name="username">
+    </div>
+  </div>
+  <div class="row py-2">
+    <div class="col-sm-6">
+      <p>Password</p>
+    </div>
+    <div class="col-sm-6">
+      <input type="password" [(ngModel)]="password" required placeholder="password" id="inputpassword" class="form-control" name="password" (keyup.enter)="login()" >
+    </div>
+  </div>
+  <div class="row col-sm-12">
+    <label>
+      <input type="checkbox" [(ngModel)]="rememberAccess" name="rememberAccess" value="{{rememberAccess}}"> Ricordami
+    </label>
+  </div>
+</form>
+<div *ngIf="errmessage" class="alert alert-danger" role="alert">
+  Errore di login: {{errmessage}}
+</div>
+<div class="row col-sm-12 py-2">
+  <button type="button" class="btn btn-primary" (click)="login()">Login</button>
+</div>
+<div class="row col-sm-12 py-2">
+  <button type="button" class="btn btn-primary" routerLink="/signup">Registrati</button>
+</div>

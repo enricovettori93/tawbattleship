@@ -1,0 +1,127 @@
+.vertical {
+  transform: rotate(90deg);
+}
+
+.horizonatal {
+  transform: none;
+}
+
+.ship-group {
+  display: inline-block;
+  margin: 10px 20px;
+}
+
+.fa-times, .fa-repeat {
+  position: absolute;
+}
+
+.destroyer .fa-repeat {
+  right: 15px;
+  top: 20px
+}
+
+.destroyer .fa-times {
+  right: 15px;
+  bottom: 30px
+}
+
+.submarine .fa-repeat {
+  right: 15px;
+  top: 30px
+}
+
+.submarine .fa-times {
+  right: 15px;
+  bottom: 45px
+}
+
+.battleship .fa-repeat {
+  right: 15px;
+  top: 50px
+}
+
+.battleship .fa-times {
+  right: 15px;
+  bottom: 45px
+}
+
+.aircraft-carrier .fa-repeat {
+  right: 15px;
+  top: 50px
+}
+
+.aircraft-carrier .fa-times {
+  right: 15px;
+  bottom: 75px
+}
+
+.ship {
+  position: relative;
+  display: block;
+  float: left;
+}
+
+.ship[draggable="false"] {
+  opacity: 0.5;
+}
+
+.held {
+  border: solid 10px black;
+  background-color: black;
+}
+
+.holder {
+  height: 50px;
+  width: 50px;
+  border: solid 1px #666;
+  background-color: white;
+  display: inline-block;
+}
+
+.hovered {
+  border: dotted 5px black;
+}
+
+.invisible {
+  display: none;
+}
+
+#container {
+  margin: auto;
+  top: 100px;
+  width: 400px;
+  position: relative;
+}
+
+.board-row {
+  line-height: 0px;
+  max-width: 100%;
+  display: block;
+  text-align: center;
+}
+
+@media (max-width: 1025px) {
+  .holder {
+    width: 45px;
+    height: 45px;
+  }
+  .destroyer {
+    height: 50px;
+  }
+  .submarine {
+    height: 60px;
+  }
+  .battleship {
+    height: 70px;
+  }
+  .aircraft-carrier{
+    height: 80px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .holder {
+    width: 30px;
+    height: 30px;
+  }
+}
