@@ -695,7 +695,7 @@ mongoose.connect('mongodb://localhost:27017/battleship').then(
                         partitePerse: 0
                     });
                     admin.setAdmin();
-                    admin.setPassword("ciaobelli");
+                    admin.setPassword("admin");
                     admin.save().then(() => {
                         console.log("Admin created");
                     }).catch((err) => {
