@@ -1,16 +1,16 @@
-<h1 *ngIf="opponentUsr != null">Match vs:
-  <a routerLink="/user/{{opponentUsr}}">{{opponentUsr}}</a>
-</h1>
-<h1 *ngIf="opponentUsr == null">Match vs: giocatore eliminato</h1>
 <div *ngIf="winner; then finish; else inGame">
 
 </div>
 
 <ng-template #finish>
-  <div class="alert alert-primary" *ngIf="last_attacker !== userService.get_userId()">{{winner}} ha vinto la partita</div>
+  <div class="alert alert-primary">{{winner_username}} ha vinto la partita</div>
 </ng-template>
 
 <ng-template #inGame>
+  <h1 *ngIf="opponentUsr != null">Match vs:
+    <a routerLink="/user/{{opponentUsr}}">{{opponentUsr}}</a>
+  </h1>
+  <h1 *ngIf="opponentUsr == null">Match vs: giocatore eliminato</h1>
   <div class="alert alert-warning" *ngIf="last_attacker === userService.get_userId()">Attendi, è il turno dell'avversario</div>
   <div class="alert alert-primary" *ngIf="last_attacker !== userService.get_userId()">Tocca a te!</div>
 </ng-template>

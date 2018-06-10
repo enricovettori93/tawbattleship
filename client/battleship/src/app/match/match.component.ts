@@ -17,6 +17,7 @@ export class MatchComponent implements OnInit {
   private last_attacker;
   private match;
   private winner = undefined;
+  private winner_username = undefined;
   opponentUsr: string;
   userBoard;
   userShips;
@@ -39,6 +40,14 @@ export class MatchComponent implements OnInit {
         this.userBoard = match.userBoard.matrix;
         this.opponentBoard = match.opponentBoard.matrix;
         this.userShips = match.userBoard.ships;
+        if(match.winnerId != undefined ||  match.winnerId != null){
+          if(match.winnerId == match.userInfo.id){
+            this.winner_username = match.userInfo.username;
+          }
+          else{
+            this.winner_username = match.opponentInfo.username;
+          }
+        }
       }
     );
   }
@@ -76,6 +85,7 @@ export class MatchComponent implements OnInit {
       if(!this.winner){
         this.error = "Hai già sparato in quella cella";
       }
+      
     }
   }
 }
