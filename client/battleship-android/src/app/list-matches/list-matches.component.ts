@@ -84,7 +84,7 @@ export class ListMatchesComponent implements OnInit {
       const request = this.matchService.joinMatch(idMatch, this.userService.get_userId());
       request.subscribe(
         (data) => {
-          console.log(data);
+          //console.log(data);
           if (!data.error) {
             this.router.navigate(['/match/' + idMatch + '/board']);
           }

@@ -12,7 +12,7 @@ const token_name = 'battleship_token';
 @Injectable()
 export class UserService {
   constructor(private http: HttpClient, private router: Router, private utilities: UtilitiesService) {
-    console.log('User Service istanziato');
+    // console.log('User Service istanziato');
   }
 
   private token = '';
@@ -46,7 +46,7 @@ export class UserService {
     console.log('Login: ' + this.url + '/login ' + JSON.stringify(optionsLogin));
     return this.http.get(this.url + '/login', optionsLogin).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
         this.is_logged.emit(true);
         this.token = data.token;
         localStorage.setItem(token_name, this.token);
@@ -74,7 +74,7 @@ export class UserService {
     console.log(JSON.stringify(user));
     return this.http.post(this.url + '/users', user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       }, (error) => {
         console.log('ERRORE REGISTRAZIONE ' + error.error.errormessage);
       })
@@ -96,7 +96,7 @@ export class UserService {
 
     return this.http.put(this.url + '/users/' + this.get_username(), user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }
@@ -106,7 +106,7 @@ export class UserService {
     return this.http.put(this.url + '/users/' + username, { 'username': username, 'isAdmin': isAdmin },
       this.utilities.create_options(this.get_token())).pipe(
         tap((data) => {
-          console.log(JSON.stringify(data));
+          // console.log(JSON.stringify(data));
         })
       );
   }
@@ -115,7 +115,7 @@ export class UserService {
     console.log('Deleting user ' + username);
     return this.http.delete(this.url + '/users/' + username, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }
@@ -130,7 +130,7 @@ export class UserService {
   getInfoUser(user: string): Observable<any> {
     return this.http.get(this.url + '/users/' + user, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log('Getting info user: ' + JSON.stringify(data));
+        // console.log('Getting info user: ' + JSON.stringify(data));
       })
     );
   }
@@ -139,13 +139,13 @@ export class UserService {
     if (keyword === undefined || keyword === '') {
       return this.http.get(this.url + '/users', this.utilities.create_options(this.get_token())).pipe(
         tap((data) => {
-          console.log('Searching user: ' + JSON.stringify(data));
+          // console.log('Searching user: ' + JSON.stringify(data));
         })
       );
     } else {
       return this.http.get(this.url + '/users', this.utilities.create_options(this.get_token(), { 'keysearched': keyword })).pipe(
         tap((data) => {
-          console.log('Searching user: ' + JSON.stringify(data));
+          // console.log('Searching user: ' + JSON.stringify(data));
         })
       );
     }
@@ -154,7 +154,7 @@ export class UserService {
   getScoreboard(params = {}): Observable<any> {
     return this.http.get(this.url + '/scoreboard', this.utilities.create_options(this.get_token(), params)).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }
@@ -162,7 +162,7 @@ export class UserService {
   getUserChats(): Observable<any> {
     return this.http.get(this.url + '/chats', this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }
@@ -178,7 +178,7 @@ export class UserService {
   createChat(username: string): Observable<any> {
     return this.http.post(this.url + '/chats', { 'destinatario': username }, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }
@@ -188,7 +188,7 @@ export class UserService {
     return this.http.post(this.url + '/chats/' + idChat, { 'sentAt': date, 'text': text },
       this.utilities.create_options(this.get_token())).pipe(
         tap((data) => {
-          console.log(JSON.stringify(data));
+          // console.log(JSON.stringify(data));
         })
       );
   }
@@ -196,7 +196,7 @@ export class UserService {
   deleteChat(id: string) {
     return this.http.delete(this.url + '/chats/' + id, this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }
@@ -204,7 +204,7 @@ export class UserService {
   getMatches(user: string) {
     return this.http.get(this.url + '/users/:user/matches', this.utilities.create_options(this.get_token())).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }
@@ -217,7 +217,7 @@ export class UserService {
       this.renew().subscribe(
         (data) => {
           console.log('Token renewed successfully');
-      });
+        });
     }
     return this.token;
   }

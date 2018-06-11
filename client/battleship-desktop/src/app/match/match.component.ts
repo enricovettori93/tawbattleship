@@ -32,7 +32,7 @@ export class MatchComponent implements OnInit {
   private matchUpdate(): void {
     this.matchService.getMatchInfo(this.matchId, true).subscribe(
       (match) => {
-        //console.log(match);
+        // console.log(match);
         this.match = match;
         this.winner = match.winnerId;
         this.last_attacker = match.lastIdAttacker;
@@ -40,11 +40,10 @@ export class MatchComponent implements OnInit {
         this.userBoard = match.userBoard.matrix;
         this.opponentBoard = match.opponentBoard.matrix;
         this.userShips = match.userBoard.ships;
-        if(match.winnerId != undefined ||  match.winnerId != null){
-          if(match.winnerId == match.userInfo.id){
+        if (match.winnerId !== undefined || match.winnerId != null) {
+          if (match.winnerId === match.userInfo._id) {
             this.winner_username = match.userInfo.username;
-          }
-          else{
+          } else {
             this.winner_username = match.opponentInfo.username;
           }
         }
@@ -61,7 +60,7 @@ export class MatchComponent implements OnInit {
       socket.on('match update ' + this.matchId, (m) => {
         this.error = undefined;
         this.last_attacker = m.lastIdAttacker;
-        //console.log("MESSAGE RECEIVED " + JSON.stringify(m));
+        // console.log("MESSAGE RECEIVED " + JSON.stringify(m));
         this.matchUpdate();
       });
       this.matchUpdate();
@@ -69,23 +68,22 @@ export class MatchComponent implements OnInit {
   }
 
   shoot(x, y, color) {
-    if(color == "#00ffff"){
+    if (color === '#00ffff') {
       this.error = undefined;
       this.matchService.shoot(x, y, this.matchId).subscribe(
         (success) => {
           this.winner = success.winner;
-          //console.log(success);
+          // console.log(success);
         },
         (error) => {
           console.log(error);
         }
       );
-    }
-    else{
-      if(!this.winner){
-        this.error = "Hai già sparato in quella cella";
+    } else {
+      if (!this.winner) {
+        this.error = 'Hai già sparato in quella cella';
       }
-      
+
     }
   }
 }

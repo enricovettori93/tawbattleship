@@ -1,7 +1,7 @@
 {
   "name": "battleship",
   "version": "0.0.1",
-  "main": "start_electron",
+  "main": "electron-start",
   "scripts": {
     "ng": "ng",
     "start": "electron .",

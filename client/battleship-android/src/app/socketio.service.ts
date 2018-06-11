@@ -20,19 +20,19 @@ export class SocketioService {
    * che richieda un canale broadcast
    */
   connect(id: string): Observable<any> {
-    console.log(id);
+    //console.log(id);
     this.socket = io(this.userService.url);
     return new Observable((observer) => {
       this.socket.on('broadcast ' + id, (m) => {
-        console.log('Received socket message: ' + JSON.stringify(m));
+        //console.log('Received socket message: ' + JSON.stringify(m));
         observer.next(m);
       });
       this.socket.on('error ' + id, (err) => {
-        console.log('Error socket received: ' + JSON.stringify(err));
+        //console.log('Error socket received: ' + JSON.stringify(err));
         observer.error(err);
       });
       this.socket.on('new_message_for ' + id, (m) => {
-        console.log('Received messa message: ' + JSON.stringify(m));
+        //console.log('Received message message: ' + JSON.stringify(m));
         observer.next(m);
       });
       return {
