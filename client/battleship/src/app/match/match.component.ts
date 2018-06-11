@@ -41,9 +41,6 @@ export class MatchComponent implements OnInit {
         this.opponentBoard = match.opponentBoard.matrix;
         this.userShips = match.userBoard.ships;
         if (match.winnerId !== undefined || match.winnerId != null) {
-          console.log(match.winnerId === match.userInfo._id);
-          console.log(match.winnerId);
-          console.log(match.userInfo._id);
           if (match.winnerId === match.userInfo._id) {
             this.winner_username = match.userInfo.username;
           } else {

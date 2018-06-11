@@ -79,7 +79,6 @@ export class MatchService {
   }
 
   joinMatch(id: string, user_id: string): Observable<any> {
-    console.log('son qua');
     return this.http.put(
       this.userService.url + '/matches/' + id + '/join',
       {},
